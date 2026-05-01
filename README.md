@@ -9,7 +9,7 @@ A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https:/
 ## 🚀 Features
 
 * **Multi-Platform AI**: Powered by Gemini, Anthropic, or any OpenAI-compatible LLM (e.g., ThaiLLM).
-* **Modern TUI**: A rich, interactive CLI experience with custom styling, animated indicators, and structured layout.
+* **Modern TUI**: A rich, interactive CLI experience with a custom ASCII banner, animated indicators, and structured layout.
 * **Markdown Wiki KM**: A transparent, human-readable Knowledge Management system using `.md` files.
 * **Dynamic Persona & Soul**: Configure the bot's personality and user context via `AGENT.md` and `USER.md`.
 * **Persistent Sessions**: SQLite-backed conversation history keyed by Telegram user ID.
@@ -60,6 +60,7 @@ The system supports multiple entry points sharing the same core agent logic:
 ```mermaid
 graph TD
     subgraph EntryPoints [Modes]
+        direction TB
         Bot[Telegram Bot]
         CLI[Interactive CLI]
         Run[Direct Run]
@@ -75,8 +76,6 @@ graph TD
     Agent --> Tools[src/agent/tools/*]
     Agent --> Wiki[Wiki / Markdown]
     Agent --> Persona[AGENT.md & USER.md]
-    
-    style Agent fill:#f96,stroke:#333,stroke-width:2px
 ```
 
 * **teloxide**: Handles Telegram polling and updates.
