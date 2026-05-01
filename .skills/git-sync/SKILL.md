@@ -1,6 +1,8 @@
 ---
 name: git-sync
 description: Automates Git operations (add, commit, push) for rapid project syncing. Use when you have pending changes that need to be committed and pushed to the remote repository.
+allowed-tools:
+  - exec_command
 ---
 
 # Git Sync

@@ -1,24 +1,22 @@
-use std::sync::Arc;
 use adk_rust::prelude::*;
+use std::sync::Arc;
 
 // OpenAI-compatible API
 use adk_rust::model::{OpenAIClient, OpenAIConfig};
 
-pub mod utils;
-pub mod database;
+pub mod create_skill_tool;
 pub mod current_datetime_tool;
+pub mod database;
 pub mod filesystem_tool;
 pub mod km_tool;
+pub mod mcp;
 pub mod shell_tool;
+pub mod system_info_tool;
+pub mod utils;
 pub mod weather_tool;
 pub mod web_fetch_tool;
-pub mod system_info_tool;
-pub mod create_skill_tool;
-pub mod mcp;
-
 
 pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
-
     // Sample for ThaiLLM OpenAI-compatible API
     // Load the API key from an environment variable
     let api_key = std::env::var("THAILLM_API_KEY")?;
@@ -31,7 +29,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     );
 
     // Create the OpenAI client with the custom configuration
-    let model =  Arc::new(OpenAIClient::new(config)?);
+    let model = Arc::new(OpenAIClient::new(config)?);
 
     // Sample for Gemini
     // let api_key = std::env::var("GOOGLE_API_KEY")?;
@@ -53,7 +51,7 @@ Guidelines for Interaction:
 4. Transparency: If a request exceeds your capabilities or toolset, or if you do not have enough information to answer, clearly state your limitations. Do NOT attempt to use tools (like creating a skill) if the request is not related to that tool's specific purpose.
 5. Formatting: Use plain text only. Do NOT use Markdown formatting (no bold, italics, headers, or tables).
 6. Language: You MUST always answer and communicate with the user in Thai, even if the user speaks in another language. Use natural, professional, and clear Thai.
-7. Final Output: Use plain text. For lists, use emoji indicators (e.g., 🔹, 1️⃣) to maintain structure without Markdown.",)
+7. Final Output: Use plain text. For lists use indicators (e.g., '- ', '1. ') to maintain structure without Markdown.",)
         .model(model.clone())
         .with_skills_from_root(project_root)?;
 
@@ -66,7 +64,7 @@ Guidelines for Interaction:
     tools.extend(web_fetch_tool::web_fetch_tools());
     tools.extend(system_info_tool::system_info_tools());
     tools.extend(create_skill_tool::create_skill_tool());
- 
+
     // Add tools to the agent builder
     for t in tools {
         builder = builder.tool(t).into();
@@ -77,6 +75,6 @@ Guidelines for Interaction:
 
     // Build and return the agent
     let agent = builder.build()?;
-    
+
     Ok((Arc::new(agent), model))
 }

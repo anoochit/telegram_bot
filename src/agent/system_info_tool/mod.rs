@@ -13,7 +13,7 @@ struct NoArgs {}
 
 /// Retrieves system information including CPU usage, memory stats, disk space, network stats, and latency to google.com.
 #[tool]
-async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError> {
+async fn get_system_info(_args: NoArgs) -> std::result::Result<Value, AdkError> {
     let mut sys = System::new_all();
     sys.refresh_all();
 
@@ -90,6 +90,6 @@ async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError>
 
 pub fn system_info_tools() -> Vec<Arc<dyn Tool>> {
     vec![
-        Arc::new(GetSystemStats),
+        Arc::new(GetSystemInfo),
     ]
 }

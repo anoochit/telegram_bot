@@ -1,6 +1,8 @@
 ---
 name: system-info
 description: Use this skill to provide details about the host machine's system performance, including CPU usage, memory availability, and disk status. Use when the user asks about "machine stats", "how are you running?", or "system health".
+allowed-tools:
+  - get_system_info
 ---
 
 # System Info
