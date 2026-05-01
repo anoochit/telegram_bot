@@ -39,17 +39,18 @@ SERPER_API_KEY=your_serper_api_key
 ```
 
 2. Customize the Bot's Soul:
-- Edit `AGENT.md` to change the name, personality, and tone.
-- Edit `USER.md` to provide context about yourself and your preferences.
+* Edit `AGENT.md` to change the name, personality, and tone.
+* Edit `USER.md` to provide context about yourself and your preferences.
 
 ## 🏃 Getting Started
 
-The application provides three primary run modes:
+The application provides four primary run modes:
 
 | Mode | Command | Description |
 | :--- | :--- | :--- |
 | **Telegram Bot** | `cargo run -- bot` | Start the interactive Telegram bot. |
 | **CLI** | `cargo run -- cli` | Local interactive terminal agent with rich TUI. |
+| **Run** | `cargo run -- run "prompt"` | Execute a single prompt directly from the CLI. |
 | **Server** | `cargo run -- server` | Run as an HTTP service. |
 
 ## 🏗 Architecture
@@ -79,15 +80,16 @@ graph TD
 ### Wiki Knowledge Management
 
 The bot uses the `wiki/` directory in its workspace to store long-term knowledge.
-- `add_wiki_page`: Saves new information as Markdown.
-- `summarize_wiki`: Generates a `SUMMARY.md` index of all topics.
-- `search_wiki`: Full-text search across all knowledge pages.
+
+* `add_wiki_page`: Saves new information as Markdown.
+* `summarize_wiki`: Generates a `SUMMARY.md` index of all topics.
+* `search_wiki`: Full-text search across all knowledge pages.
 
 ### Persona & Memories
 
-- **AGENT.md**: Defines the "Soul" of the bot.
-- **USER.md**: Defines the context of the master.
-- **MEMORIES.md**: Automatically updated by the bot when it learns personal facts about the user.
+* **AGENT.md**: Defines the "Soul" of the bot.
+* **USER.md**: Defines the context of the master.
+* **MEMORIES.md**: Automatically updated by the bot when it learns personal facts about the user.
 
 ## 💡 Developer Tips
 
