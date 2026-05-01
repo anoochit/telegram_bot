@@ -5531,6 +5531,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "clap",
+ "crossterm",
  "dirs",
  "dotenvy",
  "futures",

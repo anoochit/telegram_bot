@@ -4,6 +4,8 @@ use std::io::{self, Write};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use termimad::MadSkin;
+use crossterm::{execute, terminal, cursor, style};
+use crossterm::style::Stylize;
 
 use adk_runner::EventsCompactionConfig;
 use adk_rust::Agent;
@@ -16,17 +18,20 @@ pub(crate) async fn run_cli(
     sessions: Arc<dyn SessionService>,
     model: Arc<dyn Llm>,
 ) -> anyhow::Result<()> {
+    let mut stdout = io::stdout();
+    execute!(stdout, terminal::Clear(terminal::ClearType::All), cursor::MoveTo(0, 0))?;
+
     println!(
         r#"
-
-          | | |                            _   
- _____  __| | |  _ _____ ____ _   _  ___ _| |_ 
-(____ |/ _  | |_/ |_____) ___) | | |/___|_   _)
-/ ___ ( (_| |  _ (     | |   | |_| |___ | | |_ 
-\_____|\____|_| \_)    |_|   |____/(___/   \__)
-
-
-Type a message to chat. /exit to quit.
+      _   _                _ 
+     | \ | |              (_)
+     |  \| | __ _ _ __ ___ _ 
+     | . ` |/ _` | '_ ` _ \ |
+     | |\  | (_| | | | | | | |
+     |_| \_|\__,_|_| |_| |_|_|
+     
+     Nami CLI :: Your Playful Agent
+     Type /exit, /clear, or /new.
 "#
     );
 
@@ -34,160 +39,108 @@ Type a message to chat. /exit to quit.
     let user_id = "default_user";
     let session_id = "cli_session";
 
-    // ensure session exists
-    if sessions
-        .get(GetRequest {
+    if sessions.get(GetRequest {
+        app_name: app_name.to_string(),
+        user_id: user_id.to_string(),
+        session_id: session_id.to_string(),
+        num_recent_events: None,
+        after: None,
+    }).await.is_err() {
+        sessions.create(CreateRequest {
             app_name: app_name.to_string(),
             user_id: user_id.to_string(),
-            session_id: session_id.to_string(),
-            num_recent_events: None,
-            after: None,
-        })
-        .await
-        .is_err()
-    {
-        sessions
-            .create(CreateRequest {
-                app_name: app_name.to_string(),
-                user_id: user_id.to_string(),
-                session_id: Some(session_id.to_string()),
-                state: Default::default(),
-            })
-            .await?;
+            session_id: Some(session_id.to_string()),
+            state: Default::default(),
+        }).await?;
     }
-
-    let summarizer = Arc::new(LlmEventSummarizer::new(model.clone()));
-    let compaction_config = EventsCompactionConfig {
-        compaction_interval: 10,
-        overlap_size: 2,
-        summarizer,
-    };
 
     let runner = Runner::builder()
         .app_name(app_name)
         .agent(agent)
         .session_service(sessions.clone())
-        .compaction_config(compaction_config)
+        .compaction_config(EventsCompactionConfig {
+            compaction_interval: 10,
+            overlap_size: 2,
+            summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
+        })
         .build()?;
 
     let mut rl = DefaultEditor::new()?;
-    // Optional: persist history
     let _ = rl.load_history(".cli_history");
 
-    let mut response_buffer = String::new();
-    let skin = MadSkin::default();
+    let mut nami_skin = MadSkin::default();
+    nami_skin.bold.set_fg(termimad::crossterm::style::Color::Magenta);
+    nami_skin.paragraph.set_fg(termimad::crossterm::style::Color::White);
+
     loop {
-        let readline = rl.readline("You> ");
+        let readline = rl.readline(format!("{} You> ", style::style("⚡").with(style::Color::Yellow)).as_str());
         match readline {
             Ok(line) => {
                 let trimmed = line.trim();
-                if trimmed.is_empty() {
-                    continue;
-                }
-                if trimmed == "/exit" || trimmed == "exit" {
-                    break;
-                }
+                if trimmed.is_empty() { continue; }
+                if trimmed == "/exit" { break; }
                 if trimmed == "/clear" {
-                    print!("\x1B[2J\x1B[1;1H");
-                    io::stdout().flush().ok();
+                    execute!(stdout, terminal::Clear(terminal::ClearType::All), cursor::MoveTo(0, 0))?;
                     continue;
                 }
                 if trimmed == "/new" {
-                    let _ = sessions
-                        .delete(adk_session::DeleteRequest {
-                            app_name: app_name.to_string(),
-                            user_id: user_id.to_string(),
-                            session_id: session_id.to_string(),
-                        })
-                        .await;
-                    let _ = sessions
-                        .create(CreateRequest {
-                            app_name: app_name.to_string(),
-                            user_id: user_id.to_string(),
-                            session_id: Some(session_id.to_string()),
-                            state: Default::default(),
-                        })
-                        .await;
-                    println!("Session cleared.");
+                    let _ = sessions.delete(adk_session::DeleteRequest {
+                        app_name: app_name.to_string(),
+                        user_id: user_id.to_string(),
+                        session_id: session_id.to_string(),
+                    }).await;
+                    sessions.create(CreateRequest {
+                        app_name: app_name.to_string(),
+                        user_id: user_id.to_string(),
+                        session_id: Some(session_id.to_string()),
+                        state: Default::default(),
+                    }).await?;
+                    println!("--- New Session Started ---");
                     continue;
                 }
 
                 let _ = rl.add_history_entry(trimmed);
-                let _ = rl.save_history(".cli_history");
+                rl.save_history(".cli_history")?;
 
-                let content = Content::new("user").with_text(trimmed);
-                let mut stream = runner.run_str(user_id, session_id, content).await?;
-
-                response_buffer.clear();
-                print!("Agent> ");
-
-                // Thinking indicator
+                println!("\n{}", style::style("─".repeat(50)).with(style::Color::DarkGrey));
+                
+                let mut response_buffer = String::new();
                 let is_thinking = Arc::new(AtomicBool::new(true));
                 let indicator = is_thinking.clone();
                 let handle = tokio::spawn(async move {
-                    let spinner = ['|', '/', '-', '\\'];
+                    let spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
                     let mut i = 0;
                     while indicator.load(Ordering::Relaxed) {
-                        print!("\rAgent> [{}]", spinner[i % 4]);
+                        print!("\r{} Nami is thinking... {}", style::style(spinner[i % 10]).with(style::Color::Magenta), spinner[i % 10]);
                         io::stdout().flush().ok();
-                        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                        tokio::time::sleep(tokio::time::Duration::from_millis(80)).await;
                         i += 1;
                     }
-                    // Clear the line
                     print!("\r\x1B[K");
                     io::stdout().flush().ok();
                 });
 
-                while let Some(result) = stream.next().await {
-                    let event = match result {
-                        Ok(event) => event,
-                        Err(e) => {
-                            let err_msg = e.to_string();
-                            if err_msg.contains("400 Bad Request") {
-                                response_buffer.clear();
-                                response_buffer.push_str("⚠️ Context limit reached. Please use /clear to reset the conversation.");
-                                break;
-                            } else if err_msg.contains("decoding response body")
-                                || err_msg.contains("stream read error")
-                                || err_msg.contains("connection closed")
-                            {
-                                // Log the error for debugging, but don't crash
-                                eprintln!("\n[Debug] Stream error: {}", err_msg);
-                                response_buffer.clear();
-                                response_buffer.push_str("⚠️ A transient streaming error occurred. Please try your request again.");
-                                break;
-                            } else {
-                                is_thinking.store(false, Ordering::Relaxed);
-                                let _ = handle.await;
-                                return Err(anyhow::Error::new(e));
-                            }
-                        }
-                    };
+                let content = Content::new("user").with_text(trimmed);
+                let mut stream = runner.run_str(user_id, session_id, content).await?;
 
-                    if let Some(content) = &event.llm_response.content {
-                        for part in &content.parts {
-                            if let Some(text) = part.text() {
-                                response_buffer.push_str(text);
+                while let Some(result) = stream.next().await {
+                    if let Ok(event) = result {
+                        if let Some(content) = &event.llm_response.content {
+                            for part in &content.parts {
+                                if let Some(text) = part.text() { response_buffer.push_str(text); }
                             }
                         }
                     }
                 }
                 is_thinking.store(false, Ordering::Relaxed);
                 handle.await?;
-                println!();
-                skin.print_text(&response_buffer);
-                println!();
+
+                print!("Nami> ");
+                nami_skin.print_text(&response_buffer);
+                println!("\n{}\n", style::style("─".repeat(50)).with(style::Color::DarkGrey));
             }
-            Err(rustyline::error::ReadlineError::Interrupted)
-            | Err(rustyline::error::ReadlineError::Eof) => {
-                break;
-            }
-            Err(err) => {
-                eprintln!("Error: {:?}", err);
-                break;
-            }
+            Err(_) => break,
         }
     }
-
     Ok(())
 }
