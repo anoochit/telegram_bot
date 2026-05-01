@@ -85,8 +85,14 @@ async fn handle_message(
 
     match runner.run(&chat_id, &chat_id, text).await {
         Ok(response) => {
+            // Strip markdown formatting characters
+            let clean_response = response
+                .replace("*", "")
+                .replace("#", "")
+                .replace(">", "");
+            
             // Send as plain text (ParseMode::None is default)
-            bot.send_message(msg.chat.id, response).await?;
+            bot.send_message(msg.chat.id, clean_response).await?;
         }
         Err(e) => {
             log::error!("Error running agent: {:?}", e);
