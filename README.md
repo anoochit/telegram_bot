@@ -15,6 +15,7 @@ A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https:/
 * **Persistent Sessions**: SQLite-backed conversation history keyed by Telegram user ID.
 * **Modular Tools**: Organized architecture for adding capabilities (Weather, Search, Shell, Wiki, etc.).
 * **Live Web Search**: Integrated Google Search via Serper.dev.
+* **Hierarchical Sub-Agents**: Support for delegation to specialized sub-agents via hierarchical task management.
 * **Sandboxed Environment**: Integrated filesystem tools for agent tasks within a `workspace/` directory.
 
 ## 🛠 Prerequisites
@@ -73,9 +74,12 @@ graph TD
     Runner --> DB[(SqliteSessionService)]
     
     Agent --> LLM[ThaiLLM/Gemini/OpenAI]
+    Agent --> SubAgents[Sub-Agents]
     Agent --> Tools[src/agent/tools/*]
     Agent --> Wiki[Wiki / Markdown]
     Agent --> Persona[AGENT.md & USER.md]
+    
+    SubAgents --> Agent
 ```
 
 * **teloxide**: Handles Telegram polling and updates.
