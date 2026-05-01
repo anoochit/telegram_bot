@@ -1,6 +1,7 @@
 mod agent;
 mod bot;
 mod cli;
+mod run;
 mod runner;
 mod serve;
 
@@ -55,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
             cli::run_cli(agent, sessions, model).await?;
         }
         Commands::Run { prompt } => {
-            cli::run_direct(agent, sessions, model, &prompt).await?;
+            run::run_direct(agent, sessions, model, &prompt).await?;
         }
         Commands::Server => {
             serve::run_serve(agent).await?;

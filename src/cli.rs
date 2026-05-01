@@ -21,6 +21,14 @@ pub(crate) async fn run_cli(
     let mut stdout = io::stdout();
     execute!(stdout, terminal::Clear(terminal::ClearType::All), cursor::MoveTo(0, 0))?;
 
+    println!("{}", style::style(r#"
+      _   _                _ 
+     | \ | |              (_)
+     |  \| | __ _ _ __ ___ _ 
+     | . ` |/ _` | '_ ` _ \ |
+     | |\  | (_| | | | | | | |
+     |_| \_|\__,_|_| |_| |_|_|
+"#).magenta());
     println!("{}", style::style("Nami CLI v0.1.0").bold().magenta());
     println!("Type /exit to quit, /clear to wipe terminal, /new to start a new chat.\n");
 
@@ -149,59 +157,5 @@ pub(crate) async fn run_cli(
             Err(_) => break,
         }
     }
-    Ok(())
-}
-
-pub(crate) async fn run_direct(
-    agent: Arc<dyn Agent>,
-    sessions: Arc<dyn SessionService>,
-    model: Arc<dyn Llm>,
-    prompt: &str,
-) -> anyhow::Result<()> {
-    let app_name = "cli";
-    let user_id = "default_user";
-    let session_id = "cli_session";
-
-    let runner = Runner::builder()
-        .app_name(app_name)
-        .agent(agent)
-        .session_service(sessions.clone())
-        .compaction_config(EventsCompactionConfig {
-            compaction_interval: 10,
-            overlap_size: 2,
-            summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
-        })
-        .build()?;
-
-    let content = Content::new("user").with_text(prompt);
-    let mut stream = runner.run_str(user_id, session_id, content).await?;
-    
-    let mut response_buffer = String::new();
-    while let Some(result) = stream.next().await {
-        if let Ok(event) = result {
-            if let Some(content) = &event.llm_response.content {
-                for part in &content.parts {
-                    if let Some(text) = part.text() { 
-                        response_buffer.push_str(text); 
-                    }
-                }
-            }
-        }
-    }
-
-    let mut formatted = response_buffer
-        .replace("-", "\n- ")
-        .replace("*", "\n* ");
-    for i in 0..=9 {
-        formatted = formatted.replace(&format!("{}.", i), &format!("\n{}. ", i));
-    }
-
-    let formatted = formatted.split('\n')
-        .map(|line| line.trim())
-        .filter(|line| !line.is_empty())
-        .collect::<Vec<_>>()
-        .join("\n");
-
-    println!("{}", formatted);
     Ok(())
 }

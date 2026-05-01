@@ -38,7 +38,8 @@ TELOXIDE_TOKEN=your_telegram_bot_token
 SERPER_API_KEY=your_serper_api_key
 ```
 
-2. Customize the Bot's Soul:
+1. Customize the Bot's Soul:
+
 * Edit `AGENT.md` to change the name, personality, and tone.
 * Edit `USER.md` to provide context about yourself and your preferences.
 
