@@ -88,8 +88,8 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 11. Final Output: Use plain text only. For lists, use simple dashes ('-') or numbers followed by a space, and ensure each item is on a new line. Avoid any characters that might be interpreted as Markdown by Telegram if possible, but prioritize clarity in plain text.",
 agent_md, user_md, memories_md))
         .model(model.clone())
-        .tool(Arc::new(investigator))
-        .tool(Arc::new(generalist))
+        .tool(AgentTool::new(Arc::new(investigator)))
+        .tool(AgentTool::new(Arc::new(generalist)))
         .with_skills_from_root(project_root)?;
 
     // add tools to the agent
