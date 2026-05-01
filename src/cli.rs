@@ -70,7 +70,8 @@ pub(crate) async fn run_cli(
 
     let mut nami_skin = MadSkin::default();
     nami_skin.bold.set_fg(termimad::crossterm::style::Color::Magenta);
-    nami_skin.paragraph.set_fg(termimad::crossterm::style::Color::White);
+    // Remove the paragraph color override, as it can sometimes affect how `termimad` renders complex block elements like lists.
+    // nami_skin.paragraph.set_fg(termimad::crossterm::style::Color::White);
 
     loop {
         let readline = rl.readline("You> ");
@@ -126,15 +127,13 @@ pub(crate) async fn run_cli(
                 while let Some(result) = stream.next().await {
                     match result {
                         Ok(event) => {
-                            // Debug logging
-                            log::debug!("Received event: {:?}", event);
                             if let Some(content) = &event.llm_response.content {
                                 for part in &content.parts {
                                     if let Some(text) = part.text() { 
-                                        log::debug!("Received text: {}", text);
-                                        response_buffer.push_str(text); 
-                                    }
-                                }
+                                        // Hack: Ensure newlines before list items if the model missed it
+                                        let formatted_text = text.replace("-", "\n-").replace("*", "\n*");
+                                        response_buffer.push_str(&formatted_text); 
+                                    }                                }
                             }
                         }
                         Err(e) => log::error!("Stream error: {:?}", e),
@@ -142,10 +141,10 @@ pub(crate) async fn run_cli(
                 }
                 is_thinking.store(false, Ordering::Relaxed);
                 handle.await?;
-
+                print!("\n");
                 print!("Nami> ");
                 nami_skin.print_text(&response_buffer);
-                println!("\n{}\n", style::style("─".repeat(50)).with(style::Color::DarkGrey));
+                println!("\n{}", style::style("─".repeat(50)).with(style::Color::DarkGrey));
             }
             Err(_) => break,
         }
