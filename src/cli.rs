@@ -22,12 +22,14 @@ pub(crate) async fn run_cli(
     execute!(stdout, terminal::Clear(terminal::ClearType::All), cursor::MoveTo(0, 0))?;
 
     println!("{}", style::style(r#"
-      _   _                _ 
-     | \ | |              (_)
-     |  \| | __ _ _ __ ___ _ 
-     | . ` |/ _` | '_ ` _ \ |
-     | |\  | (_| | | | | | | |
-     |_| \_|\__,_|_| |_| |_|_|
+ _____  ___        __       ___      ___   __     
+(\"   \|"  \      /""\     |"  \    /"  | |" \    
+|.\\   \    |    /    \     \   \  //   | ||  |   
+|: \.   \\  |   /' /\  \    /\\  \/.    | |:  |   
+|.  \    \. |  //  __'  \  |: \.        | |.  |   
+|    \    \ | /   /  \\  \ |.  \    /:  | /\  |\  
+ \___|\____\)(___/    \___)|___|\__/|___|(__\_|_) 
+                                                                                               
 "#).magenta());
     println!("{}", style::style("Nami CLI v0.1.0").bold().magenta());
     println!("Type /exit to quit, /clear to wipe terminal, /new to start a new chat.\n");
