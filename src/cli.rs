@@ -129,20 +129,23 @@ Type a message to chat. /exit to quit.
                 while let Some(result) = stream.next().await {
                     let event = match result {
                         Ok(event) => event,
-                        Err(e) if e.to_string().contains("400 Bad Request") => {
-                            response_buffer.clear();
-                            response_buffer.push_str("⚠️ Context limit reached. Please use /clear to reset the conversation.");
-                            break;
-                        }
-                        Err(e) if e.to_string().contains("decoding response body") || e.to_string().contains("stream read error") => {
-                            response_buffer.clear();
-                            response_buffer.push_str("⚠️ Stream error occurred. Please try again or use /clear if the issue persists.");
-                            break;
-                        }
                         Err(e) => {
-                            is_thinking.store(false, Ordering::Relaxed);
-                            let _ = handle.await;
-                            return Err(anyhow::Error::new(e));
+                            let err_msg = e.to_string();
+                            if err_msg.contains("400 Bad Request") {
+                                response_buffer.clear();
+                                response_buffer.push_str("⚠️ Context limit reached. Please use /clear to reset the conversation.");
+                                break;
+                            } else if err_msg.contains("decoding response body") || err_msg.contains("stream read error") || err_msg.contains("connection closed") {
+                                // Log the error for debugging, but don't crash
+                                eprintln!("\n[Debug] Stream error: {}", err_msg);
+                                response_buffer.clear();
+                                response_buffer.push_str("⚠️ A transient streaming error occurred. Please try your request again.");
+                                break;
+                            } else {
+                                is_thinking.store(false, Ordering::Relaxed);
+                                let _ = handle.await;
+                                return Err(anyhow::Error::new(e));
+                            }
                         }
                     };
 
