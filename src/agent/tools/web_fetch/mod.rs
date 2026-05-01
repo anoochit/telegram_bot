@@ -12,7 +12,7 @@ struct WebFetchArgs {
     url: String,
 }
 
-/// Fetch content from a URL via HTTP GET request.
+/// Fetch content from a URL via HTTP GET request. Use this tool whenever you need to access information from a website, summarize a web page, or retrieve data from a given URL.
 #[tool]
 async fn web_fetch(args: WebFetchArgs) -> std::result::Result<Value, AdkError> {
     let client = reqwest::Client::builder()

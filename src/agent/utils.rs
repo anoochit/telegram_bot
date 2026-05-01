@@ -6,11 +6,11 @@ const WORKSPACE_NAME: &str = "workspace";
 
 /// Returns the absolute path to the sandbox directory.
 /// Ensures the directory exists on disk.
-pub async fn get_workspace_root() -> std::result::Result<PathBuf, AdkError> {
-    let home = dirs::home_dir()
-        .ok_or_else(|| AdkError::tool("Failed to get home directory"))?;
+pub async fn get_workspace_dir() -> std::result::Result<PathBuf, AdkError> {
+    let current_dir = std::env::current_dir()
+        .map_err(|e| AdkError::tool(format!("Failed to get current directory: {}", e)))?;
 
-    let root = home.join(WORKSPACE_NAME);
+    let root = current_dir.join(WORKSPACE_NAME);
 
     if !root.exists() {
         fs::create_dir_all(&root)

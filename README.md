@@ -30,8 +30,8 @@ cp .env.example .env
 
 ```text
 THAILLM_API_KEY=your-api-key-here
-GOOGLE_API_KEY=your-google-api-key-here
 TELOXIDE_TOKEN=your_telegram_bot_token
+SERPER_API_KEY=your_serper_api_key
 ```
 
 ## 🏃 Getting Started

@@ -2,3 +2,4 @@
 .env
 sessions.db
 .cli*
+/workspace

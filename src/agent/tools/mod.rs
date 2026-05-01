@@ -1,0 +1,10 @@
+pub mod create_skill;
+pub mod current_datetime;
+pub mod filesystem;
+pub mod search;
+pub mod shell;
+pub mod soul;
+pub mod system_info;
+pub mod weather;
+pub mod web_fetch;
+pub mod wiki;
