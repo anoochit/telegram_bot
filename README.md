@@ -1,10 +1,8 @@
-# Telegram AI Bot (ADK-Rust)
+# namiClaw: Telegram AI Bot (ADK-Rust)
 
-A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https://github.com/google/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic persona management.
+A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://github.com/google/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic persona management.
 
-## 🖼️ Screenshot
-
-![Screenshot](screenshots/1777104356256.jpg)
+![Screenshot](screenshots/nami-avatar.png)
 
 ## 🚀 Features
 
@@ -52,7 +50,7 @@ The application provides four primary run modes:
 
 | Mode | Command | Description |
 | :--- | :--- | :--- |
-| **Telegram Bot** | `cargo run -- bot` | Start the interactive Telegram bot. |
+| **Telegram Bot** | `cargo run -- bot` | Start the interactive Telegram Bot. |
 | **CLI** | `cargo run -- cli` | Local interactive terminal agent with rich TUI. |
 | **Run** | `cargo run -- run "prompt"` | Execute a single prompt directly from the CLI. |
 | **Server** | `cargo run -- server` | Run as an HTTP service. |

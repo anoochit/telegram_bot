@@ -20,7 +20,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Bot,    // telegram bot
+    Bot,    // namiClaw
     Cli,    // command line interface
     Run { prompt: String }, // direct execution
     Server, // http server

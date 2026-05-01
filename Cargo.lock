@@ -3393,6 +3393,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "namiclaw"
+version = "0.1.0"
+dependencies = [
+ "adk-runner",
+ "adk-rust",
+ "adk-session",
+ "adk-tool",
+ "anyhow",
+ "async-trait",
+ "clap",
+ "crossterm",
+ "dirs",
+ "dotenvy",
+ "futures",
+ "log",
+ "pretty_env_logger",
+ "reqwest 0.13.3",
+ "rustyline",
+ "schemars 1.2.1",
+ "serde",
+ "serde_json",
+ "sysinfo",
+ "teloxide",
+ "termimad",
+ "tokio",
+ "urlencoding",
+ "zerocopy",
+]
+
+[[package]]
 name = "native-tls"
 version = "0.2.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5517,36 +5547,6 @@ dependencies = [
  "filetime",
  "libc",
  "xattr",
-]
-
-[[package]]
-name = "telegrame_bot"
-version = "0.1.0"
-dependencies = [
- "adk-runner",
- "adk-rust",
- "adk-session",
- "adk-tool",
- "anyhow",
- "async-trait",
- "clap",
- "crossterm",
- "dirs",
- "dotenvy",
- "futures",
- "log",
- "pretty_env_logger",
- "reqwest 0.13.3",
- "rustyline",
- "schemars 1.2.1",
- "serde",
- "serde_json",
- "sysinfo",
- "teloxide",
- "termimad",
- "tokio",
- "urlencoding",
- "zerocopy",
 ]
 
 [[package]]
