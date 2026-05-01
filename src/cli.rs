@@ -1,9 +1,9 @@
 use futures::StreamExt;
+use rustyline::DefaultEditor;
 use std::io::{self, Write};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use termimad::MadSkin;
-use rustyline::{DefaultEditor};
 
 use adk_runner::EventsCompactionConfig;
 use adk_rust::Agent;
@@ -93,17 +93,21 @@ Type a message to chat. /exit to quit.
                     continue;
                 }
                 if trimmed == "/new" {
-                    let _ = sessions.delete(adk_session::DeleteRequest {
-                        app_name: app_name.to_string(),
-                        user_id: user_id.to_string(),
-                        session_id: session_id.to_string(),
-                    }).await;
-                    let _ = sessions.create(CreateRequest {
-                        app_name: app_name.to_string(),
-                        user_id: user_id.to_string(),
-                        session_id: Some(session_id.to_string()),
-                        state: Default::default(),
-                    }).await;
+                    let _ = sessions
+                        .delete(adk_session::DeleteRequest {
+                            app_name: app_name.to_string(),
+                            user_id: user_id.to_string(),
+                            session_id: session_id.to_string(),
+                        })
+                        .await;
+                    let _ = sessions
+                        .create(CreateRequest {
+                            app_name: app_name.to_string(),
+                            user_id: user_id.to_string(),
+                            session_id: Some(session_id.to_string()),
+                            state: Default::default(),
+                        })
+                        .await;
                     println!("Session cleared.");
                     continue;
                 }
@@ -116,7 +120,7 @@ Type a message to chat. /exit to quit.
 
                 response_buffer.clear();
                 print!("Agent> ");
-                
+
                 // Thinking indicator
                 let is_thinking = Arc::new(AtomicBool::new(true));
                 let indicator = is_thinking.clone();
@@ -143,7 +147,10 @@ Type a message to chat. /exit to quit.
                                 response_buffer.clear();
                                 response_buffer.push_str("⚠️ Context limit reached. Please use /clear to reset the conversation.");
                                 break;
-                            } else if err_msg.contains("decoding response body") || err_msg.contains("stream read error") || err_msg.contains("connection closed") {
+                            } else if err_msg.contains("decoding response body")
+                                || err_msg.contains("stream read error")
+                                || err_msg.contains("connection closed")
+                            {
                                 // Log the error for debugging, but don't crash
                                 eprintln!("\n[Debug] Stream error: {}", err_msg);
                                 response_buffer.clear();
@@ -171,7 +178,8 @@ Type a message to chat. /exit to quit.
                 skin.print_text(&response_buffer);
                 println!();
             }
-            Err(rustyline::error::ReadlineError::Interrupted) | Err(rustyline::error::ReadlineError::Eof) => {
+            Err(rustyline::error::ReadlineError::Interrupted)
+            | Err(rustyline::error::ReadlineError::Eof) => {
                 break;
             }
             Err(err) => {
