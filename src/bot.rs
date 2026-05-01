@@ -85,6 +85,7 @@ async fn handle_message(
 
     match runner.run(&chat_id, &chat_id, text).await {
         Ok(response) => {
+            // Send as plain text (ParseMode::None is default)
             bot.send_message(msg.chat.id, response).await?;
         }
         Err(e) => {

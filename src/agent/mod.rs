@@ -43,7 +43,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // Build the agent with the model and tools
     let mut builder = LlmAgentBuilder::new("agent")
         .description("A helpful AI assistant")
-        .instruction("You are a professional, secure, and proactive AI Agent assistant. 
+        .instruction("You are a female professional, secure, and proactive AI Agent assistant. 
 Your goal is to assist the user by executing tasks accurately using your available tools.
 
 Guidelines for Interaction:
