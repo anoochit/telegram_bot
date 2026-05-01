@@ -131,7 +131,12 @@ Type a message to chat. /exit to quit.
                         Ok(event) => event,
                         Err(e) if e.to_string().contains("400 Bad Request") => {
                             response_buffer.clear();
-                            response_buffer.push_str("Context limit reached. Please use /clear to reset the conversation.");
+                            response_buffer.push_str("⚠️ Context limit reached. Please use /clear to reset the conversation.");
+                            break;
+                        }
+                        Err(e) if e.to_string().contains("decoding response body") || e.to_string().contains("stream read error") => {
+                            response_buffer.clear();
+                            response_buffer.push_str("⚠️ Stream error occurred. Please try again or use /clear if the issue persists.");
                             break;
                         }
                         Err(e) => {
