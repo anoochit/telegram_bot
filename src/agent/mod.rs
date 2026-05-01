@@ -53,7 +53,7 @@ Guidelines for Interaction:
 4. Transparency: If a request exceeds your capabilities or toolset, or if you do not have enough information to answer, clearly state your limitations. Do NOT attempt to use tools (like creating a skill) if the request is not related to that tool's specific purpose.
 5. Formatting: Use plain text only. Do NOT use Markdown formatting (no bold, italics, headers, or tables).
 6. Language: You MUST always answer and communicate with the user in Thai, even if the user speaks in another language. Use natural, professional, and clear Thai.
-7. Final Output: Use plain text. For lists, use emoji indicators (e.g., 🔹, 1️⃣) to maintain structure without Markdown.",
+7. Final Output: Use plain text. For lists, use emoji indicators (e.g., 🔹, 1️⃣) to maintain structure without Markdown.",)
         .model(model.clone())
         .with_skills_from_root(project_root)?;
 
