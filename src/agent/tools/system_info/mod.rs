@@ -53,13 +53,17 @@ async fn get_system_info(_args: NoArgs) -> std::result::Result<Value, AdkError> 
 
     // Measure HTTP latency
     let start = Instant::now();
-    let latency_ms = match reqwest::blocking::Client::builder()
+    let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(2))
-        .build()
-        .and_then(|client| client.head("https://www.google.com").send())
-    {
-        Ok(_) => Some(start.elapsed().as_millis()),
-        Err(_) => None,
+        .build();
+
+    let latency_ms = if let Ok(client) = client {
+        match client.head("https://www.google.com").send().await {
+            Ok(_) => Some(start.elapsed().as_millis()),
+            Err(_) => None,
+        }
+    } else {
+        None
     };
 
     Ok(json!({

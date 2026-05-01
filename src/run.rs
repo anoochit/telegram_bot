@@ -33,17 +33,17 @@ pub(crate) async fn run_direct(
     
     let mut response_buffer = String::new();
     while let Some(result) = stream.next().await {
-        if let Ok(event) = result {
-            if let Some(content) = &event.llm_response.content {
-                for part in &content.parts {
-                    if let Some(text) = part.text() { 
-                        response_buffer.push_str(text); 
-                    }
+        if let Ok(event) = result
+            && let Some(content) = &event.llm_response.content
+        {
+            for part in &content.parts {
+                if let Some(text) = part.text() { 
+                    response_buffer.push_str(text); 
                 }
             }
         }
     }
 
-    println!("{}", response_buffer);
+    termimad::print_text(&response_buffer);
     Ok(())
 }

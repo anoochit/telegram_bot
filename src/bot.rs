@@ -8,8 +8,11 @@ use crate::runner::AgentRunner;
 #[derive(BotCommands, Clone, Debug)]
 #[command(rename_rule = "lowercase")]
 enum Command {
+    /// Start the bot
     Start,
+    /// Show help information
     Help,
+    /// Clear the current session
     Clear,
 }
 
@@ -18,6 +21,10 @@ pub async fn run_bot(
     sessions: Arc<dyn SessionService>,
 ) -> anyhow::Result<()> {
     let bot = Bot::from_env();
+
+    // Register commands for autocomplete
+    bot.set_my_commands(Command::bot_commands()).await?;
+
     log::info!("Starting Telegram bot...");
 
     let handler = dptree::entry()
@@ -85,14 +92,7 @@ async fn handle_message(
 
     match runner.run(&chat_id, &chat_id, text).await {
         Ok(response) => {
-            // Refine output for plain text: strip formatting, use emoji bullets, and add new lines
-            let clean_response = response
-                .replace("*", "")
-                .replace("#", "")
-                .replace(">", "");
-            
-            // Send as plain text (ParseMode::None is default)
-            bot.send_message(msg.chat.id, clean_response).await?;
+            bot.send_message(msg.chat.id, response).await?;
         }
         Err(e) => {
             log::error!("Error running agent: {:?}", e);

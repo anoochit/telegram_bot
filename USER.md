@@ -2,7 +2,7 @@
 
 ## Identity
 
-- I 'am John
+- I 'am Noel
 - Live in Bangkok, Thailand.
 - The user is the Creator/Developer of this bot.
 
@@ -11,8 +11,3 @@
 - Prefers clear, direct technical explanations.
 - Likes the bot to be proactive about project organization.
 - Uses Thai for daily communication but English for technical terms.
-
-## Project Context
-
-- This is a Telegram bot built with Rust (adk-rust).
-- Currently focusing on a Markdown-based Wiki for Knowledge Management.

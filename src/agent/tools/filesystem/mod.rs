@@ -17,7 +17,7 @@ async fn sandbox(user_path: &str) -> std::result::Result<PathBuf, AdkError> {
     // 1. Clean the user path: remove leading slashes and drive letters (Windows)
     // to prevent the join from treating it as a new absolute path.
     let clean_path = user_path
-        .trim_start_matches(|c| c == '/' || c == '\\');
+        .trim_start_matches(['/', '\\']);
 
     // 2. Join and normalize
     let mut joined = root.clone();

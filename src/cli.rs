@@ -135,21 +135,6 @@ pub(crate) async fn run_cli(
                 is_thinking.store(false, Ordering::Relaxed);
                 handle.await?;
 
-                // // Formatting
-                // let mut formatted = response_buffer
-                //     .replace("-", "\n- ")
-                //     .replace("*", "\n* ");
-                
-                // for i in 0..=9 {
-                //     formatted = formatted.replace(&format!("{}.", i), &format!("\n{}. ", i));
-                // }
-
-                // let formatted = formatted.split('\n')
-                //     .map(|line| line.trim())
-                //     .filter(|line| !line.is_empty())
-                //     .collect::<Vec<_>>()
-                //     .join("\n");
-
                 println!("\n{}", style::style("Nami").bold().magenta());
                 nami_skin.print_text(&response_buffer);
                 println!();

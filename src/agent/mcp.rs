@@ -31,7 +31,7 @@ pub async fn load_mcp_tools(mut builder: LlmAgentBuilder) -> anyhow::Result<LlmA
             }
         }
 
-        builder = builder.toolset(mcp_manager).into();
+        builder = builder.toolset(mcp_manager);
     }
 
     Ok(builder)

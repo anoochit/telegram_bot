@@ -16,7 +16,7 @@ struct ShellArgs {
 #[tool]
 async fn execute_shell(args: ShellArgs) -> std::result::Result<Value, AdkError> {
     // Basic security: only allow specific commands
-    let allowed_commands = vec!["git", "ls", "grep"];
+    let allowed_commands = ["git", "ls", "grep"];
     if !allowed_commands.iter().any(|&cmd| args.command.starts_with(cmd)) {
         return Err(AdkError::tool(format!("Command not allowed: {}", args.command)));
     }

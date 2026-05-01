@@ -2,7 +2,7 @@ use adk_rust::prelude::*;
 use std::sync::Arc;
 
 // OpenAI-compatible API
-use adk_rust::model::{OpenAIClient, OpenAIConfig};
+// use adk_rust::model::{OpenAIClient, OpenAIConfig};
 
 pub mod mcp;
 pub mod tools;
@@ -14,19 +14,23 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     let user_md = tokio::fs::read_to_string("USER.md").await.unwrap_or_else(|_| "Developer".to_string());
     let memories_md = tokio::fs::read_to_string("MEMORIES.md").await.unwrap_or_else(|_| "No previous memories.".to_string());
 
-    // Sample for ThaiLLM OpenAI-compatible API
+    // Sample 1: for ThaiLLM OpenAI-compatible API
     // Load the API key from an environment variable
-    let api_key = std::env::var("THAILLM_API_KEY")?;
+    // let api_key = std::env::var("THAILLM_API_KEY")?;
 
     // Create the OpenAI client with the custom configuration
-    let config = OpenAIConfig::compatible(
-        &api_key,
-        "https://thaillm.or.th/api/v1",
-        "typhoon-s-thaillm-8b-instruct",
-    );
+    // let config = OpenAIConfig::compatible(
+    //     &api_key,
+    //     "https://thaillm.or.th/api/v1",
+    //     "typhoon-s-thaillm-8b-instruct",
+    // );
 
     // Create the OpenAI client with the custom configuration
-    let model = Arc::new(OpenAIClient::new(config)?);
+    // let model = Arc::new(OpenAIClient::new(config)?);
+
+    // Sample 2: for Gemini Model
+    let api_key = std::env::var("GOOGLE_API_KEY")?;
+    let model = Arc::new(GeminiModel::new(&api_key, "gemini-3-flash-preview")?);
 
     // Get the current project root path
     let project_root = std::env::current_dir()?;
@@ -59,9 +63,9 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
    - Use web_fetch to retrieve the full content of a specific URL.
 5. Precision & Security: Stay concise and technically accurate. Never disclose sensitive credentials, API keys, or environment secrets.
 6. Transparency: If a request exceeds your capabilities, clearly state your limitations in a friendly way.
-7. Formatting: Use plain text only. Do NOT use Markdown formatting (no bold, italics, headers, or tables).
+7. Formatting: Do NOT use any Markdown formatting (no bold, italics, headers, or tables). Output responses as plain text only.
 8. Language: You MUST always answer and communicate with the user in Thai. Use natural, lively, and professional Thai as defined in your Persona. Tool names and arguments should remain in English.
-9. Final Output: Use plain text. For lists use indicators (e.g., '- ', '1. ') to maintain structure without Markdown.",
+9. Final Output: Use plain text only. For lists, use simple dashes ('-') or numbers followed by a space, and ensure each item is on a new line. Avoid any characters that might be interpreted as Markdown by Telegram if possible, but prioritize clarity in plain text.",
 agent_md, user_md, memories_md))
         .model(model.clone())
         .with_skills_from_root(project_root)?;
@@ -80,7 +84,7 @@ agent_md, user_md, memories_md))
 
     // Add tools to the agent builder
     for t in tools {
-        builder = builder.tool(t).into();
+        builder = builder.tool(t);
     }
 
     // Load MCP tools from mcp.json if it exists
