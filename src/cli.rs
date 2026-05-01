@@ -21,19 +21,8 @@ pub(crate) async fn run_cli(
     let mut stdout = io::stdout();
     execute!(stdout, terminal::Clear(terminal::ClearType::All), cursor::MoveTo(0, 0))?;
 
-    println!(
-        r#"
-      _   _                _ 
-     | \ | |              (_)
-     |  \| | __ _ _ __ ___ _ 
-     | . ` |/ _` | '_ ` _ \ |
-     | |\  | (_| | | | | | | |
-     |_| \_|\__,_|_| |_| |_|_|
-     
-     Nami CLI :: Your Playful Agent
-     Type /exit, /clear, or /new.
-"#
-    );
+    println!("{}", style::style("Nami CLI v0.1.0").bold().magenta());
+    println!("Type /exit to quit, /clear to wipe terminal, /new to start a new chat.\n");
 
     let app_name = "cli";
     let user_id = "default_user";
@@ -69,12 +58,11 @@ pub(crate) async fn run_cli(
     let _ = rl.load_history(".cli_history");
 
     let mut nami_skin = MadSkin::default();
-    nami_skin.bold.set_fg(termimad::crossterm::style::Color::Magenta);
-    // Remove the paragraph color override, as it can sometimes affect how `termimad` renders complex block elements like lists.
-    // nami_skin.paragraph.set_fg(termimad::crossterm::style::Color::White);
+    nami_skin.paragraph.set_fg(termimad::crossterm::style::Color::White);
+    nami_skin.bullet.set_fg(termimad::crossterm::style::Color::Magenta);
 
     loop {
-        let readline = rl.readline("You> ");
+        let readline = rl.readline("You > ");
         match readline {
             Ok(line) => {
                 let trimmed = line.trim();
@@ -96,15 +84,13 @@ pub(crate) async fn run_cli(
                         session_id: Some(session_id.to_string()),
                         state: Default::default(),
                     }).await?;
-                    println!("--- New Session Started ---");
+                    println!("\n{}\n", style::style("--- Session Reset ---").dim());
                     continue;
                 }
 
                 let _ = rl.add_history_entry(trimmed);
                 rl.save_history(".cli_history")?;
 
-                println!("\n{}", style::style("─".repeat(50)).with(style::Color::DarkGrey));
-                
                 let mut response_buffer = String::new();
                 let is_thinking = Arc::new(AtomicBool::new(true));
                 let indicator = is_thinking.clone();
@@ -112,7 +98,7 @@ pub(crate) async fn run_cli(
                     let spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
                     let mut i = 0;
                     while indicator.load(Ordering::Relaxed) {
-                        print!("\r{} Nami is thinking... {}", style::style(spinner[i % 10]).with(style::Color::Magenta), spinner[i % 10]);
+                        print!("\r{} Thinking...", style::style(spinner[i % 10]).with(style::Color::Magenta));
                         io::stdout().flush().ok();
                         tokio::time::sleep(tokio::time::Duration::from_millis(80)).await;
                         i += 1;
@@ -141,32 +127,81 @@ pub(crate) async fn run_cli(
                 is_thinking.store(false, Ordering::Relaxed);
                 handle.await?;
 
-                // Apply formatting to the full buffer
+                // Formatting
                 let mut formatted = response_buffer
-                    // Normalize: Ensure space after markers
                     .replace("-", "\n- ")
                     .replace("*", "\n* ");
                 
                 for i in 0..=9 {
-                    let pattern = format!("{}.", i);
-                    // Replace with newline + "i. " and ensure exactly one space
-                    formatted = formatted.replace(&pattern, &format!("\n{}. ", i));
+                    formatted = formatted.replace(&format!("{}.", i), &format!("\n{}. ", i));
                 }
 
-                // Cleanup: Remove excessive newlines that might have been created
                 let formatted = formatted.split('\n')
                     .map(|line| line.trim())
                     .filter(|line| !line.is_empty())
                     .collect::<Vec<_>>()
                     .join("\n");
 
-                print!("\n");
-                print!("Nami> ");
+                println!("\n{}", style::style("Nami").bold().magenta());
                 nami_skin.print_text(&formatted);
-                println!("\n{}", style::style("─".repeat(50)).with(style::Color::DarkGrey));
+                println!();
             }
             Err(_) => break,
         }
     }
+    Ok(())
+}
+
+pub(crate) async fn run_direct(
+    agent: Arc<dyn Agent>,
+    sessions: Arc<dyn SessionService>,
+    model: Arc<dyn Llm>,
+    prompt: &str,
+) -> anyhow::Result<()> {
+    let app_name = "cli";
+    let user_id = "default_user";
+    let session_id = "cli_session";
+
+    let runner = Runner::builder()
+        .app_name(app_name)
+        .agent(agent)
+        .session_service(sessions.clone())
+        .compaction_config(EventsCompactionConfig {
+            compaction_interval: 10,
+            overlap_size: 2,
+            summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
+        })
+        .build()?;
+
+    let content = Content::new("user").with_text(prompt);
+    let mut stream = runner.run_str(user_id, session_id, content).await?;
+    
+    let mut response_buffer = String::new();
+    while let Some(result) = stream.next().await {
+        if let Ok(event) = result {
+            if let Some(content) = &event.llm_response.content {
+                for part in &content.parts {
+                    if let Some(text) = part.text() { 
+                        response_buffer.push_str(text); 
+                    }
+                }
+            }
+        }
+    }
+
+    let mut formatted = response_buffer
+        .replace("-", "\n- ")
+        .replace("*", "\n* ");
+    for i in 0..=9 {
+        formatted = formatted.replace(&format!("{}.", i), &format!("\n{}. ", i));
+    }
+
+    let formatted = formatted.split('\n')
+        .map(|line| line.trim())
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    println!("{}", formatted);
     Ok(())
 }

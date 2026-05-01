@@ -21,6 +21,7 @@ struct Cli {
 enum Commands {
     Bot,    // telegram bot
     Cli,    // command line interface
+    Run { prompt: String }, // direct execution
     Server, // http server
 }
 
@@ -52,6 +53,9 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::Cli => {
             cli::run_cli(agent, sessions, model).await?;
+        }
+        Commands::Run { prompt } => {
+            cli::run_direct(agent, sessions, model, &prompt).await?;
         }
         Commands::Server => {
             serve::run_serve(agent).await?;
