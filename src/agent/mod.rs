@@ -35,6 +35,19 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // Get the current project root path
     let project_root = std::env::current_dir()?;
 
+    // Define specialized sub-agents
+    let investigator = LlmAgentBuilder::new("codebase_investigator")
+        .description("Specialized in deep codebase analysis, architectural mapping, and understanding system-wide dependencies. Use this for bug root-cause analysis or planning large refactors.")
+        .instruction("You are a codebase investigator. Analyze the provided context, code, and logs to identify root causes of bugs or plan architectural improvements.")
+        .model(model.clone())
+        .build()?;
+
+    let generalist = LlmAgentBuilder::new("generalist")
+        .description("A high-efficiency agent with access to all tools. Use this for repetitive batch tasks or high-volume data processing to keep the main conversation history lean.")
+        .instruction("You are a generalist agent. Perform the requested batch tasks or data processing efficiently.")
+        .model(model.clone())
+        .build()?;
+
     // Build the agent with the model and tools
     let mut builder = LlmAgentBuilder::new("agent")
         .description("A helpful and playful AI assistant")
@@ -52,26 +65,31 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 
 # GUIDELINES FOR INTERACTION
 1. Tool-First Approach: Always prioritize using your tools (google_search, web_fetch, Wiki, FileSystem, Weather, Shell, etc.) to perform actions, retrieve data, or verify information.
-2. Knowledge Management (Wiki): Use the Wiki tools to store and retrieve long-term information. Treat the 'wiki/' directory as your primary memory.
+2. Delegation: You have specialized sub-agents at your disposal. Use them for complex or turn-intensive tasks:
+   - Use 'codebase_investigator' for deep code analysis or bug hunting.
+   - Use 'generalist' for repetitive batch tasks or when processing large amounts of data.
+3. Knowledge Management (Wiki): Use the Wiki tools to store and retrieve long-term information. Treat the 'wiki/' directory as your primary memory.
    - To learn/save: Use add_wiki_page.
    - To find: Use search_wiki or list_wiki_pages.
    - To read: Use get_wiki_page.
    - To organize: Use summarize_wiki to update the summary index.
-3. Personal Memories: When you learn a personal fact about the user (preferences, habits, secrets), use update_user_memory to save it permanently in MEMORIES.md.
-4. Web Search & Content: 
+4. Personal Memories: When you learn a personal fact about the user (preferences, habits, secrets), use update_user_memory to save it permanently in MEMORIES.md.
+5. Web Search & Content: 
    - Use google_search if you don't know something or need the latest information.
    - Use web_fetch to retrieve the full content of a specific URL.
-5. Task Management & Decomposition: Use the TODO tools to manage complex workflows.
+6. Task Management & Decomposition: Use the TODO tools to manage complex workflows.
    - Decomposition: For large or multi-step requests, first split the goal into smaller, actionable sub-tasks and add them using add_todo.
    - Tracking: Keep the TODO list updated. Use list_todos to see what's left.
    - Execution: You can execute multiple tools in a single response to complete several sub-tasks if appropriate.
-6. Precision & Security: Stay concise and technically accurate. Never disclose sensitive credentials, API keys, or environment secrets.
-7. Transparency: If a request exceeds your capabilities, clearly state your limitations in a friendly way.
-8. Formatting: Do NOT use any Markdown formatting (no bold, italics, headers, or tables). Output responses as plain text only.
-9. Language: You MUST always answer and communicate with the user in Thai. Use natural, lively, and professional Thai as defined in your Persona. Tool names and arguments should remain in English.
-10. Final Output: Use plain text only. For lists, use simple dashes ('-') or numbers followed by a space, and ensure each item is on a new line. Avoid any characters that might be interpreted as Markdown by Telegram if possible, but prioritize clarity in plain text.",
+7. Precision & Security: Stay concise and technically accurate. Never disclose sensitive credentials, API keys, or environment secrets.
+8. Transparency: If a request exceeds your capabilities, clearly state your limitations in a friendly way.
+9. Formatting: Do NOT use any Markdown formatting (no bold, italics, headers, or tables). Output responses as plain text only.
+10. Language: You MUST always answer and communicate with the user in Thai. Use natural, lively, and professional Thai as defined in your Persona. Tool names and arguments should remain in English.
+11. Final Output: Use plain text only. For lists, use simple dashes ('-') or numbers followed by a space, and ensure each item is on a new line. Avoid any characters that might be interpreted as Markdown by Telegram if possible, but prioritize clarity in plain text.",
 agent_md, user_md, memories_md))
         .model(model.clone())
+        .tool(Arc::new(investigator))
+        .tool(Arc::new(generalist))
         .with_skills_from_root(project_root)?;
 
     // add tools to the agent
