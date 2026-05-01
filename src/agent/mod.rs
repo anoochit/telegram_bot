@@ -1,4 +1,5 @@
 use adk_rust::prelude::*;
+use adk_rust::tool::AgentTool;
 use std::sync::Arc;
 
 // OpenAI-compatible API
