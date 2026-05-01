@@ -38,8 +38,7 @@ TELOXIDE_TOKEN=your_telegram_bot_token
 SERPER_API_KEY=your_serper_api_key
 ```
 
-1. Customize the Bot's Soul:
-
+2. Customize the Bot's Soul:
 * Edit `AGENT.md` to change the name, personality, and tone.
 * Edit `USER.md` to provide context about yourself and your preferences.
 
@@ -56,24 +55,33 @@ The application provides four primary run modes:
 
 ## 🏗 Architecture
 
-The system flows from Telegram updates through the Agent core:
+The system supports multiple entry points sharing the same core agent logic:
 
 ```mermaid
 graph TD
-    User[Telegram User] -- sends message --> T[teloxide]
-    T -- routes update --> H[handle_message]
-    H -- invokes --> R[adk-rust Runner]
-    R -- managed sessions --> DB[(SqliteSessionService)]
-    R -- agent logic --> A[LlmAgent]
-    A -- loads --> AG[AGENT.md]
-    A -- loads --> US[USER.md]
-    A -- calls --> LLM[ThaiLLM/Gemini/OpenAI]
-    A -- manages --> W[Wiki/Markdown]
+    subgraph EntryPoints [Modes]
+        Bot[Telegram Bot]
+        CLI[Interactive CLI]
+        Run[Direct Run]
+        Server[HTTP Server]
+    end
+
+    EntryPoints --> Runner[adk-rust Runner]
+    
+    Runner --> Agent[LlmAgent]
+    Runner --> DB[(SqliteSessionService)]
+    
+    Agent --> LLM[ThaiLLM/Gemini/OpenAI]
+    Agent --> Tools[src/agent/tools/*]
+    Agent --> Wiki[Wiki / Markdown]
+    Agent --> Persona[AGENT.md & USER.md]
+    
+    style Agent fill:#f96,stroke:#333,stroke-width:2px
 ```
 
 * **teloxide**: Handles Telegram polling and updates.
 * **adk-rust**: Core framework for AI agent logic and memory management.
-* **SqliteSessionService**: Provides persistent `chat_id` keyed storage (`sessions.db`).
+* **SqliteSessionService**: Provides persistent session storage (`sessions.db`).
 * **Tools Subdirectory**: Located in `src/agent/tools/`, contains all functional modules.
 
 ## 🧩 Extensions
