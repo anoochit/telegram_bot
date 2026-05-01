@@ -1,0 +1,34 @@
+[package]
+name = "telegrame_bot"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+adk-rust = "0.7.0"
+tokio = { version = "1", features = ["full"] }
+dotenvy = "0.15"
+anyhow = "1"
+
+reqwest = { version = "0.13.3", features = ["json", "stream"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "1.2.1"
+
+teloxide = { version = "0.17.0", features = ["macros"] }
+adk-session = { version = "0.7.0", features = ["sqlite"] }
+adk-tool = "0.7.0"
+adk-runner = "0.7.0"
+urlencoding = "2.1.3"
+pretty_env_logger = "0.5.0"
+futures = "0.3.32"
+
+dirs = "6.0.0"
+clap = { version = "4.6.1", features = ["derive"] }
+async-trait = "0.1.89"
+rusqlite = { version = "0.31.0", features = ["bundled"] }
+sqlite-vec = "0.1.0"
+zerocopy = { version = "0.8.48", features = ["derive"] }
+log = "0.4.29"
+sysinfo = "0.33.1"
+termimad = "0.34.1"
+rustyline = "18.0.0"
