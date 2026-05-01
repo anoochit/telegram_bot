@@ -9,6 +9,7 @@ A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https:/
 ## 🚀 Features
 
 * **Multi-Platform AI**: Powered by Gemini, Anthropic, or any OpenAI-compatible LLM (e.g., ThaiLLM).
+* **Modern TUI**: A rich, interactive CLI experience with custom styling, animated indicators, and structured layout.
 * **Markdown Wiki KM**: A transparent, human-readable Knowledge Management system using `.md` files.
 * **Dynamic Persona & Soul**: Configure the bot's personality and user context via `AGENT.md` and `USER.md`.
 * **Persistent Sessions**: SQLite-backed conversation history keyed by Telegram user ID.
@@ -48,7 +49,7 @@ The application provides three primary run modes:
 | Mode | Command | Description |
 | :--- | :--- | :--- |
 | **Telegram Bot** | `cargo run -- bot` | Start the interactive Telegram bot. |
-| **CLI** | `cargo run -- cli` | Local interactive terminal agent. |
+| **CLI** | `cargo run -- cli` | Local interactive terminal agent with rich TUI. |
 | **Server** | `cargo run -- server` | Run as an HTTP service. |
 
 ## 🏗 Architecture
