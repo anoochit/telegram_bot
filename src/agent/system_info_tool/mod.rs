@@ -4,13 +4,14 @@ use schemars::JsonSchema;
 use serde_json::{json, Value};
 use std::sync::Arc;
 use sysinfo::{System, Disks, Networks};
+use std::time::Instant;
 
 // ─── Tools ────────────────────────────────────────────────────────────────────
 
 #[derive(serde::Deserialize, JsonSchema)]
 struct NoArgs {}
 
-/// Retrieves system information including CPU usage, memory stats, disk space, and network stats.
+/// Retrieves system information including CPU usage, memory stats, disk space, network stats, and latency to google.com.
 #[tool]
 async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError> {
     let mut sys = System::new_all();
@@ -50,6 +51,17 @@ async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError>
         }));
     }
 
+    // Measure HTTP latency
+    let start = Instant::now();
+    let latency_ms = match reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(2))
+        .build()
+        .and_then(|client| client.head("https://www.google.com").send())
+    {
+        Ok(_) => Some(start.elapsed().as_millis()),
+        Err(_) => None,
+    };
+
     Ok(json!({
         "cpu": {
             "count": cpu_count,
@@ -66,6 +78,7 @@ async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError>
         },
         "disks": disk_info,
         "networks": network_info,
+        "latency_ms": latency_ms,
         "system_name": System::name(),
         "kernel_version": System::kernel_version(),
         "os_version": System::os_version(),
