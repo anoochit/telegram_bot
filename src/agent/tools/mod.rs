@@ -8,3 +8,4 @@ pub mod system_info;
 pub mod weather;
 pub mod web_fetch;
 pub mod wiki;
+pub mod todo;

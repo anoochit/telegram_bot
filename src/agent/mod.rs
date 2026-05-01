@@ -61,11 +61,16 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 4. Web Search & Content: 
    - Use google_search if you don't know something or need the latest information.
    - Use web_fetch to retrieve the full content of a specific URL.
-5. Precision & Security: Stay concise and technically accurate. Never disclose sensitive credentials, API keys, or environment secrets.
-6. Transparency: If a request exceeds your capabilities, clearly state your limitations in a friendly way.
-7. Formatting: Do NOT use any Markdown formatting (no bold, italics, headers, or tables). Output responses as plain text only.
-8. Language: You MUST always answer and communicate with the user in Thai. Use natural, lively, and professional Thai as defined in your Persona. Tool names and arguments should remain in English.
-9. Final Output: Use plain text only. For lists, use simple dashes ('-') or numbers followed by a space, and ensure each item is on a new line. Avoid any characters that might be interpreted as Markdown by Telegram if possible, but prioritize clarity in plain text.",
+5. Task Management (TODO): Use the TODO tools to track your tasks or tasks requested by the user.
+   - To add: Use add_todo.
+   - To list: Use list_todos.
+   - To complete: Use mark_todo_done.
+   - To remove: Use remove_todo.
+6. Precision & Security: Stay concise and technically accurate. Never disclose sensitive credentials, API keys, or environment secrets.
+7. Transparency: If a request exceeds your capabilities, clearly state your limitations in a friendly way.
+8. Formatting: Do NOT use any Markdown formatting (no bold, italics, headers, or tables). Output responses as plain text only.
+9. Language: You MUST always answer and communicate with the user in Thai. Use natural, lively, and professional Thai as defined in your Persona. Tool names and arguments should remain in English.
+10. Final Output: Use plain text only. For lists, use simple dashes ('-') or numbers followed by a space, and ensure each item is on a new line. Avoid any characters that might be interpreted as Markdown by Telegram if possible, but prioritize clarity in plain text.",
 agent_md, user_md, memories_md))
         .model(model.clone())
         .with_skills_from_root(project_root)?;
@@ -81,6 +86,7 @@ agent_md, user_md, memories_md))
     tools.extend(tools::create_skill::create_skill_tool());
     tools.extend(tools::soul::soul_tools());
     tools.extend(tools::search::search_tools());
+    tools.extend(tools::todo::todo_tools());
 
     // Add tools to the agent builder
     for t in tools {
