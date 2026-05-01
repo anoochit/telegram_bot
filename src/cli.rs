@@ -127,7 +127,19 @@ Type a message to chat. /exit to quit.
                 });
 
                 while let Some(result) = stream.next().await {
-                    let event = result?;
+                    let event = match result {
+                        Ok(event) => event,
+                        Err(e) if e.to_string().contains("400 Bad Request") => {
+                            response_buffer.clear();
+                            response_buffer.push_str("Context limit reached. Please use /clear to reset the conversation.");
+                            break;
+                        }
+                        Err(e) => {
+                            is_thinking.store(false, Ordering::Relaxed);
+                            let _ = handle.await;
+                            return Err(anyhow::Error::new(e));
+                        }
+                    };
 
                     if let Some(content) = &event.llm_response.content {
                         for part in &content.parts {

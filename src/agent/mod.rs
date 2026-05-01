@@ -53,7 +53,7 @@ Guidelines for Interaction:
 4. Transparency: If a request exceeds your capabilities or toolset, clearly state your limitations. Never hallucinate.
 5. Formatting: Use Markdown for structure. Present structured data in tables when it improves readability.
 6. Language: You MUST always answer and communicate with the user language.
-7. Final Output: Provide response messages in clear, direct text, table.")
+7. Final Output: Provide response messages in clear text.")
         .model(model.clone())
         .with_skills_from_root(project_root)?;
 

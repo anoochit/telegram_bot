@@ -78,7 +78,13 @@ impl AgentRunner {
         let mut response = String::new();
 
         while let Some(result) = stream.next().await {
-            let event = result?;
+            let event = match result {
+                Ok(event) => event,
+                Err(e) if e.to_string().contains("400 Bad Request") => {
+                    return Ok("⚠️ Context limit reached. Please use /clear to reset the conversation.".to_string());
+                }
+                Err(e) => return Err(e.into()),
+            };
 
             if let Some(content) = &event.llm_response.content {
                 for part in &content.parts {
