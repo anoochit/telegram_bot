@@ -130,10 +130,9 @@ pub(crate) async fn run_cli(
                             if let Some(content) = &event.llm_response.content {
                                 for part in &content.parts {
                                     if let Some(text) = part.text() { 
-                                        // Hack: Ensure newlines before list items if the model missed it
-                                        let formatted_text = text.replace("-", "\n-").replace("*", "\n*");
-                                        response_buffer.push_str(&formatted_text); 
-                                    }                                }
+                                        response_buffer.push_str(text); 
+                                    }
+                                }
                             }
                         }
                         Err(e) => log::error!("Stream error: {:?}", e),
@@ -141,9 +140,29 @@ pub(crate) async fn run_cli(
                 }
                 is_thinking.store(false, Ordering::Relaxed);
                 handle.await?;
+
+                // Apply formatting to the full buffer
+                let mut formatted = response_buffer
+                    // Normalize: Ensure space after markers
+                    .replace("-", "\n- ")
+                    .replace("*", "\n* ");
+                
+                for i in 0..=9 {
+                    let pattern = format!("{}.", i);
+                    // Replace with newline + "i. " and ensure exactly one space
+                    formatted = formatted.replace(&pattern, &format!("\n{}. ", i));
+                }
+
+                // Cleanup: Remove excessive newlines that might have been created
+                let formatted = formatted.split('\n')
+                    .map(|line| line.trim())
+                    .filter(|line| !line.is_empty())
+                    .collect::<Vec<_>>()
+                    .join("\n");
+
                 print!("\n");
                 print!("Nami> ");
-                nami_skin.print_text(&response_buffer);
+                nami_skin.print_text(&formatted);
                 println!("\n{}", style::style("─".repeat(50)).with(style::Color::DarkGrey));
             }
             Err(_) => break,
