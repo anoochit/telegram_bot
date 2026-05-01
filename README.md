@@ -16,6 +16,7 @@ A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https:/
 * **Modular Tools**: Organized architecture for adding capabilities (Weather, Search, Shell, Wiki, etc.).
 * **Live Web Search**: Integrated Google Search via Serper.dev.
 * **Hierarchical Sub-Agents**: Support for delegation to specialized sub-agents via hierarchical task management.
+* **Todo Management**: Integrated task tracking and list management.
 * **Sandboxed Environment**: Integrated filesystem tools for agent tasks within a `workspace/` directory.
 
 ## 🛠 Prerequisites
@@ -96,6 +97,14 @@ The bot uses the `wiki/` directory in its workspace to store long-term knowledge
 * `add_wiki_page`: Saves new information as Markdown.
 * `summarize_wiki`: Generates a `SUMMARY.md` index of all topics.
 * `search_wiki`: Full-text search across all knowledge pages.
+
+### Todo Management
+
+The bot features a built-in task manager for tracking goals and daily items.
+
+* `add_todo`: Create new tasks.
+* `list_todos`: View current pending items.
+* `complete_todo`: Mark tasks as finished.
 
 ### Persona & Memories
 
