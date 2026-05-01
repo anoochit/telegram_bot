@@ -3,14 +3,14 @@ use adk_tool::tool;
 use schemars::JsonSchema;
 use serde_json::{json, Value};
 use std::sync::Arc;
-use sysinfo::{System, Disks};
+use sysinfo::{System, Disks, Networks};
 
 // ─── Tools ────────────────────────────────────────────────────────────────────
 
 #[derive(serde::Deserialize, JsonSchema)]
 struct NoArgs {}
 
-/// Retrieves system information including CPU usage, memory stats, and disk space.
+/// Retrieves system information including CPU usage, memory stats, disk space, and network stats.
 #[tool]
 async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError> {
     let mut sys = System::new_all();
@@ -39,6 +39,17 @@ async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError>
         }));
     }
 
+    // Network information
+    let networks = Networks::new_with_refreshed_list();
+    let mut network_info = Vec::new();
+    for (interface_name, data) in &networks {
+        network_info.push(json!({
+            "interface": interface_name,
+            "received_bytes": data.received(),
+            "transmitted_bytes": data.transmitted(),
+        }));
+    }
+
     Ok(json!({
         "cpu": {
             "count": cpu_count,
@@ -54,6 +65,7 @@ async fn get_system_stats(_args: NoArgs) -> std::result::Result<Value, AdkError>
             "used_gb": used_swap as f64 / 1024.0 / 1024.0 / 1024.0,
         },
         "disks": disk_info,
+        "networks": network_info,
         "system_name": System::name(),
         "kernel_version": System::kernel_version(),
         "os_version": System::os_version(),
