@@ -89,16 +89,7 @@ async fn handle_message(
             let clean_response = response
                 .replace("*", "")
                 .replace("#", "")
-                .replace(">", "")
-                // Replace bullet points and numbering with emoji indicators and add newlines
-                .replace("- ", "\n🔹 ")
-                // Using regex-like logic for numbering replacement is complex in basic string.replace,
-                // so we do a simple replacement for common list start patterns.
-                .replace("1. ", "\n1️⃣ ")
-                .replace("2. ", "\n2️⃣ ")
-                .replace("3. ", "\n3️⃣ ")
-                .replace("4. ", "\n4️⃣ ")
-                .replace("5. ", "\n5️⃣ ");
+                .replace(">", "");
             
             // Send as plain text (ParseMode::None is default)
             bot.send_message(msg.chat.id, clean_response).await?;
