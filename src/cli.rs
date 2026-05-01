@@ -18,17 +18,14 @@ pub(crate) async fn run_cli(
 ) -> anyhow::Result<()> {
     println!(
         r#"
-                                                                                         
-                     88  88                                                              
-                     88  88                                                       ,d     
-                     88  88                                                       88     
-,adPPYYba,   ,adPPYb,88  88   ,d8           8b,dPPYba,  88       88  ,adPPYba,  MM88MMM  
-""     `Y8  a8"    `Y88  88 ,a8"  aaaaaaaa  88P'   "Y8  88       88  I8[    ""    88     
-,adPPPPP88  8b       88  8888[    """"""""  88          88       88   `"Y8ba,     88     
-88,    ,88  "8a,   ,d88  88`"Yba,           88          "8a,   ,a88  aa    ]8I    88,    
-`"8bbdP"Y8   `"8bbdP"Y8  88   `Y8a          88           `"YbbdP'Y8  `"YbbdP"'    "Y888  
-                                                                                         
-                                                                                
+
+          | | |                            _   
+ _____  __| | |  _ _____ ____ _   _  ___ _| |_ 
+(____ |/ _  | |_/ |_____) ___) | | |/___|_   _)
+/ ___ ( (_| |  _ (     | |   | |_| |___ | | |_ 
+\_____|\____|_| \_)    |_|   |____/(___/   \__)
+
+
 Type a message to chat. /exit to quit.
 "#
     );
