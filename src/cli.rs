@@ -99,6 +99,22 @@ Type a message to chat. /exit to quit.
                     println!("Session cleared.");
                     continue;
                 }
+                if trimmed == "/skill list" {
+                    println!("Available skills:");
+                    if let Ok(entries) = std::fs::read_dir(".skills") {
+                        for entry in entries.filter_map(|e| e.ok()) {
+                            if entry.path().is_dir() {
+                                if let Some(name) = entry.file_name().to_str() {
+                                    println!(" - {}", name);
+                                }
+                            }
+                        }
+                    } else {
+                        println!("No .skills directory found.");
+                    }
+                    continue;
+                }
+
                 let _ = rl.add_history_entry(trimmed);
                 let _ = rl.save_history(".cli_history");
 

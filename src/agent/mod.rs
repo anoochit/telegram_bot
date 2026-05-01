@@ -13,6 +13,7 @@ pub mod shell_tool;
 pub mod weather_tool;
 pub mod web_fetch_tool;
 pub mod system_info_tool;
+pub mod create_skill_tool;
 pub mod mcp;
 
 
@@ -61,13 +62,14 @@ Guidelines for Interaction:
         .with_skills_from_root(workspace_root)?;
 
     // add tools to the agent
-    let mut tools = weather_tool::weather_tools();
+    let mut tools: Vec<Arc<dyn Tool>> = weather_tool::weather_tools();
     tools.extend(filesystem_tool::filesystem_tools());
     tools.extend(current_datetime_tool::datetime_tools());
     tools.extend(km_tool::km_tools());
     tools.extend(shell_tool::shell_tools());
     tools.extend(web_fetch_tool::web_fetch_tools());
     tools.extend(system_info_tool::system_info_tools());
+    tools.extend(create_skill_tool::create_skill_tool());
  
     // Add tools to the agent builder
     for t in tools {
