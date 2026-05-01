@@ -73,7 +73,7 @@ pub(crate) async fn run_cli(
     nami_skin.paragraph.set_fg(termimad::crossterm::style::Color::White);
 
     loop {
-        let readline = rl.readline(format!("{} You> ", style::style("⚡").with(style::Color::Yellow)).as_str());
+        let readline = rl.readline("You> ");
         match readline {
             Ok(line) => {
                 let trimmed = line.trim();
@@ -124,12 +124,20 @@ pub(crate) async fn run_cli(
                 let mut stream = runner.run_str(user_id, session_id, content).await?;
 
                 while let Some(result) = stream.next().await {
-                    if let Ok(event) = result {
-                        if let Some(content) = &event.llm_response.content {
-                            for part in &content.parts {
-                                if let Some(text) = part.text() { response_buffer.push_str(text); }
+                    match result {
+                        Ok(event) => {
+                            // Debug logging
+                            log::debug!("Received event: {:?}", event);
+                            if let Some(content) = &event.llm_response.content {
+                                for part in &content.parts {
+                                    if let Some(text) = part.text() { 
+                                        log::debug!("Received text: {}", text);
+                                        response_buffer.push_str(text); 
+                                    }
+                                }
                             }
                         }
+                        Err(e) => log::error!("Stream error: {:?}", e),
                     }
                 }
                 is_thinking.store(false, Ordering::Relaxed);
