@@ -1,6 +1,6 @@
 # Telegram AI Bot (ADK-Rust)
 
-A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https://github.com/google/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic skill management.
+A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https://github.com/google/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic persona management.
 
 ## 🖼️ Screenshot
 
@@ -8,17 +8,20 @@ A modular, extensible AI-powered Telegram bot built on top of [adk-rust](https:/
 
 ## 🚀 Features
 
-* **Multi-Platform AI**: Powered by Gemini, Anthropic, or any OpenAI-compatible LLM.
-* **Persistent Sessions**: SQLite-backed conversation history per user.
-* **Modular Skills**: Easily add new capabilities through a directory-based skill system.
-* **Sandboxed Environment**: Integrated filesystem tools for agent tasks.
-* **MCP Support**: Extensible via the Model Context Protocol.
+* **Multi-Platform AI**: Powered by Gemini, Anthropic, or any OpenAI-compatible LLM (e.g., ThaiLLM).
+* **Markdown Wiki KM**: A transparent, human-readable Knowledge Management system using `.md` files.
+* **Dynamic Persona & Soul**: Configure the bot's personality and user context via `AGENT.md` and `USER.md`.
+* **Persistent Sessions**: SQLite-backed conversation history keyed by Telegram user ID.
+* **Modular Tools**: Organized architecture for adding capabilities (Weather, Search, Shell, Wiki, etc.).
+* **Live Web Search**: Integrated Google Search via Serper.dev.
+* **Sandboxed Environment**: Integrated filesystem tools for agent tasks within a `workspace/` directory.
 
 ## 🛠 Prerequisites
 
 * Rust ([rustup](https://rustup.rs/))
 * A Telegram Bot Token from [@BotFather](https://t.me/BotFather)
-* API Key for your chosen LLM (Gemini, OpenAI, etc.)
+* API Key for your chosen LLM (Gemini, OpenAI, or ThaiLLM)
+* (Optional) [Serper.dev](https://serper.dev/) API Key for Google Search features.
 
 ## ⚙️ Configuration
 
@@ -33,6 +36,10 @@ THAILLM_API_KEY=your-api-key-here
 TELOXIDE_TOKEN=your_telegram_bot_token
 SERPER_API_KEY=your_serper_api_key
 ```
+
+2. Customize the Bot's Soul:
+- Edit `AGENT.md` to change the name, personality, and tone.
+- Edit `USER.md` to provide context about yourself and your preferences.
 
 ## 🏃 Getting Started
 
@@ -55,33 +62,35 @@ graph TD
     H -- invokes --> R[adk-rust Runner]
     R -- managed sessions --> DB[(SqliteSessionService)]
     R -- agent logic --> A[LlmAgent]
-    A -- calls --> LLM[Gemini/Anthropic/OpenAI]
+    A -- loads --> AG[AGENT.md]
+    A -- loads --> US[USER.md]
+    A -- calls --> LLM[ThaiLLM/Gemini/OpenAI]
+    A -- manages --> W[Wiki/Markdown]
 ```
 
 * **teloxide**: Handles Telegram polling and updates.
 * **adk-rust**: Core framework for AI agent logic and memory management.
 * **SqliteSessionService**: Provides persistent `chat_id` keyed storage (`sessions.db`).
+* **Tools Subdirectory**: Located in `src/agent/tools/`, contains all functional modules.
 
 ## 🧩 Extensions
 
-### Skills System
+### Wiki Knowledge Management
 
-Place new folders in the `.skills/` directory (root or workspace) containing a `SKILL.md` file. Supported skills include:
+The bot uses the `wiki/` directory in its workspace to store long-term knowledge.
+- `add_wiki_page`: Saves new information as Markdown.
+- `summarize_wiki`: Generates a `SUMMARY.md` index of all topics.
+- `search_wiki`: Full-text search across all knowledge pages.
 
-* `greeting`: Personalized welcome messages.
-* `joke-generator`: Lighthearted interaction.
-* `system_info`: Diagnostic machine metrics.
-* `create-skill`: Self-scaffolding new skills.
+### Persona & Memories
 
-### MCP Integration
-
-1. Add `mcp.json` to your workspace folder.
-2. Define your servers as shown in `mcp.json.example`.
-3. Restart to automatically register MCP-based tools.
+- **AGENT.md**: Defines the "Soul" of the bot.
+- **USER.md**: Defines the context of the master.
+- **MEMORIES.md**: Automatically updated by the bot when it learns personal facts about the user.
 
 ## 💡 Developer Tips
 
 * **LLM Providers**: Configure your client in `src/agent/mod.rs`.
-* **Tooling**: Extend capabilities by adding `adk` tools in `src/agent/mod.rs`.
-* **Sandbox**: Workspace files are stored in `~/workspace` by default.
-* **Production**: For high-traffic bots, migrate `teloxide` from polling to `axum_no_setup` webhooks.
+* **Adding Tools**: Add new modules to `src/agent/tools/` and register them in `src/agent/mod.rs`.
+* **Sandbox**: Workspace files and wiki are stored in `./workspace/` by default.
+* **Production**: For high-traffic bots, migrate `teloxide` from polling to webhooks.
