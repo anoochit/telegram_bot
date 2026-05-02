@@ -23,7 +23,7 @@ enum Commands {
     Bot,    // namiClaw
     Cli,    // command line interface
     Run { prompt: String }, // direct execution
-    Server, // http server
+    Serve { port: Option<u16> }, // http server
 }
 
 #[tokio::main]
@@ -32,7 +32,7 @@ async fn main() -> anyhow::Result<()> {
 
     let cli = Cli::parse();
 
-    if !matches!(cli.command, Commands::Server) {
+    if !matches!(cli.command, Commands::Serve { .. }) {
         pretty_env_logger::init();
     }
 
@@ -48,18 +48,21 @@ async fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Bot => {
-            log::info!("Running in Bot mode");
+            log::info!("Running in bot mode");
             let runner = Arc::new(AgentRunner::new(agent, sessions.clone(), "telegram", model));
             bot::run_bot(runner, sessions.clone()).await?;
         }
         Commands::Cli => {
+            log::info!("Running in CLI mode");
             cli::run_cli(agent, sessions, model).await?;
         }
         Commands::Run { prompt } => {
+            log::info!("Running in direct run mode");
             run::run_direct(agent, sessions, model, &prompt).await?;
         }
-        Commands::Server => {
-            serve::run_serve(agent).await?;
+        Commands::Serve { port } => {
+            log::info!("Running in serve mode");
+            serve::run_serve(agent, port.unwrap_or(8080)).await?;
         }
     }
 

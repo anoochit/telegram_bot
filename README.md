@@ -77,7 +77,7 @@ The application provides four primary run modes:
 | **Telegram Bot** | `namiclaw bot` | Start the interactive Telegram Bot. |
 | **CLI** | `namiclaw cli` | Local interactive terminal agent with rich TUI. |
 | **Run** | `namiclaw run "prompt"` | Execute a single prompt directly from the CLI. |
-| **Server** | `namiclaw server` | Run as an HTTP service. |
+| **Server** | `namiclaw serve` | Run as an HTTP service. |
 
 ## 🏗 Architecture
 
