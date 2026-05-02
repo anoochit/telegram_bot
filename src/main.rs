@@ -62,7 +62,7 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::Serve { port } => {
             log::info!("Running in serve mode");
-            serve::run_serve(agent, port.unwrap_or(8080)).await?;
+            serve::run_serve(agent, model, port.unwrap_or(8080)).await?;
         }
     }
 

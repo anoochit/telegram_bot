@@ -10,7 +10,7 @@ pub struct AgentRunner {
     agent: Arc<dyn Agent>,
     sessions: Arc<dyn SessionService>,
     app_name: String,
-    model: Arc<dyn Llm>,
+    summarizer: Arc<LlmEventSummarizer>,
 }
 
 impl AgentRunner {
@@ -20,11 +20,12 @@ impl AgentRunner {
         app_name: impl Into<String>,
         model: Arc<dyn Llm>,
     ) -> Self {
+        let summarizer = Arc::new(LlmEventSummarizer::new(model.clone()));
         Self {
             agent,
             sessions,
             app_name: app_name.into(),
-            model,
+            summarizer,
         }
     }
 
@@ -57,11 +58,10 @@ impl AgentRunner {
                 .await?;
         }
 
-        let summarizer = Arc::new(LlmEventSummarizer::new(self.model.clone()));
         let compaction_config = EventsCompactionConfig {
-            compaction_interval: 10,
+            compaction_interval: 5,
             overlap_size: 2,
-            summarizer,
+            summarizer: self.summarizer.clone(),
         };
 
         let runner = Runner::builder()

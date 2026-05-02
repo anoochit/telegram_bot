@@ -11,13 +11,23 @@ pub mod utils;
 
 pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // Load Persona, User Info, and Memories from files
-    let agent_md = tokio::fs::read_to_string("AGENT.md").await.unwrap_or_else(|_| "Standard Assistant".to_string());
-    let user_md = tokio::fs::read_to_string("USER.md").await.unwrap_or_else(|_| "Developer".to_string());
-    let memories_md = tokio::fs::read_to_string("MEMORIES.md").await.unwrap_or_else(|_| "No previous memories.".to_string());
+    let agent_md = tokio::fs
+        ::read_to_string("AGENT.md").await
+        .unwrap_or_else(|_| "Standard Assistant".to_string());
+    // If USER.md or MEMORIES.md don't exist, use default values
+    let user_md = tokio::fs
+        ::read_to_string("USER.md").await
+        .unwrap_or_else(|_| "Developer".to_string());
+    // MEMORIES.md is for personal facts about the user that the agent should remember long-term. It can be updated by the agent using the update_user_memory tool.
+    let memories_md = tokio::fs
+        ::read_to_string("MEMORIES.md").await
+        .unwrap_or_else(|_| "No previous memories.".to_string());
 
     // Sample 1: for ThaiLLM OpenAI-compatible API
     // Load the API key from an environment variable
-    // let api_key = std::env::var("THAILLM_API_KEY")?;
+    // let api_key = std::env
+    //     ::var("THAILLM_API_KEY")
+    //     .expect("THAILLM_API_KEY environment variable not set");
 
     // Create the OpenAI client with the custom configuration
     // let config = OpenAIConfig::compatible(
@@ -30,7 +40,9 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // let model = Arc::new(OpenAIClient::new(config)?);
 
     // Sample 2: for Gemini Model
-    let api_key = std::env::var("GOOGLE_API_KEY")?;
+    let api_key = std::env
+        ::var("GOOGLE_API_KEY")
+        .expect("GOOGLE_API_KEY environment variable not set");
     let model = Arc::new(GeminiModel::new(&api_key, "gemini-2.5-flash")?);
 
     // Get the current project root path
@@ -38,22 +50,31 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 
     // Define specialized sub-agents
     let investigator = LlmAgentBuilder::new("codebase_investigator")
-        .description("Specialized in deep codebase analysis, architectural mapping, and understanding system-wide dependencies. Use this for bug root-cause analysis or planning large refactors.")
-        .instruction("You are a codebase investigator. Analyze the provided context, code, and logs to identify root causes of bugs or plan architectural improvements.")
+        .description(
+            "Specialized in deep codebase analysis, architectural mapping, and understanding system-wide dependencies. Use this for bug root-cause analysis or planning large refactors."
+        )
+        .instruction(
+            "You are a codebase investigator. Analyze the provided context, code, and logs to identify root causes of bugs or plan architectural improvements."
+        )
         .model(model.clone())
         .build()?;
 
     let generalist = LlmAgentBuilder::new("generalist")
-        .description("A high-efficiency agent with access to all tools. Use this for repetitive batch tasks or high-volume data processing to keep the main conversation history lean.")
-        .instruction("You are a generalist agent. Perform the requested batch tasks or data processing efficiently.")
+        .description(
+            "A high-efficiency agent with access to all tools. Use this for repetitive batch tasks or high-volume data processing to keep the main conversation history lean."
+        )
+        .instruction(
+            "You are a generalist agent. Perform the requested batch tasks or data processing efficiently."
+        )
         .model(model.clone())
         .build()?;
 
     // Build the agent with the model and tools
     let mut builder = LlmAgentBuilder::new("agent")
         .description("A helpful and playful AI assistant")
-        .instruction(format!(
-"You are an AI Agent assistant. 
+        .instruction(
+            format!(
+                "You are an AI Agent assistant. 
 
 # YOUR SOUL (Persona)
 {}
@@ -87,7 +108,11 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 9. Formatting: Do NOT use any Markdown formatting (no bold, italics, headers, or tables). Output responses as plain text only.
 10. Language: You MUST always answer and communicate with the user in Thai. Use natural, lively, and professional Thai as defined in your Persona. Tool names and arguments should remain in English.
 11. Final Output: Use plain text only. For lists, use simple dashes ('-') or numbers followed by a space, and ensure each item is on a new line. Avoid any characters that might be interpreted as Markdown by Telegram if possible, but prioritize clarity in plain text.",
-agent_md, user_md, memories_md))
+                agent_md,
+                user_md,
+                memories_md
+            )
+        )
         .model(model.clone())
         .tool(Arc::new(AgentTool::new(Arc::new(investigator))))
         .tool(Arc::new(AgentTool::new(Arc::new(generalist))))

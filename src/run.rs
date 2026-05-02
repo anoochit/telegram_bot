@@ -22,7 +22,7 @@ pub(crate) async fn run_direct(
         .agent(agent)
         .session_service(sessions.clone())
         .compaction_config(EventsCompactionConfig {
-            compaction_interval: 10,
+            compaction_interval: 5,
             overlap_size: 2,
             summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
         })
