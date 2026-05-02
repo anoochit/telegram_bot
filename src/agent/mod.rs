@@ -125,7 +125,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
         .model(model.clone())
         .tool(Arc::new(AgentTool::new(Arc::new(investigator))))
         .tool(Arc::new(AgentTool::new(Arc::new(generalist))))
-        .with_skills_from_root(project_root)?;
+        .with_skills_from_root(project_root.join("workspace"))?;
 
     // add tools to the agent
     let mut tools: Vec<Arc<dyn Tool>> = tools::weather::weather_tools();
