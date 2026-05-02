@@ -1,6 +1,6 @@
 # namiClaw: Telegram AI Bot (ADK-Rust)
 
-A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://github.com/google/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic persona management.
+A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://github.com/zavora-ai/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic persona management.
 
 ![Screenshot](screenshots/nami-avatar.png)
 
