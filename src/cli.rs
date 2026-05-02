@@ -34,7 +34,7 @@ pub(crate) async fn run_cli(
                                                                                                
 "#).magenta());
     println!("{}", style::style("Nami CLI v0.1.0").bold().magenta());
-    println!("Type /exit to quit, /clear to wipe terminal, /new to start a new chat.");
+    println!("\n{}","Type /exit to quit, /clear to wipe terminal, /new to start a new chat.");
     println!("Press ESC during a request to cancel it.\n");
 
     let app_name = "cli";
