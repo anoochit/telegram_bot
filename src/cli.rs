@@ -1,4 +1,5 @@
 use futures::StreamExt;
+use futures_util::FutureExt;
 use rustyline::DefaultEditor;
 use std::io::{self, Write};
 use std::sync::Arc;
@@ -6,6 +7,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use termimad::MadSkin;
 use crossterm::{execute, terminal, cursor, style};
 use crossterm::style::Stylize;
+use crossterm::event::{Event, EventStream, KeyCode, KeyEventKind};
 
 use adk_runner::EventsCompactionConfig;
 use adk_rust::Agent;
@@ -32,7 +34,8 @@ pub(crate) async fn run_cli(
                                                                                                
 "#).magenta());
     println!("{}", style::style("Nami CLI v0.1.0").bold().magenta());
-    println!("Type /exit to quit, /clear to wipe terminal, /new to start a new chat.\n");
+    println!("Type /exit to quit, /clear to wipe terminal, /new to start a new chat.");
+    println!("Press ESC during a request to cancel it.\n");
 
     let app_name = "cli";
     let user_id = "default_user";
@@ -58,7 +61,7 @@ pub(crate) async fn run_cli(
         .agent(agent)
         .session_service(sessions.clone())
         .compaction_config(EventsCompactionConfig {
-            compaction_interval: 10,
+            compaction_interval: 5,
             overlap_size: 2,
             summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
         })
@@ -113,32 +116,64 @@ pub(crate) async fn run_cli(
                         tokio::time::sleep(tokio::time::Duration::from_millis(80)).await;
                         i += 1;
                     }
-                    print!("\r\x1B[K");
-                    io::stdout().flush().ok();
                 });
 
                 let content = Content::new("user").with_text(trimmed);
                 let mut stream = runner.run_str(user_id, session_id, content).await?;
 
-                while let Some(result) = stream.next().await {
-                    match result {
-                        Ok(event) => {
-                            if let Some(content) = &event.llm_response.content {
-                                for part in &content.parts {
-                                    if let Some(text) = part.text() { 
-                                        response_buffer.push_str(text); 
+                let mut reader = EventStream::new();
+                let mut cancelled = false;
+
+                terminal::enable_raw_mode()?;
+
+                loop {
+                    tokio::select! {
+                        result = stream.next() => {
+                            match result {
+                                Some(Ok(event)) => {
+                                    if let Some(content) = &event.llm_response.content {
+                                        for part in &content.parts {
+                                            if let Some(text) = part.text() { 
+                                                response_buffer.push_str(text); 
+                                            }
+
+                                            if let Part::FunctionCall { name, .. } = part {
+                                                print!("\r\x1B[K{} {}\r\n", style::style(" 🛠️ Calling:").dim(), style::style(name).cyan().bold());
+                                                io::stdout().flush().ok();
+                                            }
+                                        }
                                     }
+                                }
+                                Some(Err(e)) => {
+                                    log::error!("Stream error: {:?}", e);
+                                    break;
+                                }
+                                None => break,
+                            }
+                        }
+                        maybe_event = reader.next().fuse() => {
+                            if let Some(Ok(Event::Key(key))) = maybe_event {
+                                if key.code == KeyCode::Esc && key.kind == KeyEventKind::Press {
+                                    cancelled = true;
+                                    break;
                                 }
                             }
                         }
-                        Err(e) => log::error!("Stream error: {:?}", e),
                     }
                 }
+
+                terminal::disable_raw_mode()?;
                 is_thinking.store(false, Ordering::Relaxed);
                 handle.await?;
+                print!("\r\x1B[K");
+                io::stdout().flush().ok();
 
-                println!("\n{}", style::style("Nami").bold().magenta());
-                nami_skin.print_text(&response_buffer);
+                if cancelled {
+                    println!("\n{}", style::style("--- Request cancelled ---").dim());
+                } else {
+                    println!("\n{}", style::style("Nami").bold().magenta());
+                    nami_skin.print_text(&response_buffer);
+                }
                 println!();
             }
             Err(_) => break,
