@@ -46,14 +46,38 @@ SERPER_API_KEY=your_serper_api_key
 
 ## 🏃 Getting Started
 
+### Build and Install
+
+1. **Build the application**:
+
+   ```bash
+   cargo build --release
+   ```
+
+   The generated executable will be found in `target/release/`.
+
+2. **(Optional) Install globally**:
+   To run `namiclaw` from any directory, you can move the binary to a location in your system's `PATH`:
+
+   * **Linux/macOS**:
+
+     ```bash
+     sudo mv target/release/namiclaw /usr/local/bin/
+     ```
+
+   * **Windows**:
+     Add the full path of the `target\release\` directory to your system's Environment Variables (PATH).
+
+### Running
+
 The application provides four primary run modes:
 
 | Mode | Command | Description |
 | :--- | :--- | :--- |
-| **Telegram Bot** | `cargo run -- bot` | Start the interactive Telegram Bot. |
-| **CLI** | `cargo run -- cli` | Local interactive terminal agent with rich TUI. |
-| **Run** | `cargo run -- run "prompt"` | Execute a single prompt directly from the CLI. |
-| **Server** | `cargo run -- server` | Run as an HTTP service. |
+| **Telegram Bot** | `namiclaw bot` | Start the interactive Telegram Bot. |
+| **CLI** | `namiclaw cli` | Local interactive terminal agent with rich TUI. |
+| **Run** | `namiclaw run "prompt"` | Execute a single prompt directly from the CLI. |
+| **Server** | `namiclaw server` | Run as an HTTP service. |
 
 ## 🏗 Architecture
 
@@ -114,7 +138,7 @@ The bot features a built-in task manager for tracking goals and daily items.
 
 ## 💡 Developer Tips
 
-* **LLM Providers**: Configure your client in `src/agent/mod.rs`.
+* **LLM Providers**: Gemini is the default model. You can configure or switch to other supported models in `src/agent/mod.rs`.
 * **Adding Tools**: Add new modules to `src/agent/tools/` and register them in `src/agent/mod.rs`.
 * **Sandbox**: Workspace files and wiki are stored in `./workspace/` by default.
 * **Production**: For high-traffic bots, migrate `teloxide` from polling to webhooks.
