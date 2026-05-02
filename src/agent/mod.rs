@@ -21,16 +21,16 @@ pub fn get_compaction_config(model: Arc<dyn Llm>) -> EventsCompactionConfig {
 
 pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // Load Persona, User Info, and Memories from files
-    let agent_md = tokio::fs
-        ::read_to_string("AGENT.md").await
+    let agent_md = tokio::fs::read_to_string("AGENT.md")
+        .await
         .unwrap_or_else(|_| "Standard Assistant".to_string());
     // If USER.md or MEMORIES.md don't exist, use default values
-    let user_md = tokio::fs
-        ::read_to_string("USER.md").await
+    let user_md = tokio::fs::read_to_string("USER.md")
+        .await
         .unwrap_or_else(|_| "Developer".to_string());
     // MEMORIES.md is for personal facts about the user that the agent should remember long-term. It can be updated by the agent using the update_user_memory tool.
-    let memories_md = tokio::fs
-        ::read_to_string("MEMORIES.md").await
+    let memories_md = tokio::fs::read_to_string("MEMORIES.md")
+        .await
         .unwrap_or_else(|_| "No previous memories.".to_string());
 
     // Sample 1: for ThaiLLM OpenAI-compatible API
@@ -50,9 +50,8 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // let model = Arc::new(OpenAIClient::new(config)?);
 
     // Sample 2: for Gemini Model
-    let api_key = std::env
-        ::var("GOOGLE_API_KEY")
-        .expect("GOOGLE_API_KEY environment variable not set");
+    let api_key =
+        std::env::var("GOOGLE_API_KEY").expect("GOOGLE_API_KEY environment variable not set");
     let model = Arc::new(GeminiModel::new(&api_key, "gemini-2.5-flash")?);
 
     // Get the current project root path

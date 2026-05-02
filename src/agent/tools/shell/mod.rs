@@ -1,9 +1,9 @@
-use std::sync::Arc;
-use adk_rust::serde::Deserialize;
-use adk_tool::{tool, AdkError};
 use adk_rust::Tool;
+use adk_rust::serde::Deserialize;
+use adk_tool::{AdkError, tool};
 use schemars::JsonSchema;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
+use std::sync::Arc;
 use tokio::process::Command;
 
 #[derive(Deserialize, JsonSchema)]
@@ -17,8 +17,14 @@ struct ShellArgs {
 async fn execute_shell(args: ShellArgs) -> std::result::Result<Value, AdkError> {
     // Basic security: only allow specific commands
     let allowed_commands = ["git", "ls", "grep"];
-    if !allowed_commands.iter().any(|&cmd| args.command.starts_with(cmd)) {
-        return Err(AdkError::tool(format!("Command not allowed: {}", args.command)));
+    if !allowed_commands
+        .iter()
+        .any(|&cmd| args.command.starts_with(cmd))
+    {
+        return Err(AdkError::tool(format!(
+            "Command not allowed: {}",
+            args.command
+        )));
     }
 
     let output = Command::new("powershell")
@@ -31,7 +37,9 @@ async fn execute_shell(args: ShellArgs) -> std::result::Result<Value, AdkError> 
     if output.status.success() {
         Ok(json!({"stdout": String::from_utf8_lossy(&output.stdout)}))
     } else {
-        Err(AdkError::tool(String::from_utf8_lossy(&output.stderr).to_string()))
+        Err(AdkError::tool(
+            String::from_utf8_lossy(&output.stderr).to_string(),
+        ))
     }
 }
 

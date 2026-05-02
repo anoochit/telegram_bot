@@ -1,12 +1,12 @@
-use std::sync::Arc;
-use adk_rust::serde::Deserialize;
-use adk_tool::{tool, AdkError};
-use adk_rust::Tool;
-use schemars::JsonSchema;
-use serde_json::{json, Value};
-use tokio::fs;
-use std::path::PathBuf;
 use crate::agent::utils::get_workspace_dir;
+use adk_rust::Tool;
+use adk_rust::serde::Deserialize;
+use adk_tool::{AdkError, tool};
+use schemars::JsonSchema;
+use serde_json::{Value, json};
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::fs;
 
 #[derive(Deserialize, JsonSchema)]
 struct WikiPageArgs {
@@ -58,11 +58,15 @@ async fn add_wiki_page(args: AddWikiArgs) -> std::result::Result<Value, AdkError
         let mut existing = fs::read_to_string(&path).await.unwrap_or_default();
         existing.push_str("\n\n");
         existing.push_str(&args.content);
-        fs::write(&path, existing).await
+        fs::write(&path, existing)
+            .await
             .map_err(|e| AdkError::tool(format!("Failed to append to wiki page: {}", e)))?;
-        Ok(json!({"status": "success", "message": format!("Appended to wiki page '{}'", args.title)}))
+        Ok(
+            json!({"status": "success", "message": format!("Appended to wiki page '{}'", args.title)}),
+        )
     } else {
-        fs::write(&path, &args.content).await
+        fs::write(&path, &args.content)
+            .await
             .map_err(|e| AdkError::tool(format!("Failed to write wiki page: {}", e)))?;
         Ok(json!({"status": "success", "message": format!("Saved wiki page '{}'", args.title)}))
     }
@@ -76,10 +80,14 @@ async fn get_wiki_page(args: WikiPageArgs) -> std::result::Result<Value, AdkErro
     let path = wiki_dir.join(filename);
 
     if !path.exists() {
-        return Err(AdkError::tool(format!("Wiki page '{}' not found.", args.title)));
+        return Err(AdkError::tool(format!(
+            "Wiki page '{}' not found.",
+            args.title
+        )));
     }
 
-    let content = fs::read_to_string(&path).await
+    let content = fs::read_to_string(&path)
+        .await
         .map_err(|e| AdkError::tool(format!("Failed to read wiki page: {}", e)))?;
 
     Ok(json!({ "title": args.title, "content": content }))
@@ -89,10 +97,16 @@ async fn get_wiki_page(args: WikiPageArgs) -> std::result::Result<Value, AdkErro
 #[tool]
 async fn list_wiki_pages(_args: serde_json::Value) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir).await.map_err(|e| AdkError::tool(e.to_string()))?;
+    let mut dir = fs::read_dir(&wiki_dir)
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?;
     let mut pages = Vec::new();
 
-    while let Some(entry) = dir.next_entry().await.map_err(|e| AdkError::tool(e.to_string()))? {
+    while let Some(entry) = dir
+        .next_entry()
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?
+    {
         let name = entry.file_name().to_string_lossy().to_string();
         if name.ends_with(".md") {
             pages.push(name.replace(".md", ""));
@@ -106,11 +120,17 @@ async fn list_wiki_pages(_args: serde_json::Value) -> std::result::Result<Value,
 #[tool]
 async fn search_wiki(args: SearchWikiArgs) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir).await.map_err(|e| AdkError::tool(e.to_string()))?;
+    let mut dir = fs::read_dir(&wiki_dir)
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?;
     let mut matches = Vec::new();
     let query = args.query.to_lowercase();
 
-    while let Some(entry) = dir.next_entry().await.map_err(|e| AdkError::tool(e.to_string()))? {
+    while let Some(entry) = dir
+        .next_entry()
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?
+    {
         let path = entry.path();
         if path.extension().and_then(|s| s.to_str()) == Some("md") {
             let content = fs::read_to_string(&path).await.unwrap_or_default();
@@ -131,24 +151,39 @@ async fn search_wiki(args: SearchWikiArgs) -> std::result::Result<Value, AdkErro
 #[tool]
 async fn summarize_wiki(_args: serde_json::Value) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir).await.map_err(|e| AdkError::tool(e.to_string()))?;
-    let mut summary_content = "# Wiki Summary Index\n\nGenerated automatically by Nami.\n\n".to_string();
+    let mut dir = fs::read_dir(&wiki_dir)
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?;
+    let mut summary_content =
+        "# Wiki Summary Index\n\nGenerated automatically by Nami.\n\n".to_string();
 
-    while let Some(entry) = dir.next_entry().await.map_err(|e| AdkError::tool(e.to_string()))? {
+    while let Some(entry) = dir
+        .next_entry()
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?
+    {
         let path = entry.path();
         if path.extension().and_then(|s| s.to_str()) == Some("md") {
             let filename = entry.file_name().to_string_lossy().to_string();
             let title = filename.replace(".md", "");
-            if title == "SUMMARY" { continue; }
-            
+            if title == "SUMMARY" {
+                continue;
+            }
+
             let content = fs::read_to_string(&path).await.unwrap_or_default();
-            let first_line = content.lines().next().unwrap_or("No content").trim_start_matches('#').trim();
+            let first_line = content
+                .lines()
+                .next()
+                .unwrap_or("No content")
+                .trim_start_matches('#')
+                .trim();
             summary_content.push_str(&format!("- **{}**: {}\n", title, first_line));
         }
     }
 
     let summary_path = wiki_dir.join("SUMMARY.md");
-    fs::write(&summary_path, summary_content).await
+    fs::write(&summary_path, summary_content)
+        .await
         .map_err(|e| AdkError::tool(format!("Failed to write SUMMARY.md: {}", e)))?;
 
     Ok(json!({"status": "success", "message": "Wiki summary (SUMMARY.md) has been updated!"}))

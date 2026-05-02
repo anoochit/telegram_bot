@@ -73,9 +73,15 @@ impl AgentRunner {
             let event = match result {
                 Ok(event) => event,
                 Err(e) if e.to_string().contains("400 Bad Request") => {
-                    return Ok("⚠️ Context limit reached. Please use /clear to reset the conversation.".to_string());
+                    return Ok(
+                        "⚠️ Context limit reached. Please use /clear to reset the conversation."
+                            .to_string(),
+                    );
                 }
-                Err(e) if e.to_string().contains("decoding response body") || e.to_string().contains("stream read error") => {
+                Err(e)
+                    if e.to_string().contains("decoding response body")
+                        || e.to_string().contains("stream read error") =>
+                {
                     return Ok("⚠️ Stream error occurred. Please try again or use /clear if the issue persists.".to_string());
                 }
                 Err(e) => return Err(e.into()),

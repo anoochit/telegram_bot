@@ -1,14 +1,14 @@
+use crate::agent::utils;
 use adk_rust::prelude::*;
 use adk_tool::mcp::McpServerManager;
 use std::sync::Arc;
-use crate::agent::utils;
 
 /// Loads MCP tools from `mcp.json` if it exists and attaches them to the agent builder.
 /// It checks the workspace directory first, then the current directory.
 pub async fn load_mcp_tools(mut builder: LlmAgentBuilder) -> anyhow::Result<LlmAgentBuilder> {
     let workspace_root = utils::get_workspace_dir().await?;
     let workspace_mcp = workspace_root.join("mcp.json");
-    
+
     let mcp_config_path = if workspace_mcp.exists() {
         Some(workspace_mcp)
     } else if std::path::Path::new("mcp.json").exists() {

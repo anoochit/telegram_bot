@@ -1,12 +1,12 @@
-use std::sync::Arc;
-use adk_rust::serde::{Deserialize, Serialize};
-use adk_tool::{tool, AdkError};
-use adk_rust::Tool;
-use schemars::JsonSchema;
-use serde_json::{json, Value};
-use tokio::fs;
-use std::path::PathBuf;
 use crate::agent::utils::get_workspace_dir;
+use adk_rust::Tool;
+use adk_rust::serde::{Deserialize, Serialize};
+use adk_tool::{AdkError, tool};
+use schemars::JsonSchema;
+use serde_json::{Value, json};
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::fs;
 
 #[derive(Serialize, Deserialize, JsonSchema, Clone)]
 struct Todo {
@@ -37,16 +37,19 @@ async fn load_todos() -> std::result::Result<Vec<Todo>, AdkError> {
     if !path.exists() {
         return Ok(Vec::new());
     }
-    let content = fs::read_to_string(&path).await
+    let content = fs::read_to_string(&path)
+        .await
         .map_err(|e| AdkError::tool(format!("Failed to read todos: {}", e)))?;
-    serde_json::from_str(&content).map_err(|e| AdkError::tool(format!("Failed to parse todos: {}", e)))
+    serde_json::from_str(&content)
+        .map_err(|e| AdkError::tool(format!("Failed to parse todos: {}", e)))
 }
 
 async fn save_todos(todos: &[Todo]) -> std::result::Result<(), AdkError> {
     let path = get_todo_file().await?;
     let content = serde_json::to_string_pretty(todos)
         .map_err(|e| AdkError::tool(format!("Failed to serialize todos: {}", e)))?;
-    fs::write(&path, content).await
+    fs::write(&path, content)
+        .await
         .map_err(|e| AdkError::tool(format!("Failed to write todos: {}", e)))
 }
 

@@ -1,9 +1,9 @@
-use std::sync::Arc;
-use adk_rust::serde::Deserialize;
-use adk_tool::{tool, AdkError};
 use adk_rust::Tool;
+use adk_rust::serde::Deserialize;
+use adk_tool::{AdkError, tool};
 use schemars::JsonSchema;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
+use std::sync::Arc;
 use tokio::fs;
 
 #[derive(Deserialize, JsonSchema)]
@@ -21,24 +21,30 @@ struct UpdateSoulArgs {
 /// Adds a new fact to the user's permanent memories (MEMORIES.md).
 #[tool]
 async fn update_user_memory(args: UpdateMemoryArgs) -> std::result::Result<Value, AdkError> {
-    let mut content = fs::read_to_string("MEMORIES.md").await.unwrap_or_else(|_| "# User Memories\n".to_string());
+    let mut content = fs::read_to_string("MEMORIES.md")
+        .await
+        .unwrap_or_else(|_| "# User Memories\n".to_string());
     content.push_str(&format!("\n- {}", args.fact));
-    
-    fs::write("MEMORIES.md", content).await
+
+    fs::write("MEMORIES.md", content)
+        .await
         .map_err(|e| AdkError::tool(format!("Failed to update memories: {}", e)))?;
-        
+
     Ok(json!({"status": "success", "message": "I'll remember that for you!"}))
 }
 
 /// Updates the agent's persona file (AGENT.md). Use this to 'evolve' the agent's personality.
 #[tool]
 async fn update_agent_soul(args: UpdateSoulArgs) -> std::result::Result<Value, AdkError> {
-    let mut content = fs::read_to_string("AGENT.md").await.unwrap_or_else(|_| "# Agent Persona\n".to_string());
+    let mut content = fs::read_to_string("AGENT.md")
+        .await
+        .unwrap_or_else(|_| "# Agent Persona\n".to_string());
     content.push_str(&format!("\n\n## Evolution\n{}", args.trait_info));
-    
-    fs::write("AGENT.md", content).await
+
+    fs::write("AGENT.md", content)
+        .await
         .map_err(|e| AdkError::tool(format!("Failed to update soul: {}", e)))?;
-        
+
     Ok(json!({"status": "success", "message": "My soul is evolving... thank you!"}))
 }
 

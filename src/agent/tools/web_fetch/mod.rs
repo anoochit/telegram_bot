@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use adk_rust::serde::Deserialize;
-use adk_tool::{tool, AdkError};
 use adk_rust::Tool;
+use adk_rust::serde::Deserialize;
+use adk_tool::{AdkError, tool};
 use schemars::JsonSchema;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 #[derive(Deserialize, JsonSchema)]
 struct WebFetchArgs {
@@ -20,22 +20,28 @@ async fn web_fetch(args: WebFetchArgs) -> std::result::Result<Value, AdkError> {
         .build()
         .map_err(|e| AdkError::tool(format!("Failed to build HTTP client: {}", e)))?;
 
-    let response = client.get(&args.url)
+    let response = client
+        .get(&args.url)
         .send()
         .await
         .map_err(|e| AdkError::tool(format!("Failed to fetch URL: {}", e)))?;
 
     let status = response.status();
-    
+
     // Read response body as text
-    let text = response.text()
+    let text = response
+        .text()
         .await
         .map_err(|e| AdkError::tool(format!("Failed to read response body: {}", e)))?;
 
     // Truncate text if it's too large to avoid overwhelming the LLM context (e.g. max 50000 chars)
     let max_len = 50000;
     let content = if text.len() > max_len {
-        format!("{}... (truncated, original length: {})", &text[..max_len], text.len())
+        format!(
+            "{}... (truncated, original length: {})",
+            &text[..max_len],
+            text.len()
+        )
     } else {
         text
     };

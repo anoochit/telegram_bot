@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use adk_rust::serde::Deserialize;
-use adk_tool::{tool, AdkError};
 use adk_rust::Tool;
+use adk_rust::serde::Deserialize;
+use adk_tool::{AdkError, tool};
 use schemars::JsonSchema;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 #[derive(Deserialize, JsonSchema)]
 struct WeatherArgs {

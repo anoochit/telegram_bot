@@ -1,10 +1,10 @@
 use adk_rust::prelude::*;
 use adk_tool::tool;
 use schemars::JsonSchema;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::sync::Arc;
-use sysinfo::{System, Disks, Networks};
 use std::time::Instant;
+use sysinfo::{Disks, Networks, System};
 
 // ─── Tools ────────────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ async fn get_system_info(_args: NoArgs) -> std::result::Result<Value, AdkError> 
     // CPU information
     let cpu_count = sys.cpus().len();
     let global_cpu_usage = sys.global_cpu_usage();
-    
+
     // Memory information
     let total_memory = sys.total_memory();
     let used_memory = sys.used_memory();
@@ -93,7 +93,5 @@ async fn get_system_info(_args: NoArgs) -> std::result::Result<Value, AdkError> 
 // ─── Registration ─────────────────────────────────────────────────────────────
 
 pub fn system_info_tools() -> Vec<Arc<dyn Tool>> {
-    vec![
-        Arc::new(GetSystemInfo),
-    ]
+    vec![Arc::new(GetSystemInfo)]
 }

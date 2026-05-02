@@ -19,7 +19,5 @@ pub async fn get_workspace_dir() -> std::result::Result<PathBuf, AdkError> {
     }
 
     // Canonicalize for security checks
-    Ok(fs::canonicalize(&root)
-        .await
-        .unwrap_or(root))
+    Ok(fs::canonicalize(&root).await.unwrap_or(root))
 }

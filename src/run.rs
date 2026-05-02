@@ -1,10 +1,9 @@
 use crate::agent::get_compaction_config;
-use futures::StreamExt;
-use std::sync::Arc;
 use adk_rust::Agent;
 use adk_rust::prelude::*;
-use adk_session::{ SessionService};
-
+use adk_session::SessionService;
+use futures::StreamExt;
+use std::sync::Arc;
 
 pub(crate) async fn run_direct(
     agent: Arc<dyn Agent>,
@@ -25,15 +24,15 @@ pub(crate) async fn run_direct(
 
     let content = Content::new("user").with_text(prompt);
     let mut stream = runner.run_str(user_id, session_id, content).await?;
-    
+
     let mut response_buffer = String::new();
     while let Some(result) = stream.next().await {
         if let Ok(event) = result
             && let Some(content) = &event.llm_response.content
         {
             for part in &content.parts {
-                if let Some(text) = part.text() { 
-                    response_buffer.push_str(text); 
+                if let Some(text) = part.text() {
+                    response_buffer.push_str(text);
                 }
             }
         }

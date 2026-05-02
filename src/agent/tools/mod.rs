@@ -5,7 +5,7 @@ pub mod search;
 pub mod shell;
 pub mod soul;
 pub mod system_info;
+pub mod todo;
 pub mod weather;
 pub mod web_fetch;
 pub mod wiki;
-pub mod todo;
