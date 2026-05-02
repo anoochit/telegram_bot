@@ -1,6 +1,7 @@
 mod agent;
 mod bot;
 mod cli;
+mod init;
 mod run;
 mod runner;
 mod serve;
@@ -22,6 +23,7 @@ struct Cli {
 enum Commands {
     Bot,                         // namiClaw
     Cli,                         // command line interface
+    Init,                        // initialize project files
     Run { prompt: String },      // direct execution
     Serve { port: Option<u16> }, // http server
 }
@@ -32,8 +34,16 @@ async fn main() -> anyhow::Result<()> {
 
     let cli = Cli::parse();
 
-    if !matches!(cli.command, Commands::Serve { .. }) {
+    if !matches!(cli.command, Commands::Serve { .. } | Commands::Init) {
         pretty_env_logger::init();
+    }
+
+    match cli.command {
+        Commands::Init => {
+            init::initialize_project().await?;
+            return Ok(());
+        }
+        _ => {}
     }
 
     log::info!("Application starting...");
@@ -64,6 +74,7 @@ async fn main() -> anyhow::Result<()> {
             log::info!("Running in serve mode");
             serve::run_serve(agent, model, port.unwrap_or(8080)).await?;
         }
+        Commands::Init => unreachable!(),
     }
 
     Ok(())
