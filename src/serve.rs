@@ -1,5 +1,4 @@
-use adk_runner::EventsCompactionConfig;
-use adk_rust::agent::LlmEventSummarizer;
+use crate::agent::get_compaction_config;
 use adk_rust::Agent;
 use adk_rust::Launcher;
 use adk_rust::Llm;
@@ -15,11 +14,7 @@ pub(crate) async fn run_serve(
         .unwrap_or_else(|_| "http://localhost:8080".to_string());
 
     Launcher::new(agent)
-        .with_compaction(EventsCompactionConfig {
-            compaction_interval: 5,
-            overlap_size: 2,
-            summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
-        })
+        .with_compaction(get_compaction_config(model))
         .with_a2a_base_url(base_url)
         .run_serve_directly(port).await?;
     Ok(())

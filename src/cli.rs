@@ -9,9 +9,8 @@ use crossterm::{execute, terminal, cursor, style};
 use crossterm::style::Stylize;
 use crossterm::event::{Event, EventStream, KeyCode, KeyEventKind};
 
-use adk_runner::EventsCompactionConfig;
+use crate::agent::get_compaction_config;
 use adk_rust::Agent;
-use adk_rust::agent::LlmEventSummarizer;
 use adk_rust::prelude::*;
 use adk_session::{CreateRequest, GetRequest, SessionService};
 
@@ -60,11 +59,7 @@ pub(crate) async fn run_cli(
         .app_name(app_name)
         .agent(agent)
         .session_service(sessions.clone())
-        .compaction_config(EventsCompactionConfig {
-            compaction_interval: 5,
-            overlap_size: 2,
-            summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
-        })
+        .compaction_config(get_compaction_config(model))
         .build()?;
 
     let mut rl = DefaultEditor::new()?;

@@ -1,8 +1,7 @@
+use crate::agent::get_compaction_config;
 use futures::StreamExt;
 use std::sync::Arc;
-use adk_runner::EventsCompactionConfig;
 use adk_rust::Agent;
-use adk_rust::agent::LlmEventSummarizer;
 use adk_rust::prelude::*;
 use adk_session::{ SessionService};
 
@@ -21,11 +20,7 @@ pub(crate) async fn run_direct(
         .app_name(app_name)
         .agent(agent)
         .session_service(sessions.clone())
-        .compaction_config(EventsCompactionConfig {
-            compaction_interval: 5,
-            overlap_size: 2,
-            summarizer: Arc::new(LlmEventSummarizer::new(model.clone())),
-        })
+        .compaction_config(get_compaction_config(model))
         .build()?;
 
     let content = Content::new("user").with_text(prompt);

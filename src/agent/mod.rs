@@ -1,3 +1,5 @@
+use adk_runner::EventsCompactionConfig;
+use adk_rust::agent::LlmEventSummarizer;
 use adk_rust::prelude::*;
 use adk_rust::tool::AgentTool;
 use std::sync::Arc;
@@ -8,6 +10,14 @@ use std::sync::Arc;
 pub mod mcp;
 pub mod tools;
 pub mod utils;
+
+pub fn get_compaction_config(model: Arc<dyn Llm>) -> EventsCompactionConfig {
+    EventsCompactionConfig {
+        compaction_interval: 5,
+        overlap_size: 2,
+        summarizer: Arc::new(LlmEventSummarizer::new(model)),
+    }
+}
 
 pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // Load Persona, User Info, and Memories from files
