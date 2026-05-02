@@ -70,10 +70,11 @@ SERPER_API_KEY=your_serper_api_key
 
 ### Running
 
-The application provides four primary run modes:
+The application provides five primary run modes:
 
 | Mode | Command | Description |
 | :--- | :--- | :--- |
+| **Initialize** | `namiclaw init` | Initialize project config files and database. |
 | **Telegram Bot** | `namiclaw bot` | Start the interactive Telegram Bot. |
 | **CLI** | `namiclaw cli` | Local interactive terminal agent with rich TUI. |
 | **Run** | `namiclaw run "prompt"` | Execute a single prompt directly from the CLI. |
