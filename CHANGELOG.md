@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **@ File Context References**: Implemented an interactive file referencing system in the CLI. Users can type `@` followed by a file path to inject file contents directly into the prompt. Includes built-in tab-completion powered by `rustyline` scoped to the `workspace/` sandbox.
+- **Parallel Writer Tool**: Added a custom `parallel_writer` orchestrator that enables the agent to trigger multiple specialized sub-agents (WebDev, Docs, etc.) simultaneously for faster multi-task processing.
 - **Wiki Management Tools**: Added `get_backlinks`, `apply_template`, `check_broken_links`, and `rename_wiki_page` to enhance Obsidian-style knowledge management.
 - **Daily Notes Template**: Added a default `DailyTemplate.md` for consistent daily journaling.
 

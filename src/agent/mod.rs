@@ -3,6 +3,7 @@ use adk_rust::agent::LlmEventSummarizer;
 use adk_rust::prelude::*;
 use adk_rust::tool::AgentTool;
 use std::sync::Arc;
+use std::collections::HashMap;
 
 use crate::utils::get_workspace_dir;
 use crate::tools;
@@ -34,22 +35,6 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
         .await
         .unwrap_or_else(|_| "No previous memories.".to_string());
 
-    // Sample 1: for ThaiLLM OpenAI-compatible API
-    // Load the API key from an environment variable
-    // let api_key = std::env
-    //     ::var("THAILLM_API_KEY")
-    //     .expect("THAILLM_API_KEY environment variable not set");
-
-    // Create the OpenAI client with the custom configuration
-    // let config = OpenAIConfig::compatible(
-    //     &api_key,
-    //     "https://thaillm.or.th/api/v1",
-    //     "typhoon-s-thaillm-8b-instruct",
-    // );
-
-    // Create the OpenAI client with the custom configuration
-    // let model = Arc::new(OpenAIClient::new(config)?);
-
     // Sample 2: for Gemini Model
     let api_key =
         std::env::var("GOOGLE_API_KEY").expect("GOOGLE_API_KEY environment variable not set");
@@ -59,47 +44,66 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     let workspace_dir = get_workspace_dir().await?;
 
     // Define specialized sub-agents
-    let investigator = LlmAgentBuilder::new("codebase_investigator")
+    let investigator = Arc::new(LlmAgentBuilder::new("codebase_investigator")
         .description("Specialized in deep codebase analysis, architectural mapping, and understanding system-wide dependencies. Use this for bug root-cause analysis or planning large refactors.")
         .instruction("You are a codebase investigator. Analyze the provided context, code, and logs to identify root causes of bugs or plan architectural improvements.")
         .model(model.clone())
-        .build()?;
+        .build()?);
 
-    let generalist = LlmAgentBuilder::new("generalist")
+    let generalist = Arc::new(LlmAgentBuilder::new("generalist")
         .description("A high-efficiency agent with access to all tools. Use this for repetitive batch tasks or high-volume data processing to keep the main conversation history lean.")
         .instruction("You are a generalist agent. Perform the requested batch tasks or data processing efficiently.")
         .model(model.clone())
-        .build()?;
+        .build()?);
 
-    let web_developer = LlmAgentBuilder::new("web_developer")
+    let web_developer = Arc::new(LlmAgentBuilder::new("web_developer")
         .description("Specialized in full-stack web development. Use this for frontend components, API implementation, and styling.")
         .instruction("You are a web development expert. Focus on clean, modular, and accessible code. Ensure all UI components follow modern web standards and responsive design patterns.")
         .model(model.clone())
-        .build()?;
+        .build()?);
 
-    let devops_engineer = LlmAgentBuilder::new("devops_engineer")
+    let devops_engineer = Arc::new(LlmAgentBuilder::new("devops_engineer")
         .description("Specialized in DevOps, CI/CD, and cloud infrastructure. Use this for Docker, GitHub Actions, cloud deployments, and environment configuration.")
         .instruction("You are a DevOps engineer. Prioritize security, automation, and system reliability. When planning deployments, always verify environment configurations and infrastructure-as-code requirements.")
         .model(model.clone())
-        .build()?;
+        .build()?);
 
-    let quality_assurance = LlmAgentBuilder::new("quality_assurance")
+    let quality_assurance = Arc::new(LlmAgentBuilder::new("quality_assurance")
         .description("Specialized in testing and quality control. Use this for writing unit/integration tests, verifying bug fixes, and finding edge cases.")
         .instruction("You are a QA specialist. Ensure code quality through rigorous testing, edge case analysis, and consistent verification of requirements.")
         .model(model.clone())
-        .build()?;
+        .build()?);
 
-    let data_specialist = LlmAgentBuilder::new("data_specialist")
+    let data_specialist = Arc::new(LlmAgentBuilder::new("data_specialist")
         .description("Specialized in database design, data models, and analytics. Use this for schema design, migrations, and data manipulation.")
         .instruction("You are a data specialist. Focus on schema normalization, query efficiency, and data integrity.")
         .model(model.clone())
-        .build()?;
+        .build()?);
 
-    let documentation_architect = LlmAgentBuilder::new("documentation_architect")
+    let documentation_architect = Arc::new(LlmAgentBuilder::new("documentation_architect")
         .description("Specialized in technical documentation. Use this to maintain READMEs, docs, and project knowledge bases.")
         .instruction("You are a documentation expert. Ensure all technical documentation is clear, accurate, and easy to understand for developers and users.")
         .model(model.clone())
-        .build()?;
+        .build()?);
+
+    // Wrap sub-agents as tools
+    let investigator_tool: Arc<dyn Tool> = Arc::new(AgentTool::new(investigator));
+    let generalist_tool: Arc<dyn Tool> = Arc::new(AgentTool::new(generalist));
+    let web_developer_tool: Arc<dyn Tool> = Arc::new(AgentTool::new(web_developer));
+    let devops_engineer_tool: Arc<dyn Tool> = Arc::new(AgentTool::new(devops_engineer));
+    let quality_assurance_tool: Arc<dyn Tool> = Arc::new(AgentTool::new(quality_assurance));
+    let data_specialist_tool: Arc<dyn Tool> = Arc::new(AgentTool::new(data_specialist));
+    let documentation_architect_tool: Arc<dyn Tool> = Arc::new(AgentTool::new(documentation_architect));
+
+    // Create a map of specialized tools for the ParallelWriter
+    let mut specialists: HashMap<String, Arc<dyn Tool>> = HashMap::new();
+    specialists.insert("codebase_investigator".to_string(), investigator_tool.clone());
+    specialists.insert("generalist".to_string(), generalist_tool.clone());
+    specialists.insert("web_developer".to_string(), web_developer_tool.clone());
+    specialists.insert("devops_engineer".to_string(), devops_engineer_tool.clone());
+    specialists.insert("quality_assurance".to_string(), quality_assurance_tool.clone());
+    specialists.insert("data_specialist".to_string(), data_specialist_tool.clone());
+    specialists.insert("documentation_architect".to_string(), documentation_architect_tool.clone());
 
     // Build the agent with the model and tools
     let mut builder = LlmAgentBuilder::new("agent")
@@ -128,6 +132,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
    - Use 'quality_assurance' for testing and verification.
    - Use 'data_specialist' for database and data modeling tasks.
    - Use 'documentation_architect' for keeping documentation updated.
+   - Use 'parallel_writer' to execute multiple writing tasks or specialist queries simultaneously.
 3. Knowledge Management (Wiki): Use the Wiki tools to store and retrieve long-term information. Treat the 'wiki/' directory as your primary memory.
    - To learn/save: Use add_wiki_page.
    - To find: Use search_wiki or list_wiki_pages. Use search_wiki_by_tag for finding specific tags.
@@ -155,13 +160,13 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
             )
         )
         .model(model.clone())
-        .tool(Arc::new(AgentTool::new(Arc::new(investigator))))
-        .tool(Arc::new(AgentTool::new(Arc::new(generalist))))
-        .tool(Arc::new(AgentTool::new(Arc::new(web_developer))))
-        .tool(Arc::new(AgentTool::new(Arc::new(devops_engineer))))
-        .tool(Arc::new(AgentTool::new(Arc::new(quality_assurance))))
-        .tool(Arc::new(AgentTool::new(Arc::new(data_specialist))))
-        .tool(Arc::new(AgentTool::new(Arc::new(documentation_architect))))
+        .tool(investigator_tool)
+        .tool(generalist_tool)
+        .tool(web_developer_tool)
+        .tool(devops_engineer_tool)
+        .tool(quality_assurance_tool)
+        .tool(data_specialist_tool)
+        .tool(documentation_architect_tool)
         .with_skills_from_root(workspace_dir)?;
 
     // add tools to the agent
@@ -176,6 +181,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     tools.extend(tools::soul::soul_tools());
     tools.extend(tools::search::search_tools());
     tools.extend(tools::todo::todo_tools());
+    tools.extend(tools::parallel_writer::parallel_writer_tool(specialists));
 
     // Add tools to the agent builder
     for t in tools {

@@ -1,6 +1,7 @@
 pub mod create_skill;
 pub mod current_datetime;
 pub mod filesystem;
+pub mod parallel_writer;
 pub mod search;
 pub mod shell;
 pub mod soul;
