@@ -4,6 +4,8 @@ use adk_rust::prelude::*;
 use adk_rust::tool::AgentTool;
 use std::sync::Arc;
 
+use crate::agent::utils::get_workspace_dir;
+
 // OpenAI-compatible API
 // use adk_rust::model::{OpenAIClient, OpenAIConfig};
 
@@ -55,7 +57,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     let model = Arc::new(GeminiModel::new(&api_key, "gemini-2.5-flash")?);
 
     // Get the current project root path
-    let project_root = std::env::current_dir()?;
+    let workspace_dir = get_workspace_dir().await?;
 
     // Define specialized sub-agents
     let investigator = LlmAgentBuilder::new("codebase_investigator")
@@ -125,7 +127,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
         .model(model.clone())
         .tool(Arc::new(AgentTool::new(Arc::new(investigator))))
         .tool(Arc::new(AgentTool::new(Arc::new(generalist))))
-        .with_skills_from_root(project_root.join("workspace"))?;
+        .with_skills_from_root(workspace_dir)?;
 
     // add tools to the agent
     let mut tools: Vec<Arc<dyn Tool>> = tools::weather::weather_tools();
