@@ -4,11 +4,13 @@ use adk_rust::serde::Deserialize;
 use adk_tool::{AdkError, tool};
 use schemars::JsonSchema;
 use serde_json::{Value, json};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::fs;
 use regex::Regex;
 use chrono::{Utc, Datelike};
+use walkdir::WalkDir;
+use std::collections::HashMap;
 
 #[derive(Deserialize, JsonSchema)]
 struct WikiPageArgs {
@@ -47,6 +49,9 @@ struct CreateDailyNoteArgs {
     content: Option<String>,
 }
 
+#[derive(Deserialize, JsonSchema)]
+struct SanitizeWikiVaultArgs {}
+
 /// Helper to get the wiki directory path.
 async fn get_wiki_dir() -> std::result::Result<PathBuf, AdkError> {
     let root = get_workspace_dir().await?;
@@ -59,17 +64,61 @@ async fn get_wiki_dir() -> std::result::Result<PathBuf, AdkError> {
     Ok(wiki_dir)
 }
 
-/// Helper to sanitize title into a filename.
+/// Helper to sanitize title into a filename while preserving Obsidian style (case, spaces, folders).
+/// Removes characters that are invalid in Windows/Unix filenames, except for forward slashes.
 fn sanitize_title(title: &str) -> String {
-    title.trim().replace(" ", "-").to_lowercase()
+    // Convert backslashes to forward slashes for cross-platform folder support
+    let mut sanitized = title.trim().replace("\\", "/");
+    // Remove characters that are generally problematic in filenames (excluding '/')
+    let invalid_chars = ['<', '>', ':', '"', '|', '?', '*'];
+    sanitized.retain(|c| !invalid_chars.contains(&c));
+    sanitized
 }
 
-/// Adds or updates a wiki page in the 'wiki/' directory.
+/// Helper to get the relative title from a file path
+fn get_relative_title(wiki_dir: &Path, file_path: &Path) -> String {
+    file_path
+        .strip_prefix(wiki_dir)
+        .unwrap_or(file_path)
+        .with_extension("")
+        .to_string_lossy()
+        .replace("\\", "/") // Normalize to forward slashes for cross-platform consistency
+}
+
+/// Helper to convert a dash-case string to Title Case with spaces
+fn to_title_case(s: &str) -> String {
+    if s.contains('-') && !s.contains(' ') {
+        s.split('-')
+            .map(|word| {
+                let mut c = word.chars();
+                match c.next() {
+                    None => String::new(),
+                    Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+                }
+            })
+            .collect::<Vec<String>>()
+            .join(" ")
+    } else {
+        s.to_string()
+    }
+}
+
+/// Adds or updates a wiki page in the 'wiki/' directory. Supports nested folders (e.g., 'Projects/Notes').
 #[tool]
 async fn add_wiki_page(args: AddWikiArgs) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let filename = format!("{}.md", sanitize_title(&args.title));
-    let path = wiki_dir.join(filename);
+    let sanitized_title = sanitize_title(&args.title);
+    let filename = format!("{}.md", sanitized_title);
+    let path = wiki_dir.join(&filename);
+
+    // Create parent directories if they don't exist
+    if let Some(parent) = path.parent() {
+        if !parent.exists() {
+            fs::create_dir_all(parent)
+                .await
+                .map_err(|e| AdkError::tool(format!("Failed to create parent directories: {}", e)))?;
+        }
+    }
 
     if args.append.unwrap_or(false) && path.exists() {
         let mut existing = fs::read_to_string(&path).await.unwrap_or_default();
@@ -110,49 +159,35 @@ async fn get_wiki_page(args: WikiPageArgs) -> std::result::Result<Value, AdkErro
     Ok(json!({ "title": args.title, "content": content }))
 }
 
-/// Lists all available wiki pages.
+/// Lists all available wiki pages recursively.
 #[tool]
 async fn list_wiki_pages(_args: serde_json::Value) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir)
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?;
     let mut pages = Vec::new();
 
-    while let Some(entry) = dir
-        .next_entry()
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?
-    {
-        let name = entry.file_name().to_string_lossy().to_string();
-        if name.ends_with(".md") {
-            pages.push(name.replace(".md", ""));
+    for entry in WalkDir::new(&wiki_dir).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("md") {
+            pages.push(get_relative_title(&wiki_dir, path));
         }
     }
 
     Ok(json!({ "pages": pages }))
 }
 
-/// Searches for a keyword across all wiki pages.
+/// Searches for a keyword across all wiki pages recursively.
 #[tool]
 async fn search_wiki(args: SearchWikiArgs) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir)
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?;
     let mut matches = Vec::new();
     let query = args.query.to_lowercase();
 
-    while let Some(entry) = dir
-        .next_entry()
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?
-    {
+    for entry in WalkDir::new(&wiki_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
-        if path.extension().and_then(|s| s.to_str()) == Some("md") {
+        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("md") {
             let content = fs::read_to_string(&path).await.unwrap_or_default();
             if content.to_lowercase().contains(&query) {
-                matches.push(entry.file_name().to_string_lossy().replace(".md", ""));
+                matches.push(get_relative_title(&wiki_dir, path));
             }
         }
     }
@@ -164,26 +199,19 @@ async fn search_wiki(args: SearchWikiArgs) -> std::result::Result<Value, AdkErro
     }
 }
 
-/// Searches all wiki pages for a specific tag (e.g., '#rust').
+/// Searches all wiki pages for a specific tag (e.g., '#rust') recursively.
 #[tool]
 async fn search_wiki_by_tag(args: SearchWikiByTagArgs) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir)
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?;
     let mut matches = Vec::new();
-    let tag_pattern = format!("#{}", args.tag.to_lowercase()); // Construct regex pattern for tag
+    let tag_pattern = format!("#{}", args.tag.to_lowercase());
 
-    while let Some(entry) = dir
-        .next_entry()
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?
-    {
+    for entry in WalkDir::new(&wiki_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
-        if path.extension().and_then(|s| s.to_str()) == Some("md") {
+        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("md") {
             let content = fs::read_to_string(&path).await.unwrap_or_default();
             if content.to_lowercase().contains(&tag_pattern) {
-                matches.push(entry.file_name().to_string_lossy().replace(".md", ""));
+                matches.push(get_relative_title(&wiki_dir, path));
             }
         }
     }
@@ -195,28 +223,18 @@ async fn search_wiki_by_tag(args: SearchWikiByTagArgs) -> std::result::Result<Va
     }
 }
 
-/// Scans all wiki pages for [[wikilink]] references and builds a knowledge graph.
+/// Scans all wiki pages recursively for [[wikilink]] references and builds a knowledge graph.
 #[tool]
 async fn get_wiki_graph(_args: GetWikiGraphArgs) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir)
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?;
-    
     let mut nodes = Vec::new();
     let mut edges = Vec::new();
     let wikilink_regex = Regex::new(r"\[\[([^\]]+)\]\]").unwrap();
 
-    while let Some(entry) = dir
-        .next_entry()
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?
-    {
+    for entry in WalkDir::new(&wiki_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
-        if path.extension().and_then(|s| s.to_str()) == Some("md") {
-            let filename = entry.file_name().to_string_lossy().to_string();
-            let title = filename.replace(".md", "");
-            
+        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("md") {
+            let title = get_relative_title(&wiki_dir, path);
             nodes.push(json!({"id": &title, "label": &title}));
 
             let content = fs::read_to_string(&path).await.unwrap_or_default();
@@ -230,46 +248,35 @@ async fn get_wiki_graph(_args: GetWikiGraphArgs) -> std::result::Result<Value, A
     Ok(json!({ "nodes": nodes, "edges": edges }))
 }
 
-/// Creates a new wiki page for the current date (e.g., 'YYYY-MM-DD.md').
+/// Creates a new wiki page for the current date (e.g., 'Daily Notes/YYYY-MM-DD.md').
 #[tool]
 async fn create_daily_note(args: CreateDailyNoteArgs) -> std::result::Result<Value, AdkError> {
     let today = Utc::now();
-    let title = format!("{}-{:02}-{:02}", today.year(), today.month(), today.day());
-    let filename = format!("{}.md", &title);
-    let wiki_dir = get_wiki_dir().await?;
-    let path = wiki_dir.join(&filename);
-
-    if path.exists() {
-        return Err(AdkError::tool(format!("Daily note for {} already exists.", title)));
-    }
-
-    let initial_content = args.content.unwrap_or_else(|| format!("# {}\n\n", title));
-    fs::write(&path, initial_content)
-        .await
-        .map_err(|e| AdkError::tool(format!("Failed to create daily note: {}", e)))?;
+    let title = format!("Daily Notes/{}-{:02}-{:02}", today.year(), today.month(), today.day());
+    
+    // We can just reuse add_wiki_page logic here to handle the folder creation naturally
+    let add_args = AddWikiArgs {
+        title: title.clone(),
+        content: args.content.unwrap_or_else(|| format!("# {}\n\n", title)),
+        append: Some(false),
+    };
+    
+    add_wiki_page(add_args).await?;
 
     Ok(json!({"status": "success", "message": format!("Created daily note for '{}'", title), "title": title}))
 }
 
-/// Generates a 'SUMMARY.md' file that indexes all available wiki pages with a brief overview.
+/// Generates a 'SUMMARY.md' file that indexes all available wiki pages recursively with a brief overview.
 #[tool]
 async fn summarize_wiki(_args: serde_json::Value) -> std::result::Result<Value, AdkError> {
     let wiki_dir = get_wiki_dir().await?;
-    let mut dir = fs::read_dir(&wiki_dir)
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?;
     let mut summary_content =
         "# Wiki Summary Index\n\nGenerated automatically by Nami.\n\n".to_string();
 
-    while let Some(entry) = dir
-        .next_entry()
-        .await
-        .map_err(|e| AdkError::tool(e.to_string()))?
-    {
+    for entry in WalkDir::new(&wiki_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
-        if path.extension().and_then(|s| s.to_str()) == Some("md") {
-            let filename = entry.file_name().to_string_lossy().to_string();
-            let title = filename.replace(".md", "");
+        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("md") {
+            let title = get_relative_title(&wiki_dir, path);
             if title == "SUMMARY" {
                 continue;
             }
@@ -293,6 +300,90 @@ async fn summarize_wiki(_args: serde_json::Value) -> std::result::Result<Value, 
     Ok(json!({"status": "success", "message": "Wiki summary (SUMMARY.md) has been updated!"}))
 }
 
+/// Cleans up the wiki vault by renaming old dash-cased files to Title Case with spaces, and updating wikilinks.
+#[tool]
+async fn sanitize_wiki_vault(_args: SanitizeWikiVaultArgs) -> std::result::Result<Value, AdkError> {
+    let wiki_dir = get_wiki_dir().await?;
+    let mut rename_map: HashMap<String, String> = HashMap::new();
+    let mut files_to_process = Vec::new();
+
+    // Pass 1: Identify files that need renaming
+    for entry in WalkDir::new(&wiki_dir).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("md") {
+            let relative_title = get_relative_title(&wiki_dir, path);
+            files_to_process.push(path.to_path_buf());
+            
+            // Only process the actual filename, keep the parent path
+            let file_stem = path.file_stem().unwrap_or_default().to_string_lossy().to_string();
+            let new_stem = to_title_case(&file_stem);
+            
+            if file_stem != new_stem {
+                let mut new_title = relative_title.clone();
+                // Replace just the filename part in the relative path
+                if let Some(pos) = new_title.rfind(&file_stem) {
+                    new_title.replace_range(pos..pos + file_stem.len(), &new_stem);
+                }
+                rename_map.insert(relative_title, new_title);
+            }
+        }
+    }
+
+    let mut renamed_count = 0;
+    let mut links_updated_count = 0;
+
+    // Pass 2: Rename files
+    for (old_title, new_title) in &rename_map {
+        let old_path = wiki_dir.join(format!("{}.md", old_title));
+        let new_path = wiki_dir.join(format!("{}.md", new_title));
+        
+        if old_path.exists() && !new_path.exists() {
+            fs::rename(&old_path, &new_path).await.map_err(|e| AdkError::tool(format!("Failed to rename {:?} to {:?}: {}", old_path, new_path, e)))?;
+            renamed_count += 1;
+        }
+    }
+
+    // Pass 3: Update contents (wikilinks) in ALL files
+    // Use the updated file paths if they were renamed
+    let current_files: Vec<PathBuf> = files_to_process.into_iter().map(|p| {
+        let relative = get_relative_title(&wiki_dir, &p);
+        if let Some(new_rel) = rename_map.get(&relative) {
+            wiki_dir.join(format!("{}.md", new_rel))
+        } else {
+            p
+        }
+    }).collect();
+
+    for path in current_files {
+        if path.exists() {
+            let content = fs::read_to_string(&path).await.unwrap_or_default();
+            let mut new_content = content.clone();
+            
+            for (old_title, new_title) in &rename_map {
+                // Match exact wikilinks e.g., [[old-title]] -> [[New Title]]
+                let old_link = format!("[[{}]]", old_title);
+                let new_link = format!("[[{}]]", new_title);
+                if new_content.contains(&old_link) {
+                    new_content = new_content.replace(&old_link, &new_link);
+                    links_updated_count += 1;
+                }
+            }
+
+            if content != new_content {
+                fs::write(&path, new_content).await.map_err(|e| AdkError::tool(format!("Failed to update links in {:?}: {}", path, e)))?;
+            }
+        }
+    }
+
+    Ok(json!({
+        "status": "success", 
+        "message": "Vault cleanup complete.",
+        "files_renamed": renamed_count,
+        "links_updated": links_updated_count,
+        "renamed_mapping": rename_map
+    }))
+}
+
 pub fn wiki_tools() -> Vec<Arc<dyn Tool>> {
     vec![
         Arc::new(AddWikiPage),
@@ -303,5 +394,6 @@ pub fn wiki_tools() -> Vec<Arc<dyn Tool>> {
         Arc::new(SearchWikiByTag),
         Arc::new(GetWikiGraph),
         Arc::new(CreateDailyNote),
+        Arc::new(SanitizeWikiVault),
     ]
 }
