@@ -3,16 +3,147 @@ use crossterm::style::Stylize;
 use crossterm::{cursor, execute, style, terminal};
 use futures::StreamExt;
 use futures_util::FutureExt;
-use rustyline::DefaultEditor;
+use regex::Regex;
+use rustyline::completion::{Completer, Pair};
+use rustyline::highlight::Highlighter;
+use rustyline::hint::Hinter;
+use rustyline::validate::Validator;
+use rustyline::{Config, Context, Editor, Helper};
+use std::borrow::Cow;
 use std::io::{self, Write};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use termimad::MadSkin;
+use walkdir::WalkDir;
 
 use crate::agent::get_compaction_config;
 use adk_rust::Agent;
 use adk_rust::prelude::*;
 use adk_session::{CreateRequest, GetRequest, SessionService};
+
+struct NamiHelper;
+
+impl Completer for NamiHelper {
+    type Candidate = Pair;
+
+    fn complete(
+        &self,
+        line: &str,
+        pos: usize,
+        _ctx: &Context<'_>,
+    ) -> rustyline::Result<(usize, Vec<Pair>)> {
+        let (start, word) =
+            rustyline::completion::extract_word(line, pos, None, |c| c == ' ' || c == '\t');
+
+        if word.starts_with('@') {
+            let path_part = &word[1..];
+            let mut matches = Vec::new();
+
+            // Search for files in the workspace directory
+            let workspace_path = std::path::Path::new("workspace");
+            if workspace_path.exists() {
+                for entry in WalkDir::new(workspace_path)
+                    .max_depth(5) // Don't go too deep to keep it fast
+                    .into_iter()
+                    .filter_map(|e| e.ok())
+                {
+                    if entry.file_type().is_file() {
+                        if let Ok(relative_path) = entry.path().strip_prefix(workspace_path) {
+                            let path_str = relative_path.to_string_lossy().replace("\\", "/");
+
+                            if path_str.to_lowercase().contains(&path_part.to_lowercase()) {
+                                matches.push(Pair {
+                                    display: path_str.clone(),
+                                    replacement: path_str,
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Limit matches to avoid overwhelming the UI
+            matches.truncate(10);
+
+            return Ok((start + 1, matches));
+        }
+
+        Ok((0, Vec::with_capacity(0)))
+    }
+}
+
+impl Hinter for NamiHelper {
+    type Hint = String;
+}
+
+impl Highlighter for NamiHelper {
+    fn highlight_prompt<'b, 's: 'b, 'p: 'b>(
+        &'s self,
+        prompt: &'p str,
+        _default: bool,
+    ) -> Cow<'b, str> {
+        Cow::Borrowed(prompt)
+    }
+
+    fn highlight_hint<'h>(&self, hint: &'h str) -> Cow<'h, str> {
+        Cow::Borrowed(hint)
+    }
+
+    fn highlight<'l>(&self, line: &'l str, _pos: usize) -> Cow<'l, str> {
+        Cow::Borrowed(line)
+    }
+
+    fn highlight_candidate<'c>(
+        &self,
+        candidate: &'c str,
+        _completion: rustyline::CompletionType,
+    ) -> Cow<'c, str> {
+        Cow::Borrowed(candidate)
+    }
+
+    fn highlight_char(&self, _line: &str, _pos: usize, _kind: rustyline::highlight::CmdKind) -> bool {
+        false
+    }
+}
+
+impl Validator for NamiHelper {}
+impl Helper for NamiHelper {}
+
+async fn process_file_references(input: &str) -> String {
+    let mut final_prompt = input.to_string();
+    // Match @ followed by valid path characters
+    let re = Regex::new(r"@([\w\./\-]+)").unwrap();
+
+    let mut appended_context = String::new();
+    let mut seen_files = std::collections::HashSet::new();
+
+    for cap in re.captures_iter(input) {
+        let file_path_str = &cap[1];
+        if seen_files.contains(file_path_str) {
+            continue;
+        }
+        seen_files.insert(file_path_str.to_string());
+
+        let workspace_path = std::path::Path::new("workspace");
+        let path = workspace_path.join(file_path_str);
+
+        if path.exists() && path.is_file() {
+            if let Ok(content) = tokio::fs::read_to_string(&path).await {
+                appended_context.push_str(&format!(
+                    "\n\n--- Content from {} ---\n{}\n--- End of content ---\n",
+                    file_path_str, content
+                ));
+            }
+        }
+    }
+
+    if !appended_context.is_empty() {
+        final_prompt.push_str("\n\n[FILE CONTEXT]");
+        final_prompt.push_str(&appended_context);
+    }
+
+    final_prompt
+}
 
 pub(crate) async fn run_cli(
     agent: Arc<dyn Agent>,
@@ -47,6 +178,7 @@ pub(crate) async fn run_cli(
         "\n{}",
         "Type /exit to quit, /clear to wipe terminal, /new to start a new chat."
     );
+    println!("Type @ followed by path to reference files (use Tab for completion).");
     println!("Press ESC during a request to cancel it.\n");
 
     let app_name = "cli";
@@ -81,7 +213,12 @@ pub(crate) async fn run_cli(
         .compaction_config(get_compaction_config(model))
         .build()?;
 
-    let mut rl = DefaultEditor::new()?;
+    let config = Config::builder()
+        .completion_type(rustyline::CompletionType::List)
+        .build();
+    let mut rl: Editor<NamiHelper, rustyline::history::FileHistory> =
+        Editor::with_config(config)?;
+    rl.set_helper(Some(NamiHelper));
     let _ = rl.load_history(".cli_history");
 
     let mut nami_skin = MadSkin::default();
@@ -134,6 +271,8 @@ pub(crate) async fn run_cli(
                 let _ = rl.add_history_entry(trimmed);
                 rl.save_history(".cli_history")?;
 
+                let enriched_prompt = process_file_references(trimmed).await;
+
                 let mut response_buffer = String::new();
                 let is_thinking = Arc::new(AtomicBool::new(true));
                 let indicator = is_thinking.clone();
@@ -151,7 +290,7 @@ pub(crate) async fn run_cli(
                     }
                 });
 
-                let content = Content::new("user").with_text(trimmed);
+                let content = Content::new("user").with_text(enriched_prompt);
                 let mut stream = runner.run_str(user_id, session_id, content).await?;
 
                 let mut reader = EventStream::new();
