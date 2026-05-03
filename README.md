@@ -24,7 +24,7 @@ A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://git
   - **Data Specialist**: Database design & analytics.
   - **Documentation Architect**: Technical knowledge & docs maintenance.
 * **Todo Management**: Integrated task tracking and list management.
-* **Sandboxed Environment**: Integrated filesystem tools for agent tasks within a `workspace/` directory.
+* **Sandboxed Environment**: Integrated filesystem tools for agent tasks within a `workspace/` directory, including the ability to merge multiple documents together using `merge_files`.
 
 ## 🛠 Prerequisites
 
@@ -154,6 +154,13 @@ The bot features a built-in task manager for tracking goals and daily items.
 * **AGENT.md**: Defines the "Soul" of the bot.
 * **USER.md**: Defines the context of the master.
 * **MEMORIES.md**: Automatically updated by the bot when it learns personal facts about the user.
+
+### Publishing Skills
+
+The bot includes built-in skills to compile your workspace documents into distributable formats:
+
+* `create-pdf`: Converts Markdown files into beautifully formatted PDF documents (requires `md-to-pdf`).
+* `create-epub`: Compiles Markdown files into EPUB e-books with automatic BOM sanitization (requires `md-to-epub`).
 
 ## 💡 Developer Tips
 
