@@ -3,8 +3,9 @@
 sessions.db
 .cli*
 /workspace/*
-!/workspace/wiki/
 !/workspace/.skills/
-!/workspace/todos.json
 MEMORIES.md
 /ref
+workspace/wiki/
+workspace/todos.json
+workspace/wiki/.obsidian
