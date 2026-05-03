@@ -4,14 +4,13 @@ use adk_rust::prelude::*;
 use adk_rust::tool::AgentTool;
 use std::sync::Arc;
 
-use crate::agent::utils::get_workspace_dir;
+use crate::utils::get_workspace_dir;
+use crate::tools;
 
 // OpenAI-compatible API
 // use adk_rust::model::{OpenAIClient, OpenAIConfig};
 
 pub mod mcp;
-pub mod tools;
-pub mod utils;
 
 pub fn get_compaction_config(model: Arc<dyn Llm>) -> EventsCompactionConfig {
     EventsCompactionConfig {

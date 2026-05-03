@@ -1,10 +1,8 @@
 mod agent;
-mod bot;
-mod cli;
-mod init;
-mod run;
+mod modes;
 mod runner;
-mod serve;
+mod tools;
+mod utils;
 
 use std::sync::Arc;
 
@@ -40,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Init => {
-            init::initialize_project().await?;
+            modes::init::initialize_project().await?;
             return Ok(());
         }
         _ => {}
@@ -60,19 +58,19 @@ async fn main() -> anyhow::Result<()> {
         Commands::Bot => {
             log::info!("Running in bot mode");
             let runner = Arc::new(AgentRunner::new(agent, sessions.clone(), "telegram", model));
-            bot::run_bot(runner, sessions.clone()).await?;
+            modes::bot::run_bot(runner, sessions.clone()).await?;
         }
         Commands::Cli => {
             log::info!("Running in CLI mode");
-            cli::run_cli(agent, sessions, model).await?;
+            modes::cli::run_cli(agent, sessions, model).await?;
         }
         Commands::Run { prompt } => {
             log::info!("Running in direct run mode");
-            run::run_direct(agent, sessions, model, &prompt).await?;
+            modes::run::run_direct(agent, sessions, model, &prompt).await?;
         }
         Commands::Serve { port } => {
             log::info!("Running in serve mode");
-            serve::run_serve(agent, model, port.unwrap_or(8080)).await?;
+            modes::serve::run_serve(agent, model, port.unwrap_or(8080)).await?;
         }
         Commands::Init => unreachable!(),
     }

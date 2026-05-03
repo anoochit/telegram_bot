@@ -1,4 +1,4 @@
-use crate::agent::utils::get_workspace_dir;
+use crate::utils::get_workspace_dir;
 use adk_rust::prelude::*;
 use adk_rust::serde::Deserialize;
 use adk_tool::tool;
@@ -12,7 +12,7 @@ use tokio::process::Command;
 
 /// Resolves a user-provided string into a safe path within the workspace.
 async fn sandbox(user_path: &str) -> std::result::Result<PathBuf, AdkError> {
-    let root = get_workspace_dir().await?;
+    let root: std::path::PathBuf = get_workspace_dir().await?;
 
     // 1. Clean the user path: remove leading slashes and drive letters (Windows)
     // to prevent the join from treating it as a new absolute path.
@@ -116,7 +116,7 @@ struct ExecArgs {
 /// Executes a shell command within the workspace.
 #[tool]
 async fn exec_command(args: ExecArgs) -> std::result::Result<Value, AdkError> {
-    let root = get_workspace_dir().await?;
+    let root: std::path::PathBuf = get_workspace_dir().await?;
     let run_dir = match args.cwd {
         Some(c) => sandbox(&c).await?,
         None => root.clone(),
@@ -188,7 +188,7 @@ struct GrepArgs {
 /// Searches for a regular expression pattern within files in the workspace.
 #[tool]
 async fn grep_search(args: GrepArgs) -> std::result::Result<Value, AdkError> {
-    let root = get_workspace_dir().await?;
+    let root: std::path::PathBuf = get_workspace_dir().await?;
     let mut command = Command::new("grep");
     command.arg("-r").arg(&args.pattern).arg(".");
 
@@ -212,7 +212,7 @@ struct GlobArgs {
 /// Finds files matching a specific glob pattern within the workspace.
 #[tool]
 async fn glob_find(args: GlobArgs) -> std::result::Result<Value, AdkError> {
-    let root = get_workspace_dir().await?;
+    let root: std::path::PathBuf = get_workspace_dir().await?;
     let mut command = Command::new("find");
     command.arg(".").arg("-name").arg(&args.pattern);
 

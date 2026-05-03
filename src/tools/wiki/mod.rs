@@ -1,4 +1,4 @@
-use crate::agent::utils::get_workspace_dir;
+use crate::utils::get_workspace_dir;
 use adk_rust::Tool;
 use adk_rust::serde::Deserialize;
 use adk_tool::{AdkError, tool};
@@ -85,7 +85,7 @@ struct ApplyTemplateArgs {
 
 /// Helper to get the wiki directory path.
 async fn get_wiki_dir() -> std::result::Result<PathBuf, AdkError> {
-    let root = get_workspace_dir().await?;
+    let root: std::path::PathBuf = get_workspace_dir().await?;
     let wiki_dir = root.join("wiki");
     if !wiki_dir.exists() {
         fs::create_dir_all(&wiki_dir)
