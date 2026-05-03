@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-05-03
+
+### Added
+
+- **Hierarchical Sub-Agents**: Introduced an ecosystem of 7 specialized agents (Codebase Investigator, Generalist, Web Developer, DevOps Engineer, Quality Assurance, Data Specialist, Documentation Architect) to support complex task delegation.
+
 ## [0.2.0] - 2026-05-02
 
 ### Added
