@@ -1,4 +1,4 @@
 # Nami-Core TODOs
 
-- [ ] [Nami-Core] พัฒนาส่วน Multiline Input
-- [ ] [Nami-Core] เพิ่มระบบตั้งค่า LLM Model ผ่านไฟล์ Config
+- [ ] [Nami-Core] Implement Multiline Input
+- [ ] [Nami-Core] Add LLM Model configuration via config file
