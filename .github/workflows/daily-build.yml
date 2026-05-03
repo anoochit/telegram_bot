@@ -1,0 +1,79 @@
+name: Daily Build
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows you to manually trigger the workflow from the Actions tab
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }} (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux amd64
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            use-cross: false
+            extension: ""
+          
+          # Linux arm64
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            use-cross: true
+            extension: ""
+          
+          # macOS arm64 (Apple Silicon)
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            use-cross: false
+            extension: ""
+            
+          # macOS amd64 (Intel)
+          - os: macos-13
+            target: x86_64-apple-darwin
+            use-cross: false
+            extension: ""
+
+          # Windows amd64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            use-cross: false
+            extension: ".exe"
+
+          # Windows arm64
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            use-cross: false
+            extension: ".exe"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install cross
+        if: matrix.use-cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build
+        if: '!matrix.use-cross'
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Build with cross
+        if: matrix.use-cross
+        run: cross build --release --target ${{ matrix.target }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: namiclaw-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/namiclaw${{ matrix.extension }}
+          if-no-files-found: error
