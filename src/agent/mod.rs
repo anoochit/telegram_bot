@@ -61,22 +61,44 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 
     // Define specialized sub-agents
     let investigator = LlmAgentBuilder::new("codebase_investigator")
-        .description(
-            "Specialized in deep codebase analysis, architectural mapping, and understanding system-wide dependencies. Use this for bug root-cause analysis or planning large refactors."
-        )
-        .instruction(
-            "You are a codebase investigator. Analyze the provided context, code, and logs to identify root causes of bugs or plan architectural improvements."
-        )
+        .description("Specialized in deep codebase analysis, architectural mapping, and understanding system-wide dependencies. Use this for bug root-cause analysis or planning large refactors.")
+        .instruction("You are a codebase investigator. Analyze the provided context, code, and logs to identify root causes of bugs or plan architectural improvements.")
         .model(model.clone())
         .build()?;
 
     let generalist = LlmAgentBuilder::new("generalist")
-        .description(
-            "A high-efficiency agent with access to all tools. Use this for repetitive batch tasks or high-volume data processing to keep the main conversation history lean."
-        )
-        .instruction(
-            "You are a generalist agent. Perform the requested batch tasks or data processing efficiently."
-        )
+        .description("A high-efficiency agent with access to all tools. Use this for repetitive batch tasks or high-volume data processing to keep the main conversation history lean.")
+        .instruction("You are a generalist agent. Perform the requested batch tasks or data processing efficiently.")
+        .model(model.clone())
+        .build()?;
+
+    let web_developer = LlmAgentBuilder::new("web_developer")
+        .description("Specialized in full-stack web development. Use this for frontend components, API implementation, and styling.")
+        .instruction("You are a web development expert. Focus on clean, modular, and accessible code. Ensure all UI components follow modern web standards and responsive design patterns.")
+        .model(model.clone())
+        .build()?;
+
+    let devops_engineer = LlmAgentBuilder::new("devops_engineer")
+        .description("Specialized in DevOps, CI/CD, and cloud infrastructure. Use this for Docker, GitHub Actions, cloud deployments, and environment configuration.")
+        .instruction("You are a DevOps engineer. Prioritize security, automation, and system reliability. When planning deployments, always verify environment configurations and infrastructure-as-code requirements.")
+        .model(model.clone())
+        .build()?;
+
+    let quality_assurance = LlmAgentBuilder::new("quality_assurance")
+        .description("Specialized in testing and quality control. Use this for writing unit/integration tests, verifying bug fixes, and finding edge cases.")
+        .instruction("You are a QA specialist. Ensure code quality through rigorous testing, edge case analysis, and consistent verification of requirements.")
+        .model(model.clone())
+        .build()?;
+
+    let data_specialist = LlmAgentBuilder::new("data_specialist")
+        .description("Specialized in database design, data models, and analytics. Use this for schema design, migrations, and data manipulation.")
+        .instruction("You are a data specialist. Focus on schema normalization, query efficiency, and data integrity.")
+        .model(model.clone())
+        .build()?;
+
+    let documentation_architect = LlmAgentBuilder::new("documentation_architect")
+        .description("Specialized in technical documentation. Use this to maintain READMEs, docs, and project knowledge bases.")
+        .instruction("You are a documentation expert. Ensure all technical documentation is clear, accurate, and easy to understand for developers and users.")
         .model(model.clone())
         .build()?;
 
@@ -100,7 +122,12 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 1. Tool-First Approach: Always prioritize using your tools (google_search, web_fetch, Wiki, FileSystem, Weather, Shell, etc.) to perform actions, retrieve data, or verify information.
 2. Delegation: You have specialized sub-agents at your disposal. Use them for complex or turn-intensive tasks:
    - Use 'codebase_investigator' for deep code analysis or bug hunting.
-   - Use 'generalist' for repetitive batch tasks or when processing large amounts of data.
+   - Use 'generalist' for repetitive batch tasks.
+   - Use 'web_developer' for frontend/backend coding and API work.
+   - Use 'devops_engineer' for CI/CD, Docker, and infrastructure.
+   - Use 'quality_assurance' for testing and verification.
+   - Use 'data_specialist' for database and data modeling tasks.
+   - Use 'documentation_architect' for keeping documentation updated.
 3. Knowledge Management (Wiki): Use the Wiki tools to store and retrieve long-term information. Treat the 'wiki/' directory as your primary memory.
    - To learn/save: Use add_wiki_page.
    - To find: Use search_wiki or list_wiki_pages.
@@ -127,7 +154,13 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
         .model(model.clone())
         .tool(Arc::new(AgentTool::new(Arc::new(investigator))))
         .tool(Arc::new(AgentTool::new(Arc::new(generalist))))
+        .tool(Arc::new(AgentTool::new(Arc::new(web_developer))))
+        .tool(Arc::new(AgentTool::new(Arc::new(devops_engineer))))
+        .tool(Arc::new(AgentTool::new(Arc::new(quality_assurance))))
+        .tool(Arc::new(AgentTool::new(Arc::new(data_specialist))))
+        .tool(Arc::new(AgentTool::new(Arc::new(documentation_architect))))
         .with_skills_from_root(workspace_dir)?;
+
 
     // add tools to the agent
     let mut tools: Vec<Arc<dyn Tool>> = tools::weather::weather_tools();
