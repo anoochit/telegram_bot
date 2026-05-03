@@ -1,9 +1,9 @@
-use std::sync::Arc;
-use adk_rust::serde::Deserialize;
-use adk_tool::{tool, AdkError};
 use adk_rust::Tool;
+use adk_rust::serde::Deserialize;
+use adk_tool::{AdkError, tool};
 use schemars::JsonSchema;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
+use std::sync::Arc;
 
 #[derive(Deserialize, JsonSchema)]
 struct SearchArgs {
@@ -18,7 +18,8 @@ async fn google_search(args: SearchArgs) -> std::result::Result<Value, AdkError>
         .map_err(|_| AdkError::tool("SERPER_API_KEY not found in environment"))?;
 
     let client = reqwest::Client::new();
-    let response = client.post("https://google.serper.dev/search")
+    let response = client
+        .post("https://google.serper.dev/search")
         .header("X-API-KEY", api_key)
         .header("Content-Type", "application/json")
         .json(&json!({
@@ -29,7 +30,8 @@ async fn google_search(args: SearchArgs) -> std::result::Result<Value, AdkError>
         .await
         .map_err(|e| AdkError::tool(format!("Search request failed: {}", e)))?;
 
-    let data: Value = response.json()
+    let data: Value = response
+        .json()
         .await
         .map_err(|e| AdkError::tool(format!("Failed to parse search results: {}", e)))?;
 

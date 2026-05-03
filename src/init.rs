@@ -1,12 +1,21 @@
+use adk_session::SqliteSessionService;
 use std::fs;
 use std::path::Path;
-use adk_session::SqliteSessionService;
 
 pub async fn initialize_project() -> anyhow::Result<()> {
     let files = [
-        ("AGENT.md", "# Agent Configuration\n\nDefine agent personality and capabilities here."),
-        ("MEMORIES.md", "# Agent Memories\n\nPersistent memories and context for the agent."),
-        ("USER.md", "# User Information\n\nUser profile and preferences.")
+        (
+            "AGENT.md",
+            "# Agent Configuration\n\nDefine agent personality and capabilities here.",
+        ),
+        (
+            "MEMORIES.md",
+            "# Agent Memories\n\nPersistent memories and context for the agent.",
+        ),
+        (
+            "USER.md",
+            "# User Information\n\nUser profile and preferences.",
+        ),
     ];
 
     for (filename, content) in files {

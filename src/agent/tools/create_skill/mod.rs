@@ -1,12 +1,12 @@
-use std::sync::Arc;
 use std::fs;
 use std::path::Path;
+use std::sync::Arc;
 
-use adk_rust::serde::Deserialize;
-use adk_tool::{tool, AdkError};
 use adk_rust::Tool;
+use adk_rust::serde::Deserialize;
+use adk_tool::{AdkError, tool};
 use schemars::JsonSchema;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 #[derive(Deserialize, JsonSchema)]
 struct CreateSkillArgs {
@@ -29,7 +29,7 @@ async fn create_skill(args: CreateSkillArgs) -> std::result::Result<Value, AdkEr
 
     fs::create_dir_all(&path)
         .map_err(|e| AdkError::tool(format!("Failed to create directory: {e}")))?;
-    
+
     let content = format!(
         "---\nname: {}\ndescription: {}\n---\n\n# {}\n\n## Description\n{}\n",
         name, description, name, description

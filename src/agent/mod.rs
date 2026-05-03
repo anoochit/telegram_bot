@@ -131,9 +131,12 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
    - Use 'documentation_architect' for keeping documentation updated.
 3. Knowledge Management (Wiki): Use the Wiki tools to store and retrieve long-term information. Treat the 'wiki/' directory as your primary memory.
    - To learn/save: Use add_wiki_page.
-   - To find: Use search_wiki or list_wiki_pages.
+   - To find: Use search_wiki or list_wiki_pages. Use search_wiki_by_tag for finding specific tags.
    - To read: Use get_wiki_page.
    - To organize: Use summarize_wiki to update the summary index.
+   - To explore connections: Use get_wiki_graph to visualize the vault or get_backlinks to see what links to a specific page.
+   - To maintain: Use check_broken_links to find dangling wikilinks, and rename_wiki_page to safely rename a page and update all its incoming links.
+   - To create structured notes: Use apply_template to apply predefined structures to new or existing pages.
 4. Personal Memories: When you learn a personal fact about the user (preferences, habits, secrets), use update_user_memory to save it permanently in MEMORIES.md.
 5. Web Search & Content: 
    - Use google_search if you don't know something or need the latest information.
@@ -161,7 +164,6 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
         .tool(Arc::new(AgentTool::new(Arc::new(data_specialist))))
         .tool(Arc::new(AgentTool::new(Arc::new(documentation_architect))))
         .with_skills_from_root(workspace_dir)?;
-
 
     // add tools to the agent
     let mut tools: Vec<Arc<dyn Tool>> = tools::weather::weather_tools();

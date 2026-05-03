@@ -1,14 +1,14 @@
+use crate::agent::utils::get_workspace_dir;
 use adk_rust::prelude::*;
 use adk_rust::serde::Deserialize;
 use adk_tool::tool;
 use schemars::JsonSchema;
-use serde_json::{json, Value};
-use std::path::{PathBuf};
+use serde_json::{Value, json};
+use std::path::PathBuf;
+use std::process::Stdio;
 use std::sync::Arc;
 use tokio::fs;
 use tokio::process::Command;
-use std::process::Stdio;
-use crate::agent::utils::get_workspace_dir;
 
 /// Resolves a user-provided string into a safe path within the workspace.
 async fn sandbox(user_path: &str) -> std::result::Result<PathBuf, AdkError> {
@@ -16,8 +16,7 @@ async fn sandbox(user_path: &str) -> std::result::Result<PathBuf, AdkError> {
 
     // 1. Clean the user path: remove leading slashes and drive letters (Windows)
     // to prevent the join from treating it as a new absolute path.
-    let clean_path = user_path
-        .trim_start_matches(['/', '\\']);
+    let clean_path = user_path.trim_start_matches(['/', '\\']);
 
     // 2. Join and normalize
     let mut joined = root.clone();
@@ -26,7 +25,9 @@ async fn sandbox(user_path: &str) -> std::result::Result<PathBuf, AdkError> {
     let mut normalized = PathBuf::new();
     for component in joined.components() {
         match component {
-            std::path::Component::ParentDir => { normalized.pop(); }
+            std::path::Component::ParentDir => {
+                normalized.pop();
+            }
             std::path::Component::CurDir => {}
             c => normalized.push(c),
         }
@@ -72,7 +73,7 @@ struct WriteFileArgs {
 #[tool]
 async fn write_file(args: WriteFileArgs) -> std::result::Result<Value, AdkError> {
     let path = sandbox(&args.path).await?;
-    
+
     // Create parent dirs within workspace if they don't exist
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).await.ok();
@@ -89,10 +90,16 @@ async fn write_file(args: WriteFileArgs) -> std::result::Result<Value, AdkError>
 #[tool]
 async fn list_dir(args: PathArgs) -> std::result::Result<Value, AdkError> {
     let path = sandbox(&args.path).await?;
-    let mut dir = fs::read_dir(&path).await.map_err(|e| AdkError::tool(e.to_string()))?;
+    let mut dir = fs::read_dir(&path)
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?;
     let mut entries = Vec::new();
 
-    while let Some(entry) = dir.next_entry().await.map_err(|e| AdkError::tool(e.to_string()))? {
+    while let Some(entry) = dir
+        .next_entry()
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?
+    {
         entries.push(entry.file_name().to_string_lossy().to_string());
     }
 
@@ -129,7 +136,7 @@ async fn exec_command(args: ExecArgs) -> std::result::Result<Value, AdkError> {
         .arg(&args.command)
         .current_dir(&run_dir)
         // Set HOME to workspace to prevent tools from leaking into the host system
-        .env("HOME", &root) 
+        .env("HOME", &root)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
@@ -183,11 +190,10 @@ struct GrepArgs {
 async fn grep_search(args: GrepArgs) -> std::result::Result<Value, AdkError> {
     let root = get_workspace_dir().await?;
     let mut command = Command::new("grep");
-    command.arg("-r")
-        .arg(&args.pattern)
-        .arg(".");
+    command.arg("-r").arg(&args.pattern).arg(".");
 
-    let output = command.current_dir(root)
+    let output = command
+        .current_dir(root)
         .stdout(Stdio::piped())
         .spawn()
         .map_err(|e| AdkError::tool(e.to_string()))?
@@ -208,11 +214,10 @@ struct GlobArgs {
 async fn glob_find(args: GlobArgs) -> std::result::Result<Value, AdkError> {
     let root = get_workspace_dir().await?;
     let mut command = Command::new("find");
-    command.arg(".")
-        .arg("-name")
-        .arg(&args.pattern);
+    command.arg(".").arg("-name").arg(&args.pattern);
 
-    let output = command.current_dir(root)
+    let output = command
+        .current_dir(root)
         .stdout(Stdio::piped())
         .spawn()
         .map_err(|e| AdkError::tool(e.to_string()))?
