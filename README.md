@@ -118,7 +118,8 @@ graph TD
 * **teloxide**: Handles Telegram polling and updates.
 * **adk-rust**: Core framework for AI agent logic and memory management.
 * **SqliteSessionService**: Provides persistent session storage (`sessions.db`).
-* **Tools Subdirectory**: Located in `src/tools/`, contains all functional modules.
+* **Modes**: Located in `src/modes/`, contains application entry points (Bot, CLI, Server, etc.).
+* **Tools**: Located in `src/tools/`, contains all functional modules.
 
 ## 🧩 Extensions
 
@@ -132,6 +133,10 @@ The bot uses the `wiki/` directory in its workspace to store long-term knowledge
 * `create_daily_note`: Creates a journal entry for the current date.
 * `summarize_wiki`: Generates a `SUMMARY.md` index of all topics.
 * `search_wiki`: Full-text search across all knowledge pages.
+* `get_backlinks`: Lists all pages that link to a specific note.
+* `apply_template`: Applies a structured template to a wiki page.
+* `check_broken_links`: Identifies and reports dead wikilinks.
+* `rename_wiki_page`: Safely renames a page and updates all incoming links.
 
 ### Todo Management
 
@@ -139,7 +144,8 @@ The bot features a built-in task manager for tracking goals and daily items.
 
 * `add_todo`: Create new tasks.
 * `list_todos`: View current pending items.
-* `complete_todo`: Mark tasks as finished.
+* `mark_todo_done`: Mark tasks as finished.
+* `remove_todo`: Permanently delete a task.
 
 ### Persona & Memories
 
