@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-05-03
+
+### Added
+
+- **Wiki Management Tools**: Added `get_backlinks`, `apply_template`, `check_broken_links`, and `rename_wiki_page` to enhance Obsidian-style knowledge management.
+- **Daily Notes Template**: Added a default `DailyTemplate.md` for consistent daily journaling.
+
+### Changed
+
+- **Wiki Search**: Upgraded `search_wiki` and `search_wiki_by_tag` to support regex and YAML frontmatter parsing.
+- **CLI & Docs**: Bumped application version and updated the Nami CLI greeting to v0.4.0.
+
+### Removed
+
+- **Wiki Date Search**: Removed `search_wiki_by_date` in favor of more robust tag and content search strategies.
+
 ## [0.3.0] - 2026-05-03
 
 ### Added
