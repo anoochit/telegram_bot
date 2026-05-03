@@ -228,6 +228,50 @@ async fn glob_find(args: GlobArgs) -> std::result::Result<Value, AdkError> {
     Ok(json!({ "files": String::from_utf8_lossy(&output.stdout) }))
 }
 
+#[derive(Deserialize, JsonSchema)]
+struct MergeFilesArgs {
+    /// A list of file paths relative to the workspace/ directory to merge.
+    input_files: Vec<String>,
+    /// The path to the destination file where the merged content will be saved.
+    output_file: String,
+    /// An optional string to insert between merged file contents (e.g. "\\n\\n---\\n\\n"). Defaults to a single newline.
+    separator: Option<String>,
+}
+
+/// Reads multiple files and concatenates their contents into a single output file.
+#[tool]
+async fn merge_files(args: MergeFilesArgs) -> std::result::Result<Value, AdkError> {
+    let mut combined_content = String::new();
+    let separator = args.separator.unwrap_or_else(|| "\n".to_string());
+
+    for (index, file_path) in args.input_files.iter().enumerate() {
+        let path = sandbox(file_path).await?;
+        
+        let content = fs::read_to_string(&path)
+            .await
+            .map_err(|e| AdkError::tool(format!("Failed to read {}: {}", file_path, e)))?;
+            
+        combined_content.push_str(&content);
+        
+        if index < args.input_files.len() - 1 {
+            combined_content.push_str(&separator);
+        }
+    }
+
+    let out_path = sandbox(&args.output_file).await?;
+    
+    // Create parent dirs within workspace if they don't exist
+    if let Some(parent) = out_path.parent() {
+        fs::create_dir_all(parent).await.ok();
+    }
+
+    fs::write(&out_path, combined_content)
+        .await
+        .map_err(|e| AdkError::tool(format!("Failed to write merged output to {}: {}", args.output_file, e)))?;
+
+    Ok(json!({ "status": "success", "message": format!("Merged {} files into {}", args.input_files.len(), args.output_file) }))
+}
+
 // ─── Registration ─────────────────────────────────────────────────────────────
 
 pub fn filesystem_tools() -> Vec<Arc<dyn Tool>> {
@@ -239,5 +283,6 @@ pub fn filesystem_tools() -> Vec<Arc<dyn Tool>> {
         Arc::new(ReplaceText),
         Arc::new(GrepSearch),
         Arc::new(GlobFind),
+        Arc::new(MergeFiles),
     ]
 }
