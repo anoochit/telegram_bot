@@ -42,7 +42,7 @@ pub(crate) async fn run_cli(
         )
         .magenta()
     );
-    println!("{}", style::style("Nami CLI v0.1.0").bold().magenta());
+    println!("{}", style::style("Nami CLI v0.2.0").bold().magenta());
     println!(
         "\n{}",
         "Type /exit to quit, /clear to wipe terminal, /new to start a new chat."

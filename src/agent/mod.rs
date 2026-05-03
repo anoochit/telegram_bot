@@ -54,7 +54,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     // Sample 2: for Gemini Model
     let api_key =
         std::env::var("GOOGLE_API_KEY").expect("GOOGLE_API_KEY environment variable not set");
-    let model = Arc::new(GeminiModel::new(&api_key, "gemini-2.5-flash")?);
+    let model = Arc::new(GeminiModel::new(&api_key, "gemini-3-flash-preview")?);
 
     // Get the current project root path
     let workspace_dir = get_workspace_dir().await?;
