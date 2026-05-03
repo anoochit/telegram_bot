@@ -64,15 +64,49 @@ async fn get_wiki_dir() -> std::result::Result<PathBuf, AdkError> {
     Ok(wiki_dir)
 }
 
-/// Helper to sanitize title into a filename while preserving Obsidian style (case, spaces, folders).
+/// Helper to convert a string to Title Case (Obsidian-style with spaces).
+/// Converts dashes, underscores, and multiple spaces into single spaces and capitalizes each word.
+fn to_title_case(s: &str) -> String {
+    let mut result = String::new();
+    let mut capitalize_next = true;
+    let mut last_was_space = false;
+
+    for c in s.chars() {
+        if c == '-' || c == '_' || c == ' ' {
+            if !last_was_space && !result.is_empty() {
+                result.push(' ');
+                last_was_space = true;
+            }
+            capitalize_next = true;
+        } else if capitalize_next {
+            result.push(c.to_ascii_uppercase());
+            capitalize_next = false;
+            last_was_space = false;
+        } else {
+            result.push(c);
+            last_was_space = false;
+        }
+    }
+    result.trim().to_string()
+}
+
+/// Helper to sanitize title into a filename while enforcing Obsidian style (Title Case with spaces).
 /// Removes characters that are invalid in Windows/Unix filenames, except for forward slashes.
 fn sanitize_title(title: &str) -> String {
     // Convert backslashes to forward slashes for cross-platform folder support
-    let mut sanitized = title.trim().replace("\\", "/");
-    // Remove characters that are generally problematic in filenames (excluding '/')
-    let invalid_chars = ['<', '>', ':', '"', '|', '?', '*'];
-    sanitized.retain(|c| !invalid_chars.contains(&c));
-    sanitized
+    let sanitized_path = title.trim().replace("\\", "/");
+    
+    // Process each component of the path separately to preserve folder structure
+    let parts: Vec<String> = sanitized_path.split('/')
+        .map(|part| {
+            let mut p = part.to_string();
+            let invalid_chars = ['<', '>', ':', '"', '|', '?', '*'];
+            p.retain(|c| !invalid_chars.contains(&c));
+            to_title_case(&p)
+        })
+        .collect();
+    
+    parts.join("/")
 }
 
 /// Helper to get the relative title from a file path
@@ -83,24 +117,6 @@ fn get_relative_title(wiki_dir: &Path, file_path: &Path) -> String {
         .with_extension("")
         .to_string_lossy()
         .replace("\\", "/") // Normalize to forward slashes for cross-platform consistency
-}
-
-/// Helper to convert a dash-case string to Title Case with spaces
-fn to_title_case(s: &str) -> String {
-    if s.contains('-') && !s.contains(' ') {
-        s.split('-')
-            .map(|word| {
-                let mut c = word.chars();
-                match c.next() {
-                    None => String::new(),
-                    Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
-                }
-            })
-            .collect::<Vec<String>>()
-            .join(" ")
-    } else {
-        s.to_string()
-    }
 }
 
 /// Adds or updates a wiki page in the 'wiki/' directory. Supports nested folders (e.g., 'Projects/Notes').
