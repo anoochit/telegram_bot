@@ -118,7 +118,7 @@ graph TD
 * **teloxide**: Handles Telegram polling and updates.
 * **adk-rust**: Core framework for AI agent logic and memory management.
 * **SqliteSessionService**: Provides persistent session storage (`sessions.db`).
-* **Tools Subdirectory**: Located in `src/agent/tools/`, contains all functional modules.
+* **Tools Subdirectory**: Located in `src/tools/`, contains all functional modules.
 
 ## 🧩 Extensions
 
@@ -150,6 +150,6 @@ The bot features a built-in task manager for tracking goals and daily items.
 ## 💡 Developer Tips
 
 * **LLM Providers**: Gemini is the default model. You can configure or switch to other supported models in `src/agent/mod.rs`.
-* **Adding Tools**: Add new modules to `src/agent/tools/` and register them in `src/agent/mod.rs`.
+* **Adding Tools**: Add new modules to `src/tools/` and register them in `src/agent/mod.rs`.
 * **Sandbox**: Workspace files and wiki are stored in `./workspace/` by default.
 * **Production**: For high-traffic bots, migrate `teloxide` from polling to webhooks.
