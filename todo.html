@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NamiClaw - Realtime Todos</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: #2d2d2d;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #ff79c6; /* Magenta to match Nami CLI */
+            margin-top: 0;
+            border-bottom: 2px solid #444;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            display: flex;
+            align-items: center;
+            background: #3d3d3d;
+            margin-bottom: 12px;
+            padding: 14px;
+            border-radius: 8px;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+        li:hover {
+            transform: translateX(4px);
+            background: #454545;
+        }
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #ff79c6;
+            cursor: not-allowed;
+        }
+        .task-text {
+            margin-left: 14px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+        .task-id {
+            color: #888;
+            font-size: 0.9rem;
+            margin-right: 8px;
+            font-family: monospace;
+        }
+        .done .task-text, .done .task-id {
+            text-decoration: line-through;
+            color: #777;
+        }
+        .status {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #888;
+            text-align: right;
+            font-family: monospace;
+        }
+        .error {
+            color: #ff5555;
+            background: #442222;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 NamiClaw Tasks</h1>
+        <div id="error-box" class="error" style="display: none;"></div>
+        <ul id="todo-list">
+            <li><span class="task-text">Loading tasks...</span></li>
+        </ul>
+        <div class="status" id="status-text">Waiting for update...</div>
+    </div>
+
+    <script>
+        async function fetchTodos() {
+            const errorBox = document.getElementById('error-box');
+            try {
+                // Fetch the JSON file. The cache-buster query param ensures we don't get a stale browser cache.
+                const response = await fetch('workspace/todos.json?t=' + new Date().getTime());
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        renderTodos([]); // File doesn't exist yet
+                        errorBox.style.display = 'none';
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const todos = await response.json();
+                renderTodos(todos);
+                
+                errorBox.style.display = 'none';
+                document.getElementById('status-text').innerText = 'Last updated: ' + new Date().toLocaleTimeString();
+                
+            } catch (error) {
+                console.error('Error fetching todos:', error);
+                
+                // Show friendly error if CORS/Local file block happens
+                if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                    errorBox.innerHTML = `<strong>Error loading tasks.</strong><br>
+                    Browsers block fetching local files (CORS). Please serve this file using a local web server.<br>
+                    <em>Example:</em> <code>python -m http.server 8000</code> or <code>npx serve</code>`;
+                    errorBox.style.display = 'block';
+                }
+                
+                document.getElementById('status-text').innerText = 'Connection lost at ' + new Date().toLocaleTimeString();
+            }
+        }
+
+        function renderTodos(todos) {
+            const list = document.getElementById('todo-list');
+            list.innerHTML = ''; // Clear current list
+
+            if (!todos || todos.length === 0) {
+                list.innerHTML = '<li><span class="task-text">No tasks pending! 🎉</span></li>';
+                return;
+            }
+
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                if (todo.done) {
+                    li.classList.add('done');
+                }
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = todo.done;
+                checkbox.disabled = true; // Read-only dashboard
+
+                const idSpan = document.createElement('span');
+                idSpan.className = 'task-id';
+                idSpan.innerText = `#${todo.id}`;
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'task-text';
+                textSpan.innerText = todo.task;
+
+                li.appendChild(checkbox);
+                li.appendChild(idSpan);
+                li.appendChild(textSpan);
+                list.appendChild(li);
+            });
+        }
+
+        // Fetch immediately on load, then poll every 2 seconds
+        fetchTodos();
+        setInterval(fetchTodos, 2000);
+    </script>
+</body>
+</html>

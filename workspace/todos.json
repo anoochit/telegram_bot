@@ -1,0 +1,157 @@
+[
+  {
+    "id": 1,
+    "task": "[Book] Chapter 1: Introduction & Overview (ความสามารถและแนวคิดเบื้องต้น)",
+    "done": false
+  },
+  {
+    "id": 2,
+    "task": "[Book] Chapter 2: Setup & CLI (การติดตั้งและการใช้งานเครื่องมือ CLI)",
+    "done": false
+  },
+  {
+    "id": 3,
+    "task": "[Book] Chapter 3: Architecture & Runtimes (โครงสร้างและตัวจัดการการทำงาน)",
+    "done": false
+  },
+  {
+    "id": 4,
+    "task": "[Book] Chapter 4: UI Primitives & Components (ส่วนประกอบพื้นฐานและการสร้างหน้าจอแชท)",
+    "done": false
+  },
+  {
+    "id": 5,
+    "task": "[Book] Chapter 5: External Integrations (Vercel AI SDK, LangGraph และการเชื่อมต่อภายนอก)",
+    "done": false
+  },
+  {
+    "id": 6,
+    "task": "[Book] Chapter 6: Advanced UI Features (Generative UI, Tool Calls และไฟล์แนบ)",
+    "done": false
+  },
+  {
+    "id": 7,
+    "task": "[Book] Chapter 7: Persistence & Authentication (การบันทึกข้อมูลและการระบุตัวตน)",
+    "done": false
+  },
+  {
+    "id": 8,
+    "task": "[Book] Chapter 8: Multi-platform Support (React Native และ Terminal/Ink)",
+    "done": false
+  },
+  {
+    "id": 9,
+    "task": "[Book] Chapter 9: Best Practices & Production (เทคนิคขั้นสูง, ความปลอดภัย และการนำไปใช้งานจริง)",
+    "done": false
+  },
+  {
+    "id": 17,
+    "task": "[Meeting] ประชุมกับ CEO น้องแนน เรื่องโปรเจคลูค้า (เลื่อนเป็นวันศุกร์ที่ 8 พ.ค. 2026)",
+    "done": false
+  },
+  {
+    "id": 25,
+    "task": "[Marketing] ทำ video review ตัว assistant-ui ลงในเพจ",
+    "done": false
+  },
+  {
+    "id": 26,
+    "task": "[Reading] อ่านต้นฉบับหนังสือ Rust Axum โดย อึนเก",
+    "done": false
+  },
+  {
+    "id": 27,
+    "task": "[Reading] อ่านต้นฉบับหนังสือ Rust Diesel โดย อึนเก",
+    "done": false
+  },
+  {
+    "id": 28,
+    "task": "[Reading] อ่านต้นฉบับหนังสือ Go Fiber โดย อึนเก",
+    "done": false
+  },
+  {
+    "id": 29,
+    "task": "เตรียมงาน Call for maker (ไม่เป็นทางการ) ณ สยามพารากอน วันที่ 25 มิถุนายน",
+    "done": false
+  },
+  {
+    "id": 30,
+    "task": "[CLI-Book] Integrate Yazi into Chapter 4",
+    "done": true
+  },
+  {
+    "id": 31,
+    "task": "[CLI-Book] Integrate Lazygit into Chapter 11",
+    "done": true
+  },
+  {
+    "id": 33,
+    "task": "[CLI-Book] Final review of Preface.md vs Feedback",
+    "done": true
+  },
+  {
+    "id": 34,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Preface.md",
+    "done": true
+  },
+  {
+    "id": 35,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 1 (Ditching the 1970s)",
+    "done": true
+  },
+  {
+    "id": 36,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 2 (Setup & Workspace)",
+    "done": true
+  },
+  {
+    "id": 37,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 3 (Smart Navigation)",
+    "done": true
+  },
+  {
+    "id": 38,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 4 (Viewing Files)",
+    "done": true
+  },
+  {
+    "id": 39,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 5 (File Finding)",
+    "done": true
+  },
+  {
+    "id": 40,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 6 (Searching Inside Files)",
+    "done": true
+  },
+  {
+    "id": 41,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 7 (Getting Help)",
+    "done": true
+  },
+  {
+    "id": 42,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 8 (Conversational CLI)",
+    "done": true
+  },
+  {
+    "id": 43,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 9 (Automation)",
+    "done": true
+  },
+  {
+    "id": 44,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 10 (System Monitoring)",
+    "done": true
+  },
+  {
+    "id": 45,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Chapter 11 (Beautiful Git)",
+    "done": true
+  },
+  {
+    "id": 46,
+    "task": "[CLI-Book] Polish Tone & Philosophy: Conclusion.md",
+    "done": true
+  }
+]
