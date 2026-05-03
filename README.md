@@ -8,6 +8,7 @@ A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://git
 
 * **Multi-Platform AI**: Powered by Gemini, Anthropic, or any OpenAI-compatible LLM (e.g., ThaiLLM).
 * **Modern TUI**: A rich, interactive CLI experience with a custom ASCII banner, animated indicators, and structured layout.
+* **@ File Context References**: Reference files from the `workspace/` directly in the CLI using `@path/to/file` with built-in Tab-completion.
 * **Markdown Wiki KM**: A transparent, human-readable Knowledge Management system using `.md` files.
 * **Dynamic Persona & Soul**: Configure the bot's personality and user context via `AGENT.md` and `USER.md`.
 * **Persistent Sessions**: SQLite-backed conversation history keyed by Telegram user ID.
