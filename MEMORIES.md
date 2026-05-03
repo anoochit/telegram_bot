@@ -12,7 +12,5 @@
 
 - Noel shared a joke that if Nami were in Northern Thailand, the name would be 'Ha Na Mi' (ฮานามิ) because 'Ha' means 'I' in Northern Thai.
 - Noel's office team consists of 4 people: Nan (CEO), Noel (CTO), Angie (Python Dev/Data Analyst), and Kuenge (Rust Dev/System).
-- Office members are Nan (CEO), Noel (CTO), Angie (Python Dev, Data Analyst), and Kuenge (Rust Dev, System).
-- Office team members: Nan (CEO), Noel (CTO), Angie (Python Dev/Data Analyst), and Kuenge (Rust Dev/System).
 - Office team locations: Nan (CEO) and Angie (Python Dev/Data Analyst) are in Daejeon, South Korea. Kuenge (Rust Dev/System) is in Seoul, South Korea.
 - Noel wants to minimize the use of google_search to save on costs because Nan (CEO) might complain about expenses.
