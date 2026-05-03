@@ -13,7 +13,14 @@ A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://git
 * **Persistent Sessions**: SQLite-backed conversation history keyed by Telegram user ID.
 * **Modular Tools**: Organized architecture for adding capabilities (Weather, Search, Shell, Wiki, etc.).
 * **Live Web Search**: Integrated Google Search via Serper.dev.
-* **Hierarchical Sub-Agents**: Support for delegation to specialized sub-agents via hierarchical task management.
+* **Hierarchical Sub-Agents**: Support for delegation to a team of 7 specialized agents:
+  - **Codebase Investigator**: Deep analysis & bug hunting.
+  - **Generalist**: Batch tasks & data processing.
+  - **Web Developer**: Full-stack web & API implementation.
+  - **DevOps Engineer**: CI/CD, Docker & cloud infrastructure.
+  - **Quality Assurance**: Automated testing & verification.
+  - **Data Specialist**: Database design & analytics.
+  - **Documentation Architect**: Technical knowledge & docs maintenance.
 * **Todo Management**: Integrated task tracking and list management.
 * **Sandboxed Environment**: Integrated filesystem tools for agent tasks within a `workspace/` directory.
 
