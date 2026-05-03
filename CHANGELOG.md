@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **Hierarchical Sub-Agents**: Introduced an ecosystem of 7 specialized agents (Codebase Investigator, Generalist, Web Developer, DevOps Engineer, Quality Assurance, Data Specialist, Documentation Architect) to support complex task delegation.
+- **Obsidian-Style Wiki**: Implemented new wiki tools including `get_wiki_graph` for knowledge graph visualization, `search_wiki_by_tag` for tag-based search, and `create_daily_note` for daily journaling, enhancing bi-directional linking capabilities.
 
 ## [0.2.0] - 2026-05-02
 
