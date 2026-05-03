@@ -107,7 +107,7 @@ graph TD
     Runner --> DB[(SqliteSessionService)]
     
     Agent --> LLM[ThaiLLM/Gemini/OpenAI]
-    Agent --> SubAgents[Sub-Agents]
+    Agent --> SubAgents[Sub-Agents: Investigator, Generalist, WebDev, DevOps, QA, Data, Docs]
     Agent --> Tools[Tools]
     Agent --> Wiki[Wiki / Markdown]
     Agent --> Persona[AGENT.md & USER.md]
