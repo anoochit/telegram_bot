@@ -6,13 +6,19 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **@ File Context References**: Implemented an interactive file referencing system in the CLI. Users can type `@` followed by a file path to inject file contents directly into the prompt. Includes built-in tab-completion powered by `rustyline` scoped to the `workspace/` sandbox.
 - **Wiki Management Tools**: Added `get_backlinks`, `apply_template`, `check_broken_links`, and `rename_wiki_page` to enhance Obsidian-style knowledge management.
 - **Daily Notes Template**: Added a default `DailyTemplate.md` for consistent daily journaling.
 
 ### Changed
 
+- **Project Structure**: Refactored the codebase directory structure. Moved entry points into a dedicated `src/modes/` directory and relocated tools and utilities to `src/tools/` and `src/utils/` for better separation of concerns.
 - **Wiki Search**: Upgraded `search_wiki` and `search_wiki_by_tag` to support regex and YAML frontmatter parsing.
 - **CLI & Docs**: Changed CLI version greeting to be dynamically retrieved from `Cargo.toml` (v0.4.0).
+
+### Fixed
+
+- **Compilation Errors**: Resolved module pathing and type inference issues related to `get_workspace_dir` and the `rustyline` upgrade following the directory restructure.
 
 ### Removed
 
