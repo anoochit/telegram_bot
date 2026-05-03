@@ -109,7 +109,7 @@ graph TD
     Agent --> LLM[ThaiLLM/Gemini/OpenAI]
     Agent --> SubAgents[Sub-Agents: Investigator, Generalist, WebDev, DevOps, QA, Data, Docs]
     Agent --> Tools[Tools]
-    Agent --> Wiki[Wiki / Markdown]
+    Agent --> Wiki[Obsidian-Style Wiki: Graph, Tags, Daily Notes]
     Agent --> Persona[AGENT.md & USER.md]
     
     SubAgents --> Agent
@@ -122,11 +122,14 @@ graph TD
 
 ## 🧩 Extensions
 
-### Wiki Knowledge Management
+### Obsidian-Style Wiki Knowledge Management
 
-The bot uses the `wiki/` directory in its workspace to store long-term knowledge.
+The bot uses the `wiki/` directory in its workspace to store long-term knowledge, now with Obsidian-style features:
 
-* `add_wiki_page`: Saves new information as Markdown.
+* `add_wiki_page`: Saves new information as Markdown, with support for `[[wikilink]]` syntax.
+* `get_wiki_graph`: Generates a JSON representation of your knowledge graph's nodes and edges.
+* `search_wiki_by_tag`: Filters notes by specific `#tags`.
+* `create_daily_note`: Creates a journal entry for the current date.
 * `summarize_wiki`: Generates a `SUMMARY.md` index of all topics.
 * `search_wiki`: Full-text search across all knowledge pages.
 
