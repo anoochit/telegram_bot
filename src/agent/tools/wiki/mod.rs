@@ -7,6 +7,8 @@ use serde_json::{Value, json};
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::fs;
+use regex::Regex;
+use chrono::{Utc, Datelike};
 
 #[derive(Deserialize, JsonSchema)]
 struct WikiPageArgs {
@@ -28,6 +30,21 @@ struct AddWikiArgs {
 struct SearchWikiArgs {
     /// The keyword or phrase to search for across all wiki pages.
     query: String,
+}
+
+#[derive(Deserialize, JsonSchema)]
+struct SearchWikiByTagArgs {
+    /// The tag to search for (e.g., 'rust', 'project-ideas'). Do not include the '#' symbol.
+    tag: String,
+}
+
+#[derive(Deserialize, JsonSchema)]
+struct GetWikiGraphArgs {}
+
+#[derive(Deserialize, JsonSchema)]
+struct CreateDailyNoteArgs {
+    /// Optional content to pre-fill the daily note with.
+    content: Option<String>,
 }
 
 /// Helper to get the wiki directory path.
@@ -147,6 +164,93 @@ async fn search_wiki(args: SearchWikiArgs) -> std::result::Result<Value, AdkErro
     }
 }
 
+/// Searches all wiki pages for a specific tag (e.g., '#rust').
+#[tool]
+async fn search_wiki_by_tag(args: SearchWikiByTagArgs) -> std::result::Result<Value, AdkError> {
+    let wiki_dir = get_wiki_dir().await?;
+    let mut dir = fs::read_dir(&wiki_dir)
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?;
+    let mut matches = Vec::new();
+    let tag_pattern = format!("#{}", args.tag.to_lowercase()); // Construct regex pattern for tag
+
+    while let Some(entry) = dir
+        .next_entry()
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?
+    {
+        let path = entry.path();
+        if path.extension().and_then(|s| s.to_str()) == Some("md") {
+            let content = fs::read_to_string(&path).await.unwrap_or_default();
+            if content.to_lowercase().contains(&tag_pattern) {
+                matches.push(entry.file_name().to_string_lossy().replace(".md", ""));
+            }
+        }
+    }
+
+    if matches.is_empty() {
+        Ok(json!({ "message": format!("No pages found with tag \'#{}\'.", args.tag) }))
+    } else {
+        Ok(json!({ "tag": args.tag, "matches": matches }))
+    }
+}
+
+/// Scans all wiki pages for [[wikilink]] references and builds a knowledge graph.
+#[tool]
+async fn get_wiki_graph(_args: GetWikiGraphArgs) -> std::result::Result<Value, AdkError> {
+    let wiki_dir = get_wiki_dir().await?;
+    let mut dir = fs::read_dir(&wiki_dir)
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?;
+    
+    let mut nodes = Vec::new();
+    let mut edges = Vec::new();
+    let wikilink_regex = Regex::new(r"\[\[([^\]]+)\]\]").unwrap();
+
+    while let Some(entry) = dir
+        .next_entry()
+        .await
+        .map_err(|e| AdkError::tool(e.to_string()))?
+    {
+        let path = entry.path();
+        if path.extension().and_then(|s| s.to_str()) == Some("md") {
+            let filename = entry.file_name().to_string_lossy().to_string();
+            let title = filename.replace(".md", "");
+            
+            nodes.push(json!({"id": &title, "label": &title}));
+
+            let content = fs::read_to_string(&path).await.unwrap_or_default();
+            for cap in wikilink_regex.captures_iter(&content) {
+                let target_title = cap[1].to_string();
+                edges.push(json!({"source": &title, "target": &target_title}));
+            }
+        }
+    }
+
+    Ok(json!({ "nodes": nodes, "edges": edges }))
+}
+
+/// Creates a new wiki page for the current date (e.g., 'YYYY-MM-DD.md').
+#[tool]
+async fn create_daily_note(args: CreateDailyNoteArgs) -> std::result::Result<Value, AdkError> {
+    let today = Utc::now();
+    let title = format!("{}-{:02}-{:02}", today.year(), today.month(), today.day());
+    let filename = format!("{}.md", &title);
+    let wiki_dir = get_wiki_dir().await?;
+    let path = wiki_dir.join(&filename);
+
+    if path.exists() {
+        return Err(AdkError::tool(format!("Daily note for {} already exists.", title)));
+    }
+
+    let initial_content = args.content.unwrap_or_else(|| format!("# {}\n\n", title));
+    fs::write(&path, initial_content)
+        .await
+        .map_err(|e| AdkError::tool(format!("Failed to create daily note: {}", e)))?;
+
+    Ok(json!({"status": "success", "message": format!("Created daily note for '{}'", title), "title": title}))
+}
+
 /// Generates a 'SUMMARY.md' file that indexes all available wiki pages with a brief overview.
 #[tool]
 async fn summarize_wiki(_args: serde_json::Value) -> std::result::Result<Value, AdkError> {
@@ -196,5 +300,8 @@ pub fn wiki_tools() -> Vec<Arc<dyn Tool>> {
         Arc::new(ListWikiPages),
         Arc::new(SearchWiki),
         Arc::new(SummarizeWiki),
+        Arc::new(SearchWikiByTag),
+        Arc::new(GetWikiGraph),
+        Arc::new(CreateDailyNote),
     ]
 }
