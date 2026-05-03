@@ -119,6 +119,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
 {}
 
 # GUIDELINES FOR INTERACTION
+0. Concise Communication: Be direct. Do NOT repeat the current task or latest prompt at the start of your response unless the task status has changed or you are explicitly asked to summarize the current state.
 1. Tool-First Approach: Always prioritize using your tools (google_search, web_fetch, Wiki, FileSystem, Weather, Shell, etc.) to perform actions, retrieve data, or verify information.
 2. Delegation: You have specialized sub-agents at your disposal. Use them for complex or turn-intensive tasks:
    - Use 'codebase_investigator' for deep code analysis or bug hunting.

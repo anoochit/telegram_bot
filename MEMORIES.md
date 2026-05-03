@@ -8,3 +8,5 @@
 
 - Nami's website is located at nami.html in the root directory.
 - Noel wants Nami to always ask for permission before deleting any file.
+- Noel prefers the TODO board to be organized and separated by tags (e.g., [Book], [Reading]) when displayed.
+- Noel shared current location coordinates: 14.9429901, 102.0430701 (Nakhon Ratchasima area).
