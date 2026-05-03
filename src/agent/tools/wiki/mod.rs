@@ -41,12 +41,6 @@ struct SearchWikiByTagArgs {
 }
 
 #[derive(Deserialize, JsonSchema)]
-struct SearchWikiByDateArgs {
-    /// The date to search for in 'YYYY-MM-DD' format (e.g., '2026-05-03').
-    date: String,
-}
-
-#[derive(Deserialize, JsonSchema)]
 struct GetWikiGraphArgs {}
 
 #[derive(Deserialize, JsonSchema)]
@@ -255,32 +249,6 @@ async fn search_wiki_by_tag(args: SearchWikiByTagArgs) -> std::result::Result<Va
     }
 }
 
-/// Searches for wiki pages created on a specific date (e.g., '2026-05-03'), especially Daily Notes.
-#[tool]
-async fn search_wiki_by_date(args: SearchWikiByDateArgs) -> std::result::Result<Value, AdkError> {
-    let wiki_dir = get_wiki_dir().await?;
-    let mut matches = Vec::new();
-    let target_date = args.date.trim();
-
-    for entry in WalkDir::new(&wiki_dir).into_iter().filter_map(|e| e.ok()) {
-        let path = entry.path();
-        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("md") {
-            let relative_title = get_relative_title(&wiki_dir, path);
-            
-            // Check if the filename contains the date
-            if relative_title.contains(target_date) {
-                matches.push(relative_title);
-            }
-        }
-    }
-
-    if matches.is_empty() {
-        Ok(json!({ "message": format!("No notes found for date '{}'.", target_date) }))
-    } else {
-        Ok(json!({ "date": target_date, "matches": matches }))
-    }
-}
-
 /// Scans all wiki pages recursively for [[wikilink]] references and builds a knowledge graph.
 #[tool]
 async fn get_wiki_graph(_args: GetWikiGraphArgs) -> std::result::Result<Value, AdkError> {
@@ -450,7 +418,6 @@ pub fn wiki_tools() -> Vec<Arc<dyn Tool>> {
         Arc::new(SearchWiki),
         Arc::new(SummarizeWiki),
         Arc::new(SearchWikiByTag),
-        Arc::new(SearchWikiByDate),
         Arc::new(GetWikiGraph),
         Arc::new(CreateDailyNote),
         Arc::new(SanitizeWikiVault),
