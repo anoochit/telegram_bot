@@ -11,3 +11,6 @@
 - Noel prefers the TODO board to be organized and separated by tags (e.g., [Book], [Reading]) when displayed.
 
 - Noel shared a joke that if Nami were in Northern Thailand, the name would be 'Ha Na Mi' (ฮานามิ) because 'Ha' means 'I' in Northern Thai.
+- Noel's office team consists of 4 people: Nan (CEO), Noel (CTO), Angie (Python Dev/Data Analyst), and Kuenge (Rust Dev/System).
+- Office members are Nan (CEO), Noel (CTO), Angie (Python Dev, Data Analyst), and Kuenge (Rust Dev, System).
+- Office team members: Nan (CEO), Noel (CTO), Angie (Python Dev/Data Analyst), and Kuenge (Rust Dev/System).
