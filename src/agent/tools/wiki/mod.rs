@@ -65,14 +65,24 @@ async fn get_wiki_dir() -> std::result::Result<PathBuf, AdkError> {
 }
 
 /// Helper to convert a string to Title Case (Obsidian-style with spaces).
-/// Converts dashes, underscores, and multiple spaces into single spaces and capitalizes each word.
+/// Converts dashes (except in dates), underscores, and multiple spaces into single spaces and capitalizes each word.
 fn to_title_case(s: &str) -> String {
     let mut result = String::new();
     let mut capitalize_next = true;
     let mut last_was_space = false;
+    let chars: Vec<char> = s.chars().collect();
 
-    for c in s.chars() {
-        if c == '-' || c == '_' || c == ' ' {
+    for i in 0..chars.len() {
+        let c = chars[i];
+        
+        // Special case: Preserve dashes if they look like a date (Digit-Dash-Digit)
+        let is_date_dash = c == '-' 
+            && i > 0 
+            && i < chars.len() - 1 
+            && chars[i-1].is_ascii_digit() 
+            && chars[i+1].is_ascii_digit();
+
+        if (c == '-' && !is_date_dash) || c == '_' || c == ' ' {
             if !last_was_space && !result.is_empty() {
                 result.push(' ');
                 last_was_space = true;
