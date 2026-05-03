@@ -2,6 +2,7 @@
 .env
 sessions.db
 .cli*
-/workspace
+/workspace/*
+!/workspace/.skills/
 MEMORIES.md
 /ref
