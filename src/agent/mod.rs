@@ -177,7 +177,6 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>)> {
     tools.extend(tools::shell::shell_tools());
     tools.extend(tools::web_fetch::web_fetch_tools());
     tools.extend(tools::system_info::system_info_tools());
-    tools.extend(tools::create_skill::create_skill_tool());
     tools.extend(tools::soul::soul_tools());
     tools.extend(tools::search::search_tools());
     tools.extend(tools::todo::todo_tools());
