@@ -128,11 +128,22 @@ async fn process_file_references(input: &str) -> String {
         let path = workspace_path.join(file_path_str);
 
         if path.exists() && path.is_file() {
-            if let Ok(content) = tokio::fs::read_to_string(&path).await {
-                appended_context.push_str(&format!(
-                    "\n\n--- Content from {} ---\n{}\n--- End of content ---\n",
-                    file_path_str, content
-                ));
+            if let Ok(metadata) = std::fs::metadata(&path) {
+                let size = metadata.len();
+                // Threshold: 4KB
+                if size < 4096 {
+                    if let Ok(content) = tokio::fs::read_to_string(&path).await {
+                        appended_context.push_str(&format!(
+                            "\n\n--- Content from {} ---\n{}\n--- End of content ---\n",
+                            file_path_str, content
+                        ));
+                    }
+                } else {
+                    appended_context.push_str(&format!(
+                        "\n\n[REFERENCE: {} (Size: {} bytes)]\nThis file is too large for direct injection. Use your filesystem tools (read_file) to inspect specific parts of this file if needed.\n",
+                        file_path_str, size
+                    ));
+                }
             }
         }
     }

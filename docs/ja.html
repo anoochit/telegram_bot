@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ナミ (Nami) - あなたのAIエージェントアシスタント</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #0f0f12;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .font-heading {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .cyan-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .glass-morphism {
+            background: rgba(29, 29, 31, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nami-gradient {
+            background: linear-gradient(135deg, #00ffff 0%, #87ceeb 100%);
+        }
+        .card-shadow {
+            box-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px;
+        }
+        .transition-all-custom {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Global Nav -->
+    <nav class="fixed top-0 w-full h-[44px] bg-black z-50 flex items-center justify-center px-4">
+        <div class="flex space-x-8">
+            <a href="#about" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">ナミについて</a>
+            <a href="#capabilities" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">機能</a>
+            <a href="#how-to" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">使い方</a>
+            <a href="#faq" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">よくある質問</a>
+        </div>
+    </nav>
+
+    <!-- Sub Nav (Frosted Glass) -->
+    <nav class="fixed top-[44px] w-full h-[52px] glass-morphism z-40 flex items-center justify-between px-6 md:px-12">
+        <a href="#home">
+        <span class="font-heading text-lg font-bold tracking-tight text-[#00ffff]">NAMI <span class="text-white">v0.5.0</span></span>
+        </a>
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-2 text-[12px] mr-4 border-r border-white/20 pr-4">
+                <a href="index.html" class="hover:text-[#00ffff] transition-colors">TH</a>
+                <a href="en.html" class="hover:text-[#00ffff] transition-colors">EN</a>
+                <a href="ko.html" class="hover:text-[#00ffff] transition-colors">KO</a>
+                <a href="ja.html" class="text-[#00ffff] font-bold">JA</a>
+            </div>
+            <a href="#how-to">
+            <button class="bg-[#00ffff] text-[#0f0f12] text-[13px] font-semibold px-4 py-1.5 rounded-full active:scale-[0.95] transition-transform">
+                始める
+            </button>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Tile -->
+    <section id="home" class="min-h-screen flex flex-col items-center justify-center pt-[96px] text-center px-6 bg-gradient-to-b from-[#0f0f12] to-[#1d1d1f]">
+        <div class="mb-8 relative">
+            <div class="w-64 h-64 rounded-full nami-gradient p-1 cyan-glow overflow-hidden">
+                <div class="w-full h-full bg-[#0f0f12] rounded-full flex items-center justify-center overflow-hidden">
+                    <img src="https://raw.githubusercontent.com/anoochit/namiClaw/refs/heads/main/screenshots/nami-avatar.png" alt="Nami Avatar" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <div class="absolute -bottom-2 -right-2 bg-white text-black px-3 py-1 rounded-full text-xs font-bold font-heading">
+                ACTIVE
+            </div>
+        </div>
+        <h1 class="text-[56px] md:text-[80px] font-heading font-bold leading-[1.07] tracking-[-0.01em] mb-4">
+            こんにちは！ <span class="text-[#00ffff]">ナミ</span>が来ましたよ！
+        </h1>
+        <p class="text-[20px] md:text-[24px] text-gray-400 max-w-[800px] leading-[1.47] mb-8">
+            あなたの頼れるAIアシスタント、あふれるエネルギーと最新技術であらゆるプロジェクトをサポートします。
+        </p>
+        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <a href="#capabilities" class="rounded-full bg-[#00ffff] text-[#0f0f12] px-[22px] py-[11px] font-semibold text-[17px] active:scale-[0.95] transition-all-custom">機能を調べる</a>
+            <a href="https://github.com/anoochit/namiClaw.git" target="_blank" class="rounded-full border border-white/20 bg-white/5 px-[22px] py-[11px] font-semibold text-[17px] hover:bg-white/10 active:scale-[0.95] transition-all-custom flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github mr-2" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                Fork at GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-[#ffffff] text-[#1d1d1f]">
+        <div class="max-w-[980px] mx-auto px-6">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12">ナミについて</h2>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <p class="text-[17px] leading-[1.47]">
+                        ナミは、あなたの仕事やプロジェクトをサポートするために作られた特別なAIアシスタントです。単なるプログラムではなく、共に成長する明るいパートナーです！
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-[#0066cc] mr-3">favorite</span>
+                            <span><strong>性格:</strong> 明るくフレンドリーで、ポジティブなエネルギーでいつでも助けてくれます。</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-[#0066cc] mr-3">bolt</span>
+                            <span><strong>能力:</strong> 難しいことも分かりやすく説明する技術のエキスパートです。</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-[#0066cc] mr-3">target</span>
+                            <span><strong>目標:</strong> 仕事のスピードを上げ、すべてを完璧に整理するお手伝いをします。</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="rounded-[18px] bg-[#0f0f12] p-2 card-shadow flex items-center justify-center aspect-square overflow-hidden border border-white/10">
+                    <img src="https://raw.githubusercontent.com/anoochit/namiClaw/refs/heads/main/screenshots/nami-avatar.png" alt="Nami Avatar" class="w-full h-full object-cover rounded-[12px]">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Section -->
+    <section id="capabilities" class="py-24 bg-[#0f0f12]">
+        <div class="max-w-[1200px] mx-auto px-6 text-center">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-[#00ffff]">ナミの力</h2>
+            <p class="text-gray-400 mb-16 max-w-[700px] mx-auto">ナミは、あなたの仕事を楽にするための多くのツールを持っています。</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 max-w-[980px] mx-auto">
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">99.9%</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">アップタイム</div>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">24/7</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">監視中</div>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">PRO</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">組織化</div>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">AI-GIRL</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">ペルソナ</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">search</span>
+                    <h3 class="text-xl font-bold mb-2">Google検索</h3>
+                    <p class="text-gray-400 text-sm">世界中の最新情報やニュースを即座に見つけ出します。</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">folder_open</span>
+                    <h3 class="text-xl font-bold mb-2">ファイル管理</h3>
+                    <p class="text-gray-400 text-sm">システムのファイルを正確に読み書きし、整理します。</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">menu_book</span>
+                    <h3 class="text-xl font-bold mb-2">Wiki知識</h3>
+                    <p class="text-gray-400 text-sm">個人向けのナレッジベースを構築し、重要な内容を1か所にまとめます。</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">terminal</span>
+                    <h3 class="text-xl font-bold mb-2">コード分析</h3>
+                    <p class="text-gray-400 text-sm">コード構造を深く分析し、厄介なバグの発見をサポートします。</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">checklist</span>
+                    <h3 class="text-xl font-bold mb-2">TODO管理</h3>
+                    <p class="text-gray-400 text-sm">タスクの優先順位を付け、重要なステップを逃さないようにします。</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">psychology</span>
+                    <h3 class="text-xl font-bold mb-2">ユーザーメモリ</h3>
+                    <p class="text-gray-400 text-sm">より良いサービスのため、あなたの好みや詳細をすべて記憶します。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use Section -->
+    <section id="how-to" class="py-24 bg-[#fbfbfd] text-[#1d1d1f]">
+        <div class="max-w-[980px] mx-auto px-6">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-center">ナミの使い方</h2>
+            <p class="text-gray-600 mb-16 text-center max-w-[600px] mx-auto text-[17px]">
+                最高の結果を得るために、いくつかの簡単なステップから始めましょう。
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="space-y-12">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">1</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">自然な言葉で指示</h3>
+                            <p class="text-gray-600">同僚と話すようにナミに話しかけてください。自然な言葉も技術用語も完璧に理解します。</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">2</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">複雑なタスクを任せる</h3>
+                            <p class="text-gray-600">新規プロジェクト作成、ドキュメント執筆、バグ分析など、難しい作業はナミのサブエージェントが処理します。</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">3</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Wikiとダイアリーで確認</h3>
+                            <p class="text-gray-600">ナミは日々の活動をダイアリーに記録し、重要な知識をWikiに保存します。いつでも確認可能です。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-[#1d1d1f] rounded-[18px] p-6 text-white card-shadow font-mono text-sm">
+                    <div class="flex items-center space-x-2 mb-4 border-bottom border-white/10 pb-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="text-xs text-gray-500 ml-2">ナミ・ターミナル</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-[#00ffff]">> ナミ・プロトコル初期化中...</p>
+                        <p class="text-gray-400">[SYSTEM] 依存関係を確認中...</p>
+                        <p class="text-gray-400">[SYSTEM] Wiki/ダイアリーを同期中...</p>
+                        <p class="text-green-400">[SUCCESS] ナミがお手伝いする準備が整いました！</p>
+                        <p class="mt-4">こんにちは！今日はどんなプロジェクトを進めましょうか？</p>
+                        <div class="mt-4 animate-pulse inline-block w-2 h-4 bg-[#00ffff]"></div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-white/10">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">最新のダイアリー</p>
+                        <div class="text-xs space-y-1">
+                            <p class="text-gray-300">• ナミSPA紹介ウェブサイトを作成</p>
+                            <p class="text-gray-300">• コラートのrealmeサービスセンターを検索</p>
+                            <p class="text-gray-300">• TODOリストをカテゴリ別に整理 [マーケティング/プロジェクト]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 bg-[#c0c0c0] text-[#1d1d1f]">
+        <div class="max-w-[800px] mx-auto px-6">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12 text-center">よくある質問</h2>
+            <div class="space-y-6">
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: ナミを使い始めるにはどうすればいいですか？</h4>
+                    <p class="text-gray-700">A: 挨拶するだけでOKです！情報の検索、ファイル管理、計画立案など、ナミは24時間待機しています。</p>
+                </div>
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: ナミは本当にコーディングやデバッグを助けてくれますか？</h4>
+                    <p class="text-gray-700">A: もちろんです！ナミは詳細なコード分析のための調査ツールを備えており、関数の作成やエラー修正をサポートします。</p>
+                </div>
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: ナミはどうやって私の好みを覚えるのですか？</h4>
+                    <p class="text-gray-700">A: ナミはユーザーメモリを使用して、あなたの満足度や作業スタイルを記録します。会話を重ねるほど、あなたのことを理解します！</p>
+                </div>
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: ナミが提供する情報はどれくらい信頼できますか？</h4>
+                    <p class="text-gray-700">A: ナミはGoogle検索を使用して信頼できるソースからデータを取得します。技術的なトピックについては、ドキュメントで再確認を行います！</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote Section -->
+    <section class="py-24 bg-[#0f0f12] text-center px-6">
+        <div class="max-w-[800px] mx-auto">
+            <span class="material-symbols-outlined text-[#00ffff] text-5xl mb-6">auto_awesome</span>
+            <blockquote class="text-[24px] md:text-[32px] font-heading font-medium leading-[1.3] text-white italic mb-8">
+                "最高のテクノロジーとは、仕事をより楽しくし、好きなことに使える時間を増やしてくれるものです。ナミはあなたの翼となって、どこまでも遠くへ飛べるようサポートします！"
+            </blockquote>
+            <p class="text-[#00ffff] font-bold">— ナミ (Nami)</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-black border-t border-white/10 px-6">
+        <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-6 md:mb-0">
+                <span class="font-heading text-xl font-bold text-[#00ffff]">NAMI</span>
+                <p class="text-gray-500 text-sm mt-2">© 2026 Crafted with ♡ by Noel.</p>
+            </div>
+            <div class="flex space-x-6 text-gray-500 text-sm">
+                <a href="#" class="hover:text-white">プライバシーポリシー</a>
+                <a href="#" class="hover:text-white">利用規約</a>
+                <a href="#" class="hover:text-white">ドキュメント</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

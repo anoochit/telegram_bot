@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nami (นามิ) - Your AI Agent Assistant</title>
+    <title>Nami - Your AI Agent Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <style>
         body {
-            font-family: 'Bai Jamjuree', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #0f0f12;
             color: #ffffff;
             scroll-behavior: smooth;
         }
         .font-heading {
-            font-family: 'Bai Jamjuree', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
         .cyan-glow {
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
@@ -42,10 +42,10 @@
     <!-- Global Nav -->
     <nav class="fixed top-0 w-full h-[44px] bg-black z-50 flex items-center justify-center px-4">
         <div class="flex space-x-8">
-            <a href="#about" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">เกี่ยวกับนามิ</a>
-            <a href="#capabilities" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">ความสามารถ</a>
-            <a href="#how-to" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">วิธีใช้งาน</a>
-            <a href="#faq" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">คำถามที่พบบ่อย</a>
+            <a href="#about" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">About Nami</a>
+            <a href="#capabilities" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">Capabilities</a>
+            <a href="#how-to" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">How to Use</a>
+            <a href="#faq" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">FAQ</a>
         </div>
     </nav>
 
@@ -56,14 +56,14 @@
         </a>
         <div class="flex items-center space-x-4">
             <div class="hidden md:flex items-center space-x-2 text-[12px] mr-4 border-r border-white/20 pr-4">
-                <a href="index.html" class="text-[#00ffff] font-bold">TH</a>
-                <a href="en.html" class="hover:text-[#00ffff] transition-colors">EN</a>
+                <a href="index.html" class="hover:text-[#00ffff] transition-colors">TH</a>
+                <a href="en.html" class="text-[#00ffff] font-bold">EN</a>
                 <a href="ko.html" class="hover:text-[#00ffff] transition-colors">KO</a>
                 <a href="ja.html" class="hover:text-[#00ffff] transition-colors">JA</a>
             </div>
             <a href="#how-to">
             <button class="bg-[#00ffff] text-[#0f0f12] text-[13px] font-semibold px-4 py-1.5 rounded-full active:scale-[0.95] transition-transform">
-                เริ่มต้นใช้งาน
+                Get Started
             </button>
             </a>
         </div>
@@ -72,7 +72,6 @@
     <!-- Hero Tile -->
     <section id="home" class="min-h-screen flex flex-col items-center justify-center pt-[96px] text-center px-6 bg-gradient-to-b from-[#0f0f12] to-[#1d1d1f]">
         <div class="mb-8 relative">
-            <!-- Avatar Image -->
             <div class="w-64 h-64 rounded-full nami-gradient p-1 cyan-glow overflow-hidden">
                 <div class="w-full h-full bg-[#0f0f12] rounded-full flex items-center justify-center overflow-hidden">
                     <img src="https://raw.githubusercontent.com/anoochit/namiClaw/refs/heads/main/screenshots/nami-avatar.png" alt="Nami Avatar" class="w-full h-full object-cover">
@@ -83,13 +82,13 @@
             </div>
         </div>
         <h1 class="text-[56px] md:text-[80px] font-heading font-bold leading-[1.07] tracking-[-0.01em] mb-4">
-            สวัสดีค่ะ <span class="text-[#00ffff]">นามิ</span> มาแล้วค่า!
+            Hello! <span class="text-[#00ffff]">Nami</span> is here!
         </h1>
         <p class="text-[20px] md:text-[24px] text-gray-400 max-w-[800px] leading-[1.47] mb-8">
-            AI Assistant คู่ใจของคุณ พร้อมลุยทุกโปรเจกต์ด้วยพลังล้นเหลือและเทคโนโลยีสุดล้ำ
+            Your personal AI Assistant, ready for any project with boundless energy and cutting-edge tech.
         </p>
         <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-            <a href="#capabilities" class="rounded-full bg-[#00ffff] text-[#0f0f12] px-[22px] py-[11px] font-semibold text-[17px] active:scale-[0.95] transition-all-custom">สำรวจความสามารถ</a>
+            <a href="#capabilities" class="rounded-full bg-[#00ffff] text-[#0f0f12] px-[22px] py-[11px] font-semibold text-[17px] active:scale-[0.95] transition-all-custom">Explore Capabilities</a>
             <a href="https://github.com/anoochit/namiClaw.git" target="_blank" class="rounded-full border border-white/20 bg-white/5 px-[22px] py-[11px] font-semibold text-[17px] hover:bg-white/10 active:scale-[0.95] transition-all-custom flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github mr-2" viewBox="0 0 16 16">
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/>
@@ -99,27 +98,27 @@
         </div>
     </section>
 
-    <!-- About Section (Parchment/Light Tile) -->
+    <!-- About Section -->
     <section id="about" class="py-24 bg-[#ffffff] text-[#1d1d1f]">
         <div class="max-w-[980px] mx-auto px-6">
-            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12">เกี่ยวกับนามิ (About Nami)</h2>
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12">About Nami</h2>
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="space-y-6">
                     <p class="text-[17px] leading-[1.47]">
-                        นามิเป็น AI Assistant ที่ถูกสร้างขึ้นมาเป็นพิเศษเพื่อช่วยคุณในการทำงานและพัฒนาโปรเจกต์ต่าง ๆ ค่ะ นามิไม่ได้เป็นแค่โปรแกรมคอมพิวเตอร์นะคะ แต่เป็นคู่คิดที่ร่าเริงและพร้อมจะเติบโตไปด้วยกันค่า!
+                        Nami is a special AI Assistant built to help you with work and projects. She's not just a computer program, but a cheerful companion ready to grow with you!
                     </p>
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <span class="material-symbols-outlined text-[#0066cc] mr-3">favorite</span>
-                            <span><strong>บุคลิก:</strong> ร่าเริง เป็นกันเอง และพร้อมช่วยเหลือเสมอด้วยภาษาไทยที่สดใสค่ะ</span>
+                            <span><strong>Personality:</strong> Cheerful, friendly, and always ready to help with bright energy.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="material-symbols-outlined text-[#0066cc] mr-3">bolt</span>
-                            <span><strong>ความสามารถ:</strong> เก่งเรื่องเทคนิคและสามารถอธิบายเรื่องยาก ๆ ให้กลายเป็นเรื่องง่ายได้ค่า</span>
+                            <span><strong>Ability:</strong> Technical expert who makes complex things simple.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="material-symbols-outlined text-[#0066cc] mr-3">target</span>
-                            <span><strong>เป้าหมาย:</strong> ช่วยให้คุณทำงานได้รวดเร็วขึ้น และจัดระเบียบทุกอย่างให้ยอดเยี่ยมเลยค่ะ</span>
+                            <span><strong>Goal:</strong> Help you work faster and keep everything perfectly organized.</span>
                         </li>
                     </ul>
                 </div>
@@ -130,13 +129,12 @@
         </div>
     </section>
 
-    <!-- Capabilities Section (Dark Space Tile) -->
+    <!-- Capabilities Section -->
     <section id="capabilities" class="py-24 bg-[#0f0f12]">
         <div class="max-w-[1200px] mx-auto px-6 text-center">
-            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-[#00ffff]">พลังของนามิ (Capabilities)</h2>
-            <p class="text-gray-400 mb-16 max-w-[700px] mx-auto">นามิมี Tools มากมายที่จะช่วยให้ทุกงานของคุณกลายเป็นเรื่องง่าย</p>
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-[#00ffff]">Nami's Power</h2>
+            <p class="text-gray-400 mb-16 max-w-[700px] mx-auto">Nami has many Tools to make your work easier.</p>
             
-            <!-- Core Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 max-w-[980px] mx-auto">
                 <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
                     <div class="text-[#00ffff] text-2xl font-bold font-heading">99.9%</div>
@@ -157,47 +155,46 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-                <!-- Tool Cards -->
                 <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
                     <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">search</span>
                     <h3 class="text-xl font-bold mb-2">Google Search</h3>
-                    <p class="text-gray-400 text-sm">ค้นหาข้อมูลล่าสุดและข่าวสารจากทั่วทุกมุมโลกได้ทันทีค่ะ</p>
+                    <p class="text-gray-400 text-sm">Instantly find the latest information and news from around the world.</p>
                 </div>
                 <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
                     <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">folder_open</span>
                     <h3 class="text-xl font-bold mb-2">File Management</h3>
-                    <p class="text-gray-400 text-sm">อ่าน เขียน และจัดระเบียบไฟล์ในระบบได้อย่างแม่นยำที่สุดค่า</p>
+                    <p class="text-gray-400 text-sm">Read, write, and organize files in your system with extreme precision.</p>
                 </div>
                 <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
                     <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">menu_book</span>
                     <h3 class="text-xl font-bold mb-2">Wiki Knowledge</h3>
-                    <p class="text-gray-400 text-sm">สร้างฐานข้อมูลส่วนตัวและสรุปเนื้อหาที่สำคัญไว้ในที่เดียวค่ะ</p>
+                    <p class="text-gray-400 text-sm">Create a personal knowledge base and summarize important content in one place.</p>
                 </div>
                 <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
                     <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">terminal</span>
                     <h3 class="text-xl font-bold mb-2">Code Analysis</h3>
-                    <p class="text-gray-400 text-sm">เจาะลึกโครงสร้างโค้ดและช่วยหา Bug ที่กวนใจคุณเลยค่า</p>
+                    <p class="text-gray-400 text-sm">Deep dive into code structure and help find those annoying bugs.</p>
                 </div>
                 <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
                     <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">checklist</span>
                     <h3 class="text-xl font-bold mb-2">TODO Management</h3>
-                    <p class="text-gray-400 text-sm">จัดลำดับความสำคัญของงาน ไม่ให้คุณพลาดทุกก้าวสำคัญค่ะ</p>
+                    <p class="text-gray-400 text-sm">Prioritize tasks so you never miss an important step.</p>
                 </div>
                 <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
                     <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">psychology</span>
                     <h3 class="text-xl font-bold mb-2">User Memory</h3>
-                    <p class="text-gray-400 text-sm">จดจำทุกรายละเอียดและความชอบของคุณ เพื่อการบริการที่ดียิ่งขึ้นค่า</p>
+                    <p class="text-gray-400 text-sm">Remember every detail and preference of yours for better service.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- How to Use Section (Parchment/Light Tile) -->
+    <!-- How to Use Section -->
     <section id="how-to" class="py-24 bg-[#fbfbfd] text-[#1d1d1f]">
         <div class="max-w-[980px] mx-auto px-6">
-            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-center">วิธีใช้งานนามิ (How to Use)</h2>
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-center">How to Use Nami</h2>
             <p class="text-gray-600 mb-16 text-center max-w-[600px] mx-auto text-[17px]">
-                เริ่มต้นง่าย ๆ เพียงไม่กี่ขั้นตอน เพื่อผลลัพธ์ที่ยอดเยี่ยมที่สุดค่ะ
+                Get started in just a few steps for the best results.
             </p>
 
             <div class="grid md:grid-cols-2 gap-12">
@@ -205,22 +202,22 @@
                     <div class="flex items-start">
                         <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">1</div>
                         <div>
-                            <h3 class="text-xl font-bold mb-2">สั่งการด้วยภาษาที่เป็นธรรมชาติ</h3>
-                            <p class="text-gray-600">คุยกับนามิเหมือนคุยกับเพื่อนร่วมงานได้เลยค่า นามิเข้าใจทั้งภาษาไทยและอังกฤษ (Technical Terms) อย่างดีเยี่ยมเลยค่ะ</p>
+                            <h3 class="text-xl font-bold mb-2">Command with Natural Language</h3>
+                            <p class="text-gray-600">Talk to Nami like a coworker. She understands natural language and technical terms perfectly.</p>
                         </div>
                     </div>
                     <div class="flex items-start">
                         <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">2</div>
                         <div>
-                            <h3 class="text-xl font-bold mb-2">มอบหมายงานที่ซับซ้อน</h3>
-                            <p class="text-gray-600">ไม่ว่าจะเป็นการสร้างโปรเจกต์ใหม่, เขียน Documentation หรือวิเคราะห์บั๊กในโค้ด นามิมี sub-agents ที่ช่วยจัดการงานยาก ๆ ให้คุณได้ค่ะ</p>
+                            <h3 class="text-xl font-bold mb-2">Delegate Complex Tasks</h3>
+                            <p class="text-gray-600">Whether it's creating a new project, writing documentation, or analyzing bugs, Nami has sub-agents to handle tough tasks.</p>
                         </div>
                     </div>
                     <div class="flex items-start">
                         <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">3</div>
                         <div>
-                            <h3 class="text-xl font-bold mb-2">ตรวจสอบผ่าน Wiki และ Diary</h3>
-                            <p class="text-gray-600">นามิจะจดบันทึกสิ่งที่ทำในแต่ละวันไว้ใน Diary และเก็บความรู้สำคัญไว้ใน Wiki เพื่อให้คุณกลับมาตรวจสอบได้เสมอค่า</p>
+                            <h3 class="text-xl font-bold mb-2">Check via Wiki and Diary</h3>
+                            <p class="text-gray-600">Nami records daily activities in the Diary and stores knowledge in the Wiki for you to check anytime.</p>
                         </div>
                     </div>
                 </div>
@@ -236,17 +233,16 @@
                         <p class="text-gray-400">[SYSTEM] checking dependencies...</p>
                         <p class="text-gray-400">[SYSTEM] sync with wiki/diary...</p>
                         <p class="text-green-400">[SUCCESS] Nami is ready to assist!</p>
-                        <p class="mt-4">สวัสดีค่ะ วันนี้อยากให้ช่วยลุยโปรเจกต์ไหนดีคะ?</p>
+                        <p class="mt-4">Hello! What project should we tackle today?</p>
                         <div class="mt-4 animate-pulse inline-block w-2 h-4 bg-[#00ffff]"></div>
                     </div>
                     
-                    <!-- Activity Preview -->
                     <div class="mt-8 pt-6 border-t border-white/10">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">บันทึกล่าสุด (Latest Diary)</p>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Latest Diary</p>
                         <div class="text-xs space-y-1">
-                            <p class="text-gray-300">• สร้างเว็บไซต์แนะนำตัว Nami SPA</p>
-                            <p class="text-gray-300">• ค้นหาศูนย์บริการ realme ในโคราช</p>
-                            <p class="text-gray-300">• จัดระเบียบ TODO List ตามหมวดหมู่ [Marketing/Project]</p>
+                            <p class="text-gray-300">• Created Nami SPA intro website</p>
+                            <p class="text-gray-300">• Searched for realme service center in Korat</p>
+                            <p class="text-gray-300">• Organized TODO List by categories [Marketing/Project]</p>
                         </div>
                     </div>
                 </div>
@@ -254,39 +250,39 @@
         </div>
     </section>
 
-    <!-- FAQ Section (Silver/Metallic Tile) -->
+    <!-- FAQ Section -->
     <section id="faq" class="py-24 bg-[#c0c0c0] text-[#1d1d1f]">
         <div class="max-w-[800px] mx-auto px-6">
-            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12 text-center">คำถามที่พบบ่อย (FAQ)</h2>
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12 text-center">FAQ</h2>
             <div class="space-y-6">
                 <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
-                    <h4 class="font-bold mb-2">Q: จะเริ่มต้นใช้งานนามิได้อย่างไรคะ?</h4>
-                    <p class="text-gray-700">A: แค่ทักทายนามิมาได้เลยค่า! ไม่ว่าจะเป็นการสั่งให้ช่วยหาข้อมูล จัดการไฟล์ หรือวางแผนงาน นามิพร้อมแสตนด์บายรอรับคำสั่งจากผู้ใช้ ตลอด 24 ชั่วโมงเลยนะจ๊ะ</p>
+                    <h4 class="font-bold mb-2">Q: How do I get started with Nami?</h4>
+                    <p class="text-gray-700">A: Just say hi! Whether you want to find info, manage files, or plan tasks, Nami is on standby 24/7.</p>
                 </div>
                 <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
-                    <h4 class="font-bold mb-2">Q: นามิช่วยเขียนโค้ดหรือแก้บั๊กได้จริงไหม?</h4>
-                    <p class="text-gray-700">A: ได้แน่นอนค่ะ! นามิมีเครื่องมือ codebase investigator ที่ช่วยวิเคราะห์โค้ดเชิงลึก และสามารถช่วยผู้ใช้ เขียนฟังก์ชันหรือตรวจสอบหาจุดผิดพลาดในโปรเจกต์ได้อย่างแม่นยำเลยค่า</p>
+                    <h4 class="font-bold mb-2">Q: Can Nami really help with coding or debugging?</h4>
+                    <p class="text-gray-700">A: Absolutely! Nami has a codebase investigator tool for deep code analysis and can help you write functions or find errors.</p>
                 </div>
                 <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
-                    <h4 class="font-bold mb-2">Q: นามิจะจำสิ่งที่ผู้ใช้ ชอบได้ยังไงบ้างคะ?</h4>
-                    <p class="text-gray-700">A: นามิมีระบบ User Memory ที่คอยบันทึกความพึงพอใจและสไตล์การทำงานของผู้ใช้ ไว้ค่ะ ยิ่งเราคุยกันมากเท่าไหร่ นามิก็จะยิ่งรู้ใจและช่วยงานได้ตรงจุดมากขึ้นเท่านั้นเลยนะคะ</p>
+                    <h4 class="font-bold mb-2">Q: How does Nami remember my preferences?</h4>
+                    <p class="text-gray-700">A: Nami uses User Memory to record your satisfaction and working style. The more you talk, the better she knows you!</p>
                 </div>
                 <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
-                    <h4 class="font-bold mb-2">Q: ข้อมูลที่นามิหามาให้ เชื่อถือได้แค่ไหนคะ?</h4>
-                    <p class="text-gray-700">A: นามิใช้ Google Search เพื่อดึงข้อมูลล่าสุดจากแหล่งที่เชื่อถือได้ และจะทำการสรุปเนื้อหาให้ผู้ใช้ เข้าใจง่ายที่สุด แต่ถ้าเป็นเรื่องเทคนิคเฉพาะทาง นามิจะตรวจสอบจาก Documentation ให้ด้วยเพื่อความชัวร์ค่า!</p>
+                    <h4 class="font-bold mb-2">Q: How reliable is the information Nami provides?</h4>
+                    <p class="text-gray-700">A: Nami uses Google Search to pull data from reliable sources. For technical topics, she cross-checks with documentation to be sure!</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Nami's Quote/Vision -->
+    <!-- Quote Section -->
     <section class="py-24 bg-[#0f0f12] text-center px-6">
         <div class="max-w-[800px] mx-auto">
             <span class="material-symbols-outlined text-[#00ffff] text-5xl mb-6">auto_awesome</span>
             <blockquote class="text-[24px] md:text-[32px] font-heading font-medium leading-[1.3] text-white italic mb-8">
-                "เทคโนโลยีที่ดีที่สุด คือเทคโนโลยีที่ทำให้เราทำงานได้สนุกขึ้น และมีเวลาไปทำสิ่งที่เรารักมากขึ้นค่ะ นามิจะคอยเป็นลมใต้ปีกให้คุณบินไปได้ไกลที่สุดเลยนะจ๊ะ!"
+                "The best technology is the one that makes our work more fun and gives us more time to do what we love. Nami will be the wind beneath your wings to fly the furthest!"
             </blockquote>
-            <p class="text-[#00ffff] font-bold">— นามิ (Nami)</p>
+            <p class="text-[#00ffff] font-bold">— Nami</p>
         </div>
     </section>
 

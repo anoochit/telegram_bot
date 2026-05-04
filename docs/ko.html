@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나미 (Nami) - 당신의 AI 에이전트 어시스턴트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #0f0f12;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .font-heading {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .cyan-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .glass-morphism {
+            background: rgba(29, 29, 31, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nami-gradient {
+            background: linear-gradient(135deg, #00ffff 0%, #87ceeb 100%);
+        }
+        .card-shadow {
+            box-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px;
+        }
+        .transition-all-custom {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Global Nav -->
+    <nav class="fixed top-0 w-full h-[44px] bg-black z-50 flex items-center justify-center px-4">
+        <div class="flex space-x-8">
+            <a href="#about" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">나미에 대하여</a>
+            <a href="#capabilities" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">기능</a>
+            <a href="#how-to" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">사용 방법</a>
+            <a href="#faq" class="text-[12px] font-normal tracking-tight hover:text-[#00ffff] transition-colors">자주 묻는 질문</a>
+        </div>
+    </nav>
+
+    <!-- Sub Nav (Frosted Glass) -->
+    <nav class="fixed top-[44px] w-full h-[52px] glass-morphism z-40 flex items-center justify-between px-6 md:px-12">
+        <a href="#home">
+        <span class="font-heading text-lg font-bold tracking-tight text-[#00ffff]">NAMI <span class="text-white">v0.5.0</span></span>
+        </a>
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-2 text-[12px] mr-4 border-r border-white/20 pr-4">
+                <a href="index.html" class="hover:text-[#00ffff] transition-colors">TH</a>
+                <a href="en.html" class="hover:text-[#00ffff] transition-colors">EN</a>
+                <a href="ko.html" class="text-[#00ffff] font-bold">KO</a>
+                <a href="ja.html" class="hover:text-[#00ffff] transition-colors">JA</a>
+            </div>
+            <a href="#how-to">
+            <button class="bg-[#00ffff] text-[#0f0f12] text-[13px] font-semibold px-4 py-1.5 rounded-full active:scale-[0.95] transition-transform">
+                시작하기
+            </button>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Tile -->
+    <section id="home" class="min-h-screen flex flex-col items-center justify-center pt-[96px] text-center px-6 bg-gradient-to-b from-[#0f0f12] to-[#1d1d1f]">
+        <div class="mb-8 relative">
+            <div class="w-64 h-64 rounded-full nami-gradient p-1 cyan-glow overflow-hidden">
+                <div class="w-full h-full bg-[#0f0f12] rounded-full flex items-center justify-center overflow-hidden">
+                    <img src="https://raw.githubusercontent.com/anoochit/namiClaw/refs/heads/main/screenshots/nami-avatar.png" alt="Nami Avatar" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <div class="absolute -bottom-2 -right-2 bg-white text-black px-3 py-1 rounded-full text-xs font-bold font-heading">
+                ACTIVE
+            </div>
+        </div>
+        <h1 class="text-[56px] md:text-[80px] font-heading font-bold leading-[1.07] tracking-[-0.01em] mb-4">
+            안녕하세요! <span class="text-[#00ffff]">나미</span>가 왔어요!
+        </h1>
+        <p class="text-[20px] md:text-[24px] text-gray-400 max-w-[800px] leading-[1.47] mb-8">
+            당신의 든든한 AI 어시스턴트, 넘치는 에너지와 최신 기술로 모든 프로젝트를 지원합니다.
+        </p>
+        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <a href="#capabilities" class="rounded-full bg-[#00ffff] text-[#0f0f12] px-[22px] py-[11px] font-semibold text-[17px] active:scale-[0.95] transition-all-custom">기능 살펴보기</a>
+            <a href="https://github.com/anoochit/namiClaw.git" target="_blank" class="rounded-full border border-white/20 bg-white/5 px-[22px] py-[11px] font-semibold text-[17px] hover:bg-white/10 active:scale-[0.95] transition-all-custom flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github mr-2" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                Fork at GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-[#ffffff] text-[#1d1d1f]">
+        <div class="max-w-[980px] mx-auto px-6">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12">나미에 대하여</h2>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <p class="text-[17px] leading-[1.47]">
+                        나미는 당신의 업무와 프로젝트를 돕기 위해 특별히 제작된 AI 어시스턴트입니다. 단순한 컴퓨터 프로그램이 아니라, 함께 성장할 준비가 된 밝은 동반자입니다!
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-[#0066cc] mr-3">favorite</span>
+                            <span><strong>성격:</strong> 밝고 친근하며, 긍정적인 에너지로 언제나 도울 준비가 되어 있습니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-[#0066cc] mr-3">bolt</span>
+                            <span><strong>능력:</strong> 어려운 기술적인 내용도 쉽게 설명해주는 전문가입니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-[#0066cc] mr-3">target</span>
+                            <span><strong>목표:</strong> 업무 속도를 높이고 모든 것을 완벽하게 정리하도록 돕는 것입니다.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="rounded-[18px] bg-[#0f0f12] p-2 card-shadow flex items-center justify-center aspect-square overflow-hidden border border-white/10">
+                    <img src="https://raw.githubusercontent.com/anoochit/namiClaw/refs/heads/main/screenshots/nami-avatar.png" alt="Nami Avatar" class="w-full h-full object-cover rounded-[12px]">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Section -->
+    <section id="capabilities" class="py-24 bg-[#0f0f12]">
+        <div class="max-w-[1200px] mx-auto px-6 text-center">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-[#00ffff]">나미의 파워</h2>
+            <p class="text-gray-400 mb-16 max-w-[700px] mx-auto">나미는 당신의 업무를 편하게 만들어줄 다양한 도구를 가지고 있습니다.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 max-w-[980px] mx-auto">
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">99.9%</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">업타임</div>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">24/7</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">모니터링</div>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">PRO</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">조직화</div>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-[12px]">
+                    <div class="text-[#00ffff] text-2xl font-bold font-heading">AI-GIRL</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest">페르소나</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">search</span>
+                    <h3 class="text-xl font-bold mb-2">구글 검색</h3>
+                    <p class="text-gray-400 text-sm">전 세계의 최신 정보와 뉴스를 즉시 찾아드립니다.</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">folder_open</span>
+                    <h3 class="text-xl font-bold mb-2">파일 관리</h3>
+                    <p class="text-gray-400 text-sm">시스템의 파일을 정확하게 읽고, 쓰고, 정리합니다.</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">menu_book</span>
+                    <h3 class="text-xl font-bold mb-2">위키 지식</h3>
+                    <p class="text-gray-400 text-sm">개인 지식 베이스를 구축하고 중요한 내용을 한곳에 요약합니다.</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">terminal</span>
+                    <h3 class="text-xl font-bold mb-2">코드 분석</h3>
+                    <p class="text-gray-400 text-sm">코드 구조를 깊이 있게 분석하고 성가신 버그를 찾는 데 도움을 줍니다.</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">checklist</span>
+                    <h3 class="text-xl font-bold mb-2">할 일 관리</h3>
+                    <p class="text-gray-400 text-sm">작업의 우선순위를 정해 중요한 단계를 놓치지 않도록 합니다.</p>
+                </div>
+                <div class="bg-[#1d1d1f] p-8 rounded-[18px] border border-white/10 hover:border-[#00ffff]/50 transition-all-custom group">
+                    <span class="material-symbols-outlined text-[#00ffff] text-4xl mb-4 group-hover:scale-110 transition-transform">psychology</span>
+                    <h3 class="text-xl font-bold mb-2">사용자 메모리</h3>
+                    <p class="text-gray-400 text-sm">더 나은 서비스를 위해 당신의 모든 세부 사항과 선호도를 기억합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use Section -->
+    <section id="how-to" class="py-24 bg-[#fbfbfd] text-[#1d1d1f]">
+        <div class="max-w-[980px] mx-auto px-6">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-4 text-center">나미 사용 방법</h2>
+            <p class="text-gray-600 mb-16 text-center max-w-[600px] mx-auto text-[17px]">
+                최상의 결과를 위해 몇 가지 간단한 단계로 시작해 보세요.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="space-y-12">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">1</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">자연어로 명령하기</h3>
+                            <p class="text-gray-600">동료와 대화하듯 나미에게 말해보세요. 일상적인 언어와 기술 용어를 완벽하게 이해합니다.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">2</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">복잡한 작업 위임하기</h3>
+                            <p class="text-gray-600">새 프로젝트 생성, 문서 작성, 버그 분석 등 어려운 작업은 나미의 서브 에이전트들이 처리해 드립니다.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#00ffff] text-[#0f0f12] flex items-center justify-center font-bold mr-4 shrink-0">3</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">위키와 다이어리 확인하기</h3>
+                            <p class="text-gray-600">나미는 일일 활동을 다이어리에 기록하고 중요한 지식은 위키에 저장하여 언제든 확인할 수 있게 합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-[#1d1d1f] rounded-[18px] p-6 text-white card-shadow font-mono text-sm">
+                    <div class="flex items-center space-x-2 mb-4 border-bottom border-white/10 pb-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="text-xs text-gray-500 ml-2">Nami 터미널</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-[#00ffff]">> 나미_프로토콜_초기화 중...</p>
+                        <p class="text-gray-400">[SYSTEM] 의존성 확인 중...</p>
+                        <p class="text-gray-400">[SYSTEM] 위키/다이어리 동기화 중...</p>
+                        <p class="text-green-400">[SUCCESS] 나미가 도와드릴 준비가 되었습니다!</p>
+                        <p class="mt-4">안녕하세요! 오늘은 어떤 프로젝트를 함께해볼까요?</p>
+                        <div class="mt-4 animate-pulse inline-block w-2 h-4 bg-[#00ffff]"></div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-white/10">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">최근 다이어리</p>
+                        <div class="text-xs space-y-1">
+                            <p class="text-gray-300">• 나미 SPA 소개 웹사이트 제작</p>
+                            <p class="text-gray-300">• 코랏 지역 realme 서비스 센터 검색</p>
+                            <p class="text-gray-300">• 카테고리별 할 일 목록 정리 [마케팅/프로젝트]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 bg-[#c0c0c0] text-[#1d1d1f]">
+        <div class="max-w-[800px] mx-auto px-6">
+            <h2 class="text-[40px] font-heading font-semibold leading-[1.10] tracking-tight mb-12 text-center">자주 묻는 질문</h2>
+            <div class="space-y-6">
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: 나미는 어떻게 시작하나요?</h4>
+                    <p class="text-gray-700">A: 그냥 인사만 건네주세요! 정보 검색, 파일 관리, 계획 수립 등 나미는 24시간 대기 중입니다.</p>
+                </div>
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: 나미가 정말 코딩이나 디버깅을 도와줄 수 있나요?</h4>
+                    <p class="text-gray-700">A: 네, 당연하죠! 나미는 심층 코드 분석을 위한 코드베이스 조사 도구를 갖추고 있어 함수 작성이나 오류 수정을 도와드릴 수 있습니다.</p>
+                </div>
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: 나미는 내 선호도를 어떻게 기억하나요?</h4>
+                    <p class="text-gray-700">A: 나미는 사용자 메모리를 사용하여 당신의 만족도와 작업 스타일을 기록합니다. 대화를 많이 나눌수록 당신을 더 잘 이해하게 됩니다!</p>
+                </div>
+                <div class="bg-white/80 p-6 rounded-[18px] card-shadow">
+                    <h4 class="font-bold mb-2">Q: 나미가 제공하는 정보는 얼마나 신뢰할 수 있나요?</h4>
+                    <p class="text-gray-700">A: 나미는 구글 검색을 통해 신뢰할 수 있는 소스에서 데이터를 가져옵니다. 기술적인 주제는 확실한 답변을 위해 문서를 교차 확인합니다!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote Section -->
+    <section class="py-24 bg-[#0f0f12] text-center px-6">
+        <div class="max-w-[800px] mx-auto">
+            <span class="material-symbols-outlined text-[#00ffff] text-5xl mb-6">auto_awesome</span>
+            <blockquote class="text-[24px] md:text-[32px] font-heading font-medium leading-[1.3] text-white italic mb-8">
+                "최고의 기술은 업무를 더 즐겁게 만들고, 우리가 사랑하는 일을 할 시간을 더 많이 주는 기술입니다. 나미가 당신의 날개가 되어 가장 멀리 날 수 있도록 도울게요!"
+            </blockquote>
+            <p class="text-[#00ffff] font-bold">— 나미 (Nami)</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-black border-t border-white/10 px-6">
+        <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-6 md:mb-0">
+                <span class="font-heading text-xl font-bold text-[#00ffff]">NAMI</span>
+                <p class="text-gray-500 text-sm mt-2">© 2026 Crafted with ♡ by Noel.</p>
+            </div>
+            <div class="flex space-x-6 text-gray-500 text-sm">
+                <a href="#" class="hover:text-white">개인정보 처리방침</a>
+                <a href="#" class="hover:text-white">이용약관</a>
+                <a href="#" class="hover:text-white">문서</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
