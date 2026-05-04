@@ -52,9 +52,15 @@ try {
     fs.writeFileSync(cssPath, css);
 
     // Build the command using the clean temporary input
+    const libsDir = path.join(__dirname, '..', 'libs');
+    const env = { ...process.env };
+    if (fs.existsSync(libsDir)) {
+        env.LD_LIBRARY_PATH = `${libsDir}:${env.LD_LIBRARY_PATH || ''}`;
+    }
+
     const cmd = `md-to-pdf "${tempInput}" --stylesheet "${cssPath}" --pdf-options "{\\"margin\\": {\\"top\\": \\"20mm\\", \\"bottom\\": \\"20mm\\", \\"left\\": \\"20mm\\", \\"right\\": \\"20mm\\"}}"`;
     
-    execSync(cmd, { stdio: 'inherit' });
+    execSync(cmd, { stdio: 'inherit', env });
     
     // The output from md-to-pdf will be named .temp-clean-input.pdf. We need to rename it to the actual desired output.
     const tempOutput = tempInput.replace(/\.md$/, '.pdf');
