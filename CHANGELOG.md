@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2026-05-04
+
+### Added
+
+- **Ebook Creation Skill**: Introduced the `create-ebook` skill, enabling users to generate PDF and EPUB files directly from a directory of Markdown files. This includes automatic page breaks between chapters.
+
+### Changed
+
+- **Skill Prioritization**: Updated agent instructions to prioritize specialized skills over general tools, improving the accuracy and efficiency of task execution.
+
 ## [0.4.0] - 2026-05-03
 
 ### Added
