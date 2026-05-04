@@ -15,7 +15,7 @@ pub fn get_specialists(model: Arc<dyn Llm>) -> anyhow::Result<HashMap<String, Ar
     let utility_tools: Vec<Arc<dyn Tool>> = {
         let mut t = tools::weather::weather_tools();
         t.extend(tools::current_datetime::datetime_tools());
-        t.extend(tools::system_info::system_info_tools());
+        t.extend(tools::system_status::system_status_tools());
         t.extend(tools::soul::soul_tools());
         t.extend(tools::todo::todo_tools());
         t

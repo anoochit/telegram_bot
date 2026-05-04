@@ -4,7 +4,7 @@ pub mod parallel_tasks;
 pub mod search;
 pub mod shell;
 pub mod soul;
-pub mod system_info;
+pub mod system_status;
 pub mod todo;
 pub mod weather;
 pub mod web_fetch;
