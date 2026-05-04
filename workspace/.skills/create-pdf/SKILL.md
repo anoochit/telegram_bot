@@ -1,43 +1,45 @@
 ---
 name: create-pdf
-description: Use this skill to convert Markdown files into a professional PDF document. Triggers when the user asks to "convert to pdf", "create pdf", "print markdown", or "generate a pdf from".
-allowed-tools:
-  - read_file
-  - write_file
-  - list_dir
-  - exec_command
-  - glob_find
+description: Convert Markdown files into professionally formatted PDF documents. Use this skill whenever the user asks to "convert to pdf", "create pdf", "print markdown", "generate a pdf", or wants to export any Markdown content as a shareable document — even if they just say "save this as a file I can print" or "make a PDF version of this."
 ---
 
 # create-pdf
 
-This skill provides a standardized workflow for converting Markdown documents into beautifully formatted PDF files. It uses a bundled Node.js script that leverages the `md-to-pdf` package.
+This skill provides a standardized workflow for converting Markdown documents into beautifully formatted PDF files using a bundled Node.js script powered by `md-to-pdf`.
+
+## Prerequisites
+
+The `generate_pdf.cjs` script requires `md-to-pdf` to be installed globally. Check and install in one step:
+
+```bash
+npm list -g md-to-pdf || npm install -g md-to-pdf
+```
 
 ## Quick Start
 
-When the user asks to convert a Markdown file to a PDF, use the `run_shell_command` tool to execute the provided generation script.
+Run the bundled generation script with the path to the target Markdown file:
 
 ```bash
 node workspace/.skills/create-pdf/scripts/generate_pdf.cjs path/to/your_file.md
 ```
 
-The script will automatically:
-1. Validate the file path.
-2. Apply a clean, professional CSS stylesheet (typography, margins, code block formatting).
-3. Set appropriate print margins.
-4. Output the PDF in the exact same directory as the input Markdown file, with a `.pdf` extension.
+The script automatically:
+1. Validates the file path.
+2. Applies a clean, professional CSS stylesheet (typography, margins, code block formatting).
+3. Sets appropriate print margins.
+4. Saves the PDF to the same directory as the input file, with a `.pdf` extension.
 
 ## Workflow
 
-1. **Verify File Existence**: Before running the script, ensure the target `.md` file actually exists using filesystem tools if you aren't sure.
-2. **Execute Script**: Run the `generate_pdf.cjs` script.
-3. **Verify Output**: The script will output `Success: PDF generated at path/to/your_file.pdf`. 
-4. **Notify User**: Let the user know the absolute or relative path to the generated PDF.
+1. **Check dependencies:** Run the prerequisite install command above before anything else.
+2. **Verify the file exists:** Confirm the target `.md` file is accessible before running the script.
+3. **Execute the script:** Run `generate_pdf.cjs` with the correct path.
+4. **Confirm output:** The script prints `Success: PDF generated at path/to/your_file.pdf` on completion. If this line doesn't appear, treat it as a failure and surface the error to the user.
+5. **Notify the user:** Share the path to the generated PDF so they can open or print it.
 
-## Dependencies
+## Troubleshooting
 
-The `generate_pdf.cjs` script relies on a global installation of `md-to-pdf`. If the script fails indicating the command is not found, you can install it using:
-
-```bash
-npm install -g md-to-pdf
-```
+* **`md-to-pdf` not found:** Run `npm install -g md-to-pdf` and retry.
+* **Script exits without printing success:** Check stderr for the underlying error — most commonly a bad file path or unsupported Markdown syntax.
+* **Styling looks off:** The bundled stylesheet handles standard Markdown. If the source file uses non-standard extensions (e.g. raw HTML, custom directives), output may vary.
+* **Output location unclear:** The PDF always lands in the same directory as the input `.md` file — there is no output path argument. Move the file afterward if a different destination is needed.

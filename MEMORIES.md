@@ -17,3 +17,5 @@
 - To create PDF books from Markdown, use the create-pdf command. To create EPUB books, use the create-epub skill as it's configured to work without pandoc.
 - When creating a PDF with md-to-pdf, if you encounter an error related to shared libraries, use the command with LD_LIBRARY_PATH=$PWD/.skills/create-pdf/libs to access libnss3.so and other files prepared on your machine.
 - For creating EPUB, use skill create-epub (node ​​workspace/.skills/create-epub/scripts/generate_epub.cjs) instead of pandoc because pandoc is not installed on the system.
+
+- Noel requested that I (Nami) respond in English from now on.

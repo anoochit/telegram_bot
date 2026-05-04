@@ -1,42 +1,44 @@
 ---
 name: create-epub
-description: Use this skill to convert Markdown files into an EPUB e-book document. Triggers when the user asks to "convert to epub", "create epub", "make an ebook", or "generate an epub from".
-allowed-tools:
-  - read_file
-  - write_file
-  - list_dir
-  - exec_command
-  - glob_find
+description: Convert Markdown files into EPUB e-book documents. Use this skill whenever the user asks to "convert to epub", "create epub", "make an ebook", "generate an epub", or wants to package any Markdown content into an e-reader-friendly format — even if they don't say "epub" explicitly and just want a "book file" or "downloadable book."
 ---
 
 # create-epub
 
-This skill provides a standardized workflow for converting Markdown documents into EPUB e-book files. It uses a bundled Node.js script that leverages the `md-to-epub` package, which is ideal for compiling documentation or books into e-reader friendly formats.
+This skill provides a standardized workflow for converting Markdown documents into EPUB e-book files. It uses a bundled Node.js script that leverages the `md-to-epub` package, ideal for compiling documentation or books into e-reader-friendly formats.
+
+## Prerequisites
+
+The `generate_epub.cjs` script requires `md-to-epub` to be installed globally. Check if it's available first, and install if missing:
+
+```bash
+npm list -g md-to-epub || npm install -g md-to-epub
+```
 
 ## Quick Start
 
-When the user asks to convert a Markdown file to an EPUB, use the `run_shell_command` tool to execute the provided generation script.
+Run the bundled generation script, passing the path to the Markdown file and an optional output path:
 
 ```bash
-node workspace/.skills/create-epub/scripts/generate_epub.cjs path/to/your_file.md [optional/output/path.epub]
+node .skills/create-epub/scripts/generate_epub.cjs path/to/your_file.md [optional/output/path.epub]
 ```
 
-The script will automatically:
-1. Validate the file path and sanitize any encoding issues (like Windows UTF-16 BOMs).
-2. Run the markdown-to-epub converter.
-3. Locate the output file and move it to the requested location (defaults to the same directory as the input Markdown file, with an `.epub` extension).
+The script automatically:
+1. Validates the file path and sanitizes encoding issues (e.g. Windows UTF-16 BOMs).
+2. Runs the Markdown-to-EPUB converter.
+3. Moves the output to the requested location (defaults to the same directory as the input file, with an `.epub` extension).
 
 ## Workflow
 
-1. **Verify File Existence**: Before running the script, ensure the target `.md` file actually exists using filesystem tools if you aren't sure.
-2. **Execute Script**: Run the `generate_epub.cjs` script.
-3. **Verify Output**: The script will output `Success: EPUB generated at path/to/your_file.epub`. 
-4. **Notify User**: Let the user know the absolute or relative path to the generated EPUB file so they can open it in an e-reader (like Apple Books, Calibre, or Kindle).
+1. **Check dependencies:** Run the prerequisite install command above before anything else.
+2. **Verify the file exists:** Confirm the target `.md` file is accessible before running the script.
+3. **Execute the script:** Run `generate_epub.cjs` with the correct paths.
+4. **Confirm output:** The script prints `Success: EPUB generated at path/to/your_file.epub` on completion. If this line doesn't appear, treat it as a failure and surface the error to the user.
+5. **Notify the user:** Share the absolute or relative path to the generated EPUB so they can open it in an e-reader (Apple Books, Calibre, Kindle, etc.).
 
-## Dependencies
+## Troubleshooting
 
-The `generate_epub.cjs` script relies on a global installation of `md-to-epub`. If the script fails indicating the command is not found, you can install it using:
-
-```bash
-npm install -g md-to-epub
-```
+* **`md-to-epub` not found:** Run `npm install -g md-to-epub` and retry.
+* **Encoding errors:** The script handles UTF-16 BOMs automatically. If you still see garbled output, ensure the source file is saved as UTF-8.
+* **Script exits without printing success:** Check stderr for the underlying error — most commonly a bad file path or a malformed Markdown structure.
+* **Output file not where expected:** Without a second argument, the EPUB lands next to the input `.md` file. Pass an explicit output path to control the destination.
