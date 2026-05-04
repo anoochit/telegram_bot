@@ -1,25 +1,26 @@
-use crossterm::event::{Event, EventStream, KeyCode, KeyEventKind};
+use crossterm::event::{ Event, EventStream, KeyCode, KeyEventKind };
 use crossterm::style::Stylize;
-use crossterm::{cursor, execute, style, terminal};
+use crossterm::{ cursor, execute, style, terminal };
 use futures::StreamExt;
 use futures_util::FutureExt;
 use regex::Regex;
-use rustyline::completion::{Completer, Pair};
+use rustyline::completion::{ Completer, Pair };
 use rustyline::highlight::Highlighter;
 use rustyline::hint::Hinter;
 use rustyline::validate::Validator;
-use rustyline::{Config, Context, Editor, Helper};
+use rustyline::{ Config, Context, Editor, Helper };
 use std::borrow::Cow;
-use std::io::{self, Write};
+use std::io::{ self, Write };
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{ AtomicBool, Ordering };
 use termimad::MadSkin;
+use uuid::Uuid;
 use walkdir::WalkDir;
 
 use crate::agent::get_compaction_config;
 use adk_rust::Agent;
 use adk_rust::prelude::*;
-use adk_session::{CreateRequest, GetRequest, SessionService};
+use adk_session::{ CreateRequest, GetRequest, SessionService };
 
 struct NamiHelper;
 
@@ -30,10 +31,14 @@ impl Completer for NamiHelper {
         &self,
         line: &str,
         pos: usize,
-        _ctx: &Context<'_>,
+        _ctx: &Context<'_>
     ) -> rustyline::Result<(usize, Vec<Pair>)> {
-        let (start, word) =
-            rustyline::completion::extract_word(line, pos, None, |c| c == ' ' || c == '\t');
+        let (start, word) = rustyline::completion::extract_word(
+            line,
+            pos,
+            None,
+            |c| (c == ' ' || c == '\t')
+        );
 
         if word.starts_with('@') {
             let path_part = &word[1..];
@@ -45,8 +50,7 @@ impl Completer for NamiHelper {
                 for entry in WalkDir::new(workspace_path)
                     .max_depth(5) // Don't go too deep to keep it fast
                     .into_iter()
-                    .filter_map(|e| e.ok())
-                {
+                    .filter_map(|e| e.ok()) {
                     if entry.file_type().is_file() {
                         if let Ok(relative_path) = entry.path().strip_prefix(workspace_path) {
                             let path_str = relative_path.to_string_lossy().replace("\\", "/");
@@ -80,7 +84,7 @@ impl Highlighter for NamiHelper {
     fn highlight_prompt<'b, 's: 'b, 'p: 'b>(
         &'s self,
         prompt: &'p str,
-        _default: bool,
+        _default: bool
     ) -> Cow<'b, str> {
         Cow::Borrowed(prompt)
     }
@@ -96,12 +100,17 @@ impl Highlighter for NamiHelper {
     fn highlight_candidate<'c>(
         &self,
         candidate: &'c str,
-        _completion: rustyline::CompletionType,
+        _completion: rustyline::CompletionType
     ) -> Cow<'c, str> {
         Cow::Borrowed(candidate)
     }
 
-    fn highlight_char(&self, _line: &str, _pos: usize, _kind: rustyline::highlight::CmdKind) -> bool {
+    fn highlight_char(
+        &self,
+        _line: &str,
+        _pos: usize,
+        _kind: rustyline::highlight::CmdKind
+    ) -> bool {
         false
     }
 }
@@ -133,16 +142,22 @@ async fn process_file_references(input: &str) -> String {
                 // Threshold: 4KB
                 if size < 4096 {
                     if let Ok(content) = tokio::fs::read_to_string(&path).await {
-                        appended_context.push_str(&format!(
-                            "\n\n--- Content from {} ---\n{}\n--- End of content ---\n",
-                            file_path_str, content
-                        ));
+                        appended_context.push_str(
+                            &format!(
+                                "\n\n--- Content from {} ---\n{}\n--- End of content ---\n",
+                                file_path_str,
+                                content
+                            )
+                        );
                     }
                 } else {
-                    appended_context.push_str(&format!(
-                        "\n\n[REFERENCE: {} (Size: {} bytes)]\nThis file is too large for direct injection. Use your filesystem tools (read_file) to inspect specific parts of this file if needed.\n",
-                        file_path_str, size
-                    ));
+                    appended_context.push_str(
+                        &format!(
+                            "\n\n[REFERENCE: {} (Size: {} bytes)]\nThis file is too large for direct injection. Use your filesystem tools (read_file) to inspect specific parts of this file if needed.\n",
+                            file_path_str,
+                            size
+                        )
+                    );
                 }
             }
         }
@@ -159,77 +174,75 @@ async fn process_file_references(input: &str) -> String {
 fn render_banner(provider: &str, model_name: &str) {
     println!(
         "{}",
-        style::style(
-            r#"
+        style
+            ::style(
+                r#"
    _  _____   __  _______
   / |/ / _ | /  |/  /  _/
  /    / __ |/ /|_/ // /  
 /_/|_/_/ |_/_/  /_/___/  
                          
 "#
-        )
-        .magenta()
+            )
+            .magenta()
     );
     println!(
         "{} {}",
-        style::style(format!("Nami CLI v{}", env!("CARGO_PKG_VERSION"))).bold().magenta(),
+        style
+            ::style(format!("Nami CLI v{}", env!("CARGO_PKG_VERSION")))
+            .bold()
+            .magenta(),
         style::style(format!("({}) using {}", provider, model_name)).dim()
     );
-    println!(
-        "\n{}",
-        "Type /exit to quit, /clear to wipe terminal, /new to start a new chat."
-    );
+    println!("\n{}", "Type /exit to quit, /clear to wipe terminal, /new to start a new chat.");
     println!("Type @ followed by path to reference files (use Tab for completion).");
     println!("Press ESC during a request to cancel it.\n");
 }
 
-async fn ensure_session(sessions: &Arc<dyn SessionService>, app_name: &str, user_id: &str, session_id: &str) -> anyhow::Result<()> {
-    if sessions
-        .get(GetRequest {
-            app_name: app_name.to_string(),
-            user_id: user_id.to_string(),
-            session_id: session_id.to_string(),
-            num_recent_events: Some(0),
-            after: None,
-        })
-        .await
-        .is_err()
-    {
+async fn ensure_session(
+    sessions: &Arc<dyn SessionService>,
+    app_name: &str,
+    user_id: &str,
+    session_id: &str
+) -> anyhow::Result<()> {
+    if
         sessions
-            .create(CreateRequest {
+            .get(GetRequest {
                 app_name: app_name.to_string(),
                 user_id: user_id.to_string(),
-                session_id: Some(session_id.to_string()),
-                state: Default::default(),
-            })
-            .await?;
+                session_id: session_id.to_string(),
+                num_recent_events: Some(0),
+                after: None,
+            }).await
+            .is_err()
+    {
+        sessions.create(CreateRequest {
+            app_name: app_name.to_string(),
+            user_id: user_id.to_string(),
+            session_id: Some(session_id.to_string()),
+            state: Default::default(),
+        }).await?;
     }
     Ok(())
 }
-
-
 
 pub(crate) async fn run_cli(
     agent: Arc<dyn Agent>,
     sessions: Arc<dyn SessionService>,
     model: Arc<dyn Llm>,
     provider: String,
-    model_name: String,
+    model_name: String
 ) -> anyhow::Result<()> {
     let mut stdout = io::stdout();
-    execute!(
-        stdout,
-        terminal::Clear(terminal::ClearType::All),
-        cursor::MoveTo(0, 0)
-    )?;
+    execute!(stdout, terminal::Clear(terminal::ClearType::All), cursor::MoveTo(0, 0))?;
 
     render_banner(&provider, &model_name);
 
     let app_name = "cli";
     let user_id = "default_user";
-    let session_id = "cli_session";
+    let session_id = Uuid::new_v4().to_string();
 
-    ensure_session(&sessions, app_name, user_id, session_id).await?;
+    ensure_session(&sessions, app_name, user_id, &session_id).await?;
 
     let runner = Runner::builder()
         .app_name(app_name)
@@ -238,31 +251,16 @@ pub(crate) async fn run_cli(
         .compaction_config(get_compaction_config(model))
         .build()?;
 
-    let config = Config::builder()
-        .completion_type(rustyline::CompletionType::List)
-        .build();
-    let mut rl: Editor<NamiHelper, rustyline::history::FileHistory> =
-        Editor::with_config(config)?;
+    let config = Config::builder().completion_type(rustyline::CompletionType::List).build();
+    let mut rl: Editor<NamiHelper, rustyline::history::FileHistory> = Editor::with_config(config)?;
     rl.set_helper(Some(NamiHelper));
     let _ = rl.load_history(".cli_history");
 
     let mut nami_skin = MadSkin::default();
-    nami_skin
-        .paragraph
-        .set_fg(termimad::crossterm::style::Color::White);
-    nami_skin
-        .bullet
-        .set_fg(termimad::crossterm::style::Color::Magenta);
+    nami_skin.paragraph.set_fg(termimad::crossterm::style::Color::White);
+    nami_skin.bullet.set_fg(termimad::crossterm::style::Color::Magenta);
 
-    handle_chat_loop(
-        &mut rl,
-        &sessions,
-        &runner,
-        &nami_skin,
-        app_name,
-        user_id,
-        session_id,
-    ).await
+    handle_chat_loop(&mut rl, &sessions, &runner, &nami_skin, app_name, user_id, &session_id).await
 }
 
 async fn handle_chat_loop(
@@ -272,7 +270,7 @@ async fn handle_chat_loop(
     nami_skin: &MadSkin,
     app_name: &str,
     user_id: &str,
-    session_id: &str,
+    session_id: &str
 ) -> anyhow::Result<()> {
     loop {
         let readline = rl.readline("You > ");
@@ -294,21 +292,17 @@ async fn handle_chat_loop(
                     continue;
                 }
                 if trimmed == "/new" {
-                    let _ = sessions
-                        .delete(adk_session::DeleteRequest {
-                            app_name: app_name.to_string(),
-                            user_id: user_id.to_string(),
-                            session_id: session_id.to_string(),
-                        })
-                        .await;
-                    sessions
-                        .create(CreateRequest {
-                            app_name: app_name.to_string(),
-                            user_id: user_id.to_string(),
-                            session_id: Some(session_id.to_string()),
-                            state: Default::default(),
-                        })
-                        .await?;
+                    let _ = sessions.delete(adk_session::DeleteRequest {
+                        app_name: app_name.to_string(),
+                        user_id: user_id.to_string(),
+                        session_id: session_id.to_string(),
+                    }).await;
+                    sessions.create(CreateRequest {
+                        app_name: app_name.to_string(),
+                        user_id: user_id.to_string(),
+                        session_id: Some(session_id.to_string()),
+                        state: Default::default(),
+                    }).await?;
                     println!("\n{}\n", style::style("--- Session reset ---").dim());
                     continue;
                 }
@@ -393,9 +387,10 @@ async fn handle_chat_loop(
                 }
                 println!();
             }
-            Err(_) => break,
+            Err(_) => {
+                break;
+            }
         }
     }
     Ok(())
 }
-
