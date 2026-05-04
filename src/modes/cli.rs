@@ -161,14 +161,11 @@ fn render_banner(provider: &str, model_name: &str) {
         "{}",
         style::style(
             r#"
- _____  ___        __       ___      ___   __     
-(\"   \|"  \      /""\     |"  \    /"  | |" \    
-|.\\   \    |    /    \     \   \  //   | ||  |   
-|: \.   \\  |   /' /\  \    /\\  \/.    | |:  |   
-|.  \    \. |  //  __'  \  |: \.        | |.  |   
-|    \    \ | /   /  \\  \ |.  \    /:  | /\  |\  
- \___|\____\)(___/    \___)|___|\__/|___|(__\_|_) 
-                                                                                               
+   _  _____   __  _______
+  / |/ / _ | /  |/  /  _/
+ /    / __ |/ /|_/ // /  
+/_/|_/_/ |_/_/  /_/___/  
+                         
 "#
         )
         .magenta()
@@ -285,7 +282,7 @@ async fn handle_chat_loop(
                 if trimmed.is_empty() {
                     continue;
                 }
-                if trimmed == "/exit" {
+                if trimmed == "/exit" || trimmed == "/quit" {
                     break;
                 }
                 if trimmed == "/clear" {

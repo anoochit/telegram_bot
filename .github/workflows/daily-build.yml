@@ -52,12 +52,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4[cite: 1]
+
+      - name: Install System Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdbus-1-dev pkg-config libssl-dev
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@stable[cite: 1]
         with:
-          targets: ${{ matrix.target }}
+          targets: ${{ matrix.target }}[cite: 1]
 
       - name: Install cross
         if: matrix.use-cross
