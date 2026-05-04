@@ -4,8 +4,12 @@ use adk_tool::mcp::McpServerManager;
 use std::sync::Arc;
 
 /// Loads MCP tools from `mcp.json` if it exists and attaches them to the agent builder.
-/// It checks the workspace directory first, then the current directory.
+///
+/// It checks the workspace directory first, then the current directory. If a configuration
+/// file is found, it initializes an `McpServerManager`, attempts to start all defined
+/// MCP servers, logs any failures, and registers the manager as a toolset with the agent.
 pub async fn load_mcp_tools(mut builder: LlmAgentBuilder) -> anyhow::Result<LlmAgentBuilder> {
+    // Determine the path to the configuration file
     let workspace_root: std::path::PathBuf = utils::get_workspace_dir().await?;
     let workspace_mcp = workspace_root.join("mcp.json");
 
@@ -18,6 +22,7 @@ pub async fn load_mcp_tools(mut builder: LlmAgentBuilder) -> anyhow::Result<LlmA
     };
 
     if let Some(path) = mcp_config_path {
+        // Initialize the manager and load servers
         let mcp_manager = McpServerManager::from_json_file(path.to_str().unwrap_or("mcp.json"))?;
         let mcp_manager = Arc::new(mcp_manager);
 
@@ -31,6 +36,7 @@ pub async fn load_mcp_tools(mut builder: LlmAgentBuilder) -> anyhow::Result<LlmA
             }
         }
 
+        // Attach the started manager to the agent as a toolset
         builder = builder.toolset(mcp_manager);
     }
 

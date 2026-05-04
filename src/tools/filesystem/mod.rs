@@ -190,10 +190,11 @@ struct GrepArgs {
 async fn grep_search(args: GrepArgs) -> std::result::Result<Value, AdkError> {
     let root: std::path::PathBuf = get_workspace_dir().await?;
     let mut command = Command::new("grep");
+    // Ensure the grep command operates strictly within the workspace root
     command.arg("-r").arg(&args.pattern).arg(".");
 
     let output = command
-        .current_dir(root)
+        .current_dir(&root)
         .stdout(Stdio::piped())
         .spawn()
         .map_err(|e| AdkError::tool(e.to_string()))?
@@ -207,17 +208,23 @@ async fn grep_search(args: GrepArgs) -> std::result::Result<Value, AdkError> {
 #[derive(Deserialize, JsonSchema)]
 struct GlobArgs {
     pattern: String,
+    /// Optional subdirectory within workspace to search
+    cwd: Option<String>,
 }
 
 /// Finds files matching a specific glob pattern within the workspace.
 #[tool]
 async fn glob_find(args: GlobArgs) -> std::result::Result<Value, AdkError> {
-    let root: std::path::PathBuf = get_workspace_dir().await?;
+    let search_root = match args.cwd {
+        Some(c) => sandbox(&c).await?,
+        None => get_workspace_dir().await?,
+    };
+
     let mut command = Command::new("find");
-    command.arg(".").arg("-name").arg(&args.pattern);
+    // Use -wholename to allow path separators in the pattern
+    command.arg(&search_root).arg("-wholename").arg(format!("*{}*", &args.pattern));
 
     let output = command
-        .current_dir(root)
         .stdout(Stdio::piped())
         .spawn()
         .map_err(|e| AdkError::tool(e.to_string()))?

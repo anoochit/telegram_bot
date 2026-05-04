@@ -2,7 +2,7 @@ pub mod current_datetime;
 pub mod filesystem;
 pub mod parallel_tasks;
 pub mod search;
-pub mod shell;
+// pub mod shell;
 pub mod soul;
 pub mod system_status;
 pub mod todo;
