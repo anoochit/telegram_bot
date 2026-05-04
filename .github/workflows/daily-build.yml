@@ -51,6 +51,9 @@ jobs:
             extension: ".exe"
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install cross
         if: matrix.use-cross
         uses: taiki-e/install-action@cross
