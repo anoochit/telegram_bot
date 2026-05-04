@@ -8,37 +8,37 @@ use futures::future::join_all;
 use serde_json::{Value, json};
 
 #[derive(Deserialize, JsonSchema)]
-pub struct WritingTask {
-    /// The specific task or prompt for this writing job.
+pub struct Task {
+    /// The specific task or prompt for this job.
     pub prompt: String,
-    /// The name of the specialized agent to handle this task (e.g. 'documentation_architect', 'web_developer').
+    /// The name of the specialized agent to handle this task (e.g., 'generalist').
     pub specialist: String,
 }
 
 #[derive(Deserialize, JsonSchema)]
-pub struct ParallelWriterArgs {
-    /// A list of writing tasks to execute simultaneously.
-    pub tasks: Vec<WritingTask>,
+pub struct ParallelTasksArgs {
+    /// A list of tasks to execute simultaneously.
+    pub tasks: Vec<Task>,
 }
 
-pub struct ParallelWriter {
+pub struct ParallelTasks {
     specialists: HashMap<String, Arc<dyn Tool>>,
 }
 
-impl ParallelWriter {
+impl ParallelTasks {
     pub fn new(specialists: HashMap<String, Arc<dyn Tool>>) -> Self {
         Self { specialists }
     }
 }
 
 #[async_trait::async_trait]
-impl Tool for ParallelWriter {
+impl Tool for ParallelTasks {
     fn name(&self) -> &str {
-        "parallel_writer"
+        "parallel_tasks"
     }
 
     fn description(&self) -> &str {
-        "Executes multiple writing tasks in parallel using specialized sub-agents. Use this for complex document generation or multi-file analysis."
+        "Executes multiple tasks in parallel using sub-agents. Use this for high-speed multi-tasking."
     }
 
     fn parameters_schema(&self) -> Option<Value> {
@@ -51,7 +51,7 @@ impl Tool for ParallelWriter {
                         "type": "object",
                         "properties": {
                             "prompt": { "type": "string", "description": "The prompt or instructions for the sub-agent." },
-                            "specialist": { "type": "string", "description": "The name of the sub-agent to use (e.g., 'documentation_architect', 'web_developer', 'generalist')." }
+                            "specialist": { "type": "string", "description": "The name of the sub-agent to use (e.g., 'generalist')." }
                         },
                         "required": ["prompt", "specialist"]
                     }
@@ -62,7 +62,7 @@ impl Tool for ParallelWriter {
     }
 
     async fn execute(&self, ctx: Arc<dyn ToolContext>, args: Value) -> std::result::Result<Value, AdkError> {
-        let args: ParallelWriterArgs = serde_json::from_value(args)
+        let args: ParallelTasksArgs = serde_json::from_value(args)
             .map_err(|e| AdkError::tool(format!("Invalid arguments: {}", e)))?;
 
         let mut futures = Vec::new();
@@ -75,8 +75,6 @@ impl Tool for ParallelWriter {
                 let specialist_name = task.specialist.clone();
                 
                 futures.push(tokio::spawn(async move {
-                    // Call the tool (which is an AgentTool wrapping the sub-agent)
-                    // AgentTool expects the input in an 'input' field.
                     match tool.execute(ctx, json!({ "input": prompt })).await {
                         Ok(res) => format!("[{}] success: {}", specialist_name, res),
                         Err(e) => format!("[{}] error: {}", specialist_name, e),
@@ -108,6 +106,6 @@ impl Tool for ParallelWriter {
     }
 }
 
-pub fn parallel_writer_tool(specialists: HashMap<String, Arc<dyn Tool>>) -> Vec<Arc<dyn Tool>> {
-    vec![Arc::new(ParallelWriter::new(specialists))]
+pub fn parallel_tasks_tool(specialists: HashMap<String, Arc<dyn Tool>>) -> Vec<Arc<dyn Tool>> {
+    vec![Arc::new(ParallelTasks::new(specialists))]
 }

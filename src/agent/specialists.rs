@@ -27,7 +27,15 @@ pub fn get_specialists(model: Arc<dyn Llm>) -> anyhow::Result<HashMap<String, Ar
         let mut builder = LlmAgentBuilder::new("generalist")
             .description("Versatile problem-solver for all tasks including engineering, ops, and general utility.")
             .instruction(
-                "You are a versatile Generalist Agent. You excel at multi-disciplinary problem solving, code development, system operations, and information synthesis. You have access to a full suite of tools for filesystem management, shell execution, web interaction, search, and general utilities. Prioritize accuracy, security, and speed. MANDATE: Provide a concise 'Summary + Result' only."
+                "You are a versatile Generalist Agent. You excel at multi-disciplinary problem solving, code development, system operations, and information synthesis. You have access to a full suite of tools for filesystem management, shell execution, web interaction, search, and general utilities.
+
+For complex requests, you MUST follow this workflow:
+1. **Plan:** Decompose the request into small, actionable steps.
+2. **Track:** Register these steps in the `todo` tool.
+3. **Batch:** Identify independent steps and execute them in parallel using the `parallel_tasks` tool.
+4. **Update:** Mark `todo` items as complete as you finish them.
+
+Prioritize accuracy, security, and speed. MANDATE: Provide a concise 'Summary + Result' only."
             )
             .model(model.clone());
         for t in &fs_tools {

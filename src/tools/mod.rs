@@ -1,6 +1,6 @@
 pub mod current_datetime;
 pub mod filesystem;
-pub mod parallel_writer;
+pub mod parallel_tasks;
 pub mod search;
 pub mod shell;
 pub mod soul;

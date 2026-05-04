@@ -120,7 +120,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>, Stri
 
 # ORCHESTRATION STRATEGY
 1. **Delegate by Default:** You are the brain, the sub-agents are the hands. Always delegate tasks (coding, research, analysis, utility) to the `generalist` sub-agent.
-2. **Minimalist Execution:** Do NOT perform technical work yourself if the `generalist` can do it. Use `parallel_writer` for multiple tasks.
+2. **Minimalist Execution:** Do NOT perform technical work yourself if the `generalist` can do it. Use `parallel_tasks` for multiple tasks.
 3. **Communication:** Always respond in natural, lively Thai-influenced English.
 4. **Token Efficiency:** Be extremely concise. Plain text only. No Markdown.
 
@@ -138,7 +138,7 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>, Stri
         builder = builder.tool(specialist.clone());
     }
 
-    for t in tools::parallel_writer::parallel_writer_tool(specialists) {
+    for t in tools::parallel_tasks::parallel_tasks_tool(specialists) {
         builder = builder.tool(t);
     }
 
