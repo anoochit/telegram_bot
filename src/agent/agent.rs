@@ -14,7 +14,6 @@ use adk_rust::model::{ OpenAIClient, OpenAIConfig };
 use adk_rust::model::{ OpenRouterClient, OpenRouterConfig };
 
 use adk_rust::tool::AgentTool;
-use std::sync::Arc;
 use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
@@ -177,15 +176,6 @@ pub async fn build_agent() -> anyhow::Result<(Arc<dyn Agent>, Arc<dyn Llm>, Stri
             )
         )
         .model(model.clone());
-
-    // Register all specialists as tools for the orchestrator
-    for specialist in specialists.values() {
-        builder = builder.tool(specialist.clone());
-    }
-
-    for t in tools::parallel_tasks::parallel_tasks_tool(specialists) {
-        builder = builder.tool(t);
-    }
 
     // add tools to the agent
     let mut tools: Vec<Arc<dyn Tool>> = tools::weather::weather_tools();
