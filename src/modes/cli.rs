@@ -33,12 +33,9 @@ impl Completer for NamiHelper {
         pos: usize,
         _ctx: &Context<'_>
     ) -> rustyline::Result<(usize, Vec<Pair>)> {
-        let (start, word) = rustyline::completion::extract_word(
-            line,
-            pos,
-            None,
-            |c| (c == ' ' || c == '\t')
-        );
+        let (start, word) =
+            rustyline::completion::extract_word(line, pos, None, |c| c == ' ' || c == '\t');
+
 
         if word.starts_with('@') {
             let path_part = &word[1..];
