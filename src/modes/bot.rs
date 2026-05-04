@@ -51,7 +51,7 @@ async fn ensure_session(sessions: &Arc<dyn SessionService>, app_name: &str, user
             app_name: app_name.to_string(),
             user_id: user_id.to_string(),
             session_id: session_id.to_string(),
-            num_recent_events: Some(5),
+            num_recent_events: Some(0),
             after: None,
         })
         .await

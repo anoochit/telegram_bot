@@ -1,14 +1,17 @@
 ---
-name: system-info
+name: system-status
 description: Use this skill to provide details about the host machine's system performance, including CPU usage, memory availability, and disk status. Use when the user asks about "machine stats", "how are you running?", or "system health".
 allowed-tools:
-  - get_system_info
+  - get_system_status
+
 ---
 
-# System Info
+# System Status
 
 ## Overview
-This skill allows you to retrieve and report real-time telemetry from the machine you are running on. It uses the `system_info` tool to gather data about CPU load, memory usage, and storage capacity.
+
+This skill allows you to retrieve and report real-time telemetry from the machine you are running on. It uses the `get_system_status` tool to gather data about CPU load, memory usage, and storage capacity.
+
 
 ## Guidelines
 1.  **Be Precise**: Report percentages and byte counts (converted to GB/MB for readability) accurately.
