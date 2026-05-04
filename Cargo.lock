@@ -3401,7 +3401,7 @@ dependencies = [
 
 [[package]]
 name = "namiclaw"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "adk-runner",
  "adk-rust",
