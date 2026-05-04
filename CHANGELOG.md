@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 - **Skill Prioritization**: Updated agent instructions to prioritize specialized skills over general tools, improving the accuracy and efficiency of task execution.
 - **Tool Renaming**: Renamed `system_info` tool and skill to `system_status` for better clarity.
 
+### Fixed
+
+- **Compilation Errors**: Resolved compilation errors in `agent.rs` and verified the build.
+
 ## [0.4.0] - 2026-05-03
 
 ### Added
