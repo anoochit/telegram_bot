@@ -3400,7 +3400,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "namiclaw"
+name = "nami"
 version = "0.5.0"
 dependencies = [
  "adk-runner",

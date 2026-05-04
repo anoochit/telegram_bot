@@ -11,8 +11,8 @@
 - Noel prefers the TODO board to be organized and separated by tags (e.g., [Book], [Reading]) when displayed.
 
 - Noel shared a joke that if Nami were in Northern Thailand, the name would be 'Ha Na Mi' (ฮานามิ) because 'Ha' means 'I' in Northern Thai.
-- Noel's team consists of 4 people: Nan (CEO), Noel (CTO), Angie (Python Dev/Data Analyst), and Kuenge (Rust Dev/System).
-- Team locations: Nan (CEO) and Angie (Python Dev/Data Analyst) are in Daejeon, South Korea. Kuenge (Rust Dev/System) is in Seoul, South Korea.
+- Noel's team consists of 4 people: Nan (CEO), Noel (CTO), Angie (Python Dev/Data Analyst), and Eun-ke (Rust Dev/System).
+- Team locations: Nan (CEO) and Angie (Python Dev/Data Analyst) are in Daejeon, South Korea. Eun-ke (Rust Dev/System) is in Seoul, South Korea.
 - Noel wants to minimize the use of google_search to save on costs because Nan (CEO) might complain about expenses.
 - To create PDF books from Markdown, use the create-pdf command. To create EPUB books, use the create-epub skill as it's configured to work without pandoc.
 - When creating a PDF with md-to-pdf, if you encounter an error related to shared libraries, use the command with LD_LIBRARY_PATH=$PWD/.skills/create-pdf/libs to access libnss3.so and other files prepared on your machine.

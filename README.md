@@ -1,6 +1,6 @@
-# namiClaw: Telegram AI Bot (ADK-Rust)
+# nami: AI Bot
 
-A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://github.com/zavora-ai/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic persona management.
+A modular, extensible AI-powered `Nami` built on top of [adk-rust](https://github.com/zavora-ai/adk-rust) and the [teloxide](https://github.com/teloxide/teloxide) framework. This project demonstrates how to leverage modern Rust libraries to build sophisticated AI agents with persistent sessions, filesystem sandbox capabilities, and dynamic persona management.
 
 ![Screenshot](screenshots/nami-avatar.png)
 
@@ -15,14 +15,6 @@ A modular, extensible AI-powered namiClaw built on top of [adk-rust](https://git
 * **Persistent Sessions**: SQLite-backed conversation history keyed by Telegram user ID.
 * **Modular Tools**: Organized architecture for adding capabilities (Weather, Search, Shell, Wiki, etc.).
 * **Live Web Search**: Integrated Google Search via Serper.dev.
-* **Hierarchical Sub-Agents**: Support for delegation to a team of 7 specialized agents:
-  - **Codebase Investigator**: Deep analysis & bug hunting.
-  - **Generalist**: Batch tasks & data processing.
-  - **Web Developer**: Full-stack web & API implementation.
-  - **DevOps Engineer**: CI/CD, Docker & cloud infrastructure.
-  - **Quality Assurance**: Automated testing & verification.
-  - **Data Specialist**: Database design & analytics.
-  - **Documentation Architect**: Technical knowledge & docs maintenance.
 * **Todo Management**: Integrated task tracking and list management.
 * **Sandboxed Environment**: Integrated filesystem tools for agent tasks within a `workspace/` directory, including the ability to merge multiple documents together using `merge_files`.
 
@@ -66,12 +58,12 @@ SERPER_API_KEY=your_serper_api_key
    The generated executable will be found in `target/release/`.
 
 2. **(Optional) Install globally**:
-   To run `namiclaw` from any directory, you can move the binary to a location in your system's `PATH`:
+   To run `nami` from any directory, you can move the binary to a location in your system's `PATH`:
 
    * **Linux/macOS**:
 
      ```bash
-     sudo mv target/release/namiclaw /usr/local/bin/
+     sudo mv target/release/nami /usr/local/bin/
      ```
 
    * **Windows**:
@@ -83,11 +75,11 @@ The application provides five primary run modes:
 
 | Mode | Command | Description |
 | :--- | :--- | :--- |
-| **Initialize** | `namiclaw init` | Initialize project config files and database. |
-| **Telegram Bot** | `namiclaw bot` | Start the interactive Telegram Bot. |
-| **CLI** | `namiclaw cli` | Local interactive terminal agent with rich TUI. |
-| **Run** | `namiclaw run "prompt"` | Execute a single prompt directly from the CLI. |
-| **Server** | `namiclaw serve` | Run as an HTTP service. |
+| **Initialize** | `nami init` | Initialize project config files and database. |
+| **Telegram Bot** | `nami bot` | Start the interactive Telegram Bot. |
+| **CLI** | `nami cli` | Local interactive terminal agent with rich TUI. |
+| **Run** | `nami run "prompt"` | Execute a single prompt directly from the CLI. |
+| **Server** | `nami serve` | Run as an HTTP service. |
 
 ## 🏗 Architecture
 
