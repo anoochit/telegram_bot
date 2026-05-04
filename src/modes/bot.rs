@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use adk_session::{DeleteRequest, SessionService};
+use adk_session::{CreateRequest, DeleteRequest, GetRequest, SessionService};
 use teloxide::{prelude::*, utils::command::BotCommands};
 
 use crate::runner::AgentRunner;
@@ -45,6 +45,30 @@ pub async fn run_bot(
     Ok(())
 }
 
+async fn ensure_session(sessions: &Arc<dyn SessionService>, app_name: &str, user_id: &str, session_id: &str) -> anyhow::Result<()> {
+    if sessions
+        .get(GetRequest {
+            app_name: app_name.to_string(),
+            user_id: user_id.to_string(),
+            session_id: session_id.to_string(),
+            num_recent_events: Some(5),
+            after: None,
+        })
+        .await
+        .is_err()
+    {
+        sessions
+            .create(CreateRequest {
+                app_name: app_name.to_string(),
+                user_id: user_id.to_string(),
+                session_id: Some(session_id.to_string()),
+                state: Default::default(),
+            })
+            .await?;
+    }
+    Ok(())
+}
+
 async fn handle_command(
     bot: Bot,
     msg: Message,
@@ -79,13 +103,15 @@ async fn handle_message(
     bot: Bot,
     msg: Message,
     runner: Arc<AgentRunner>,
-    _sessions: Arc<dyn SessionService>,
+    sessions: Arc<dyn SessionService>,
 ) -> anyhow::Result<()> {
     let Some(text) = msg.text() else {
         return Ok(());
     };
     let chat_id = msg.chat.id.to_string();
     log::info!("Received message from {}: {}", chat_id, text);
+
+    ensure_session(&sessions, "telegram", &chat_id, &chat_id).await?;
 
     bot.send_chat_action(msg.chat.id, teloxide::types::ChatAction::Typing)
         .await?;

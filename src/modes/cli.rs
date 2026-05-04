@@ -156,18 +156,7 @@ async fn process_file_references(input: &str) -> String {
     final_prompt
 }
 
-pub(crate) async fn run_cli(
-    agent: Arc<dyn Agent>,
-    sessions: Arc<dyn SessionService>,
-    model: Arc<dyn Llm>,
-) -> anyhow::Result<()> {
-    let mut stdout = io::stdout();
-    execute!(
-        stdout,
-        terminal::Clear(terminal::ClearType::All),
-        cursor::MoveTo(0, 0)
-    )?;
-
+fn render_banner(provider: &str, model_name: &str) {
     println!(
         "{}",
         style::style(
@@ -184,24 +173,26 @@ pub(crate) async fn run_cli(
         )
         .magenta()
     );
-    println!("{}", style::style(format!("Nami CLI v{}", env!("CARGO_PKG_VERSION"))).bold().magenta());
+    println!(
+        "{} {}",
+        style::style(format!("Nami CLI v{}", env!("CARGO_PKG_VERSION"))).bold().magenta(),
+        style::style(format!("({}) using {}", provider, model_name)).dim()
+    );
     println!(
         "\n{}",
         "Type /exit to quit, /clear to wipe terminal, /new to start a new chat."
     );
     println!("Type @ followed by path to reference files (use Tab for completion).");
     println!("Press ESC during a request to cancel it.\n");
+}
 
-    let app_name = "cli";
-    let user_id = "default_user";
-    let session_id = "cli_session";
-
+async fn ensure_session(sessions: &Arc<dyn SessionService>, app_name: &str, user_id: &str, session_id: &str) -> anyhow::Result<()> {
     if sessions
         .get(GetRequest {
             app_name: app_name.to_string(),
             user_id: user_id.to_string(),
             session_id: session_id.to_string(),
-            num_recent_events: None,
+            num_recent_events: Some(5),
             after: None,
         })
         .await
@@ -216,6 +207,32 @@ pub(crate) async fn run_cli(
             })
             .await?;
     }
+    Ok(())
+}
+
+
+
+pub(crate) async fn run_cli(
+    agent: Arc<dyn Agent>,
+    sessions: Arc<dyn SessionService>,
+    model: Arc<dyn Llm>,
+    provider: String,
+    model_name: String,
+) -> anyhow::Result<()> {
+    let mut stdout = io::stdout();
+    execute!(
+        stdout,
+        terminal::Clear(terminal::ClearType::All),
+        cursor::MoveTo(0, 0)
+    )?;
+
+    render_banner(&provider, &model_name);
+
+    let app_name = "cli";
+    let user_id = "default_user";
+    let session_id = "cli_session";
+
+    ensure_session(&sessions, app_name, user_id, session_id).await?;
 
     let runner = Runner::builder()
         .app_name(app_name)
@@ -240,6 +257,26 @@ pub(crate) async fn run_cli(
         .bullet
         .set_fg(termimad::crossterm::style::Color::Magenta);
 
+    handle_chat_loop(
+        &mut rl,
+        &sessions,
+        &runner,
+        &nami_skin,
+        app_name,
+        user_id,
+        session_id,
+    ).await
+}
+
+async fn handle_chat_loop(
+    rl: &mut Editor<NamiHelper, rustyline::history::FileHistory>,
+    sessions: &Arc<dyn SessionService>,
+    runner: &Runner,
+    nami_skin: &MadSkin,
+    app_name: &str,
+    user_id: &str,
+    session_id: &str,
+) -> anyhow::Result<()> {
     loop {
         let readline = rl.readline("You > ");
         match readline {
@@ -253,7 +290,7 @@ pub(crate) async fn run_cli(
                 }
                 if trimmed == "/clear" {
                     execute!(
-                        stdout,
+                        io::stdout(),
                         terminal::Clear(terminal::ClearType::All),
                         cursor::MoveTo(0, 0)
                     )?;
@@ -364,3 +401,4 @@ pub(crate) async fn run_cli(
     }
     Ok(())
 }
+

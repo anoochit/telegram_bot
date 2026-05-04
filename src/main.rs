@@ -49,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
 
     // shared setup
     log::info!("Building agent...");
-    let (agent, model) = agent::build_agent().await?;
+    let (agent, model, provider, model_name) = agent::build_agent().await?;
     log::info!("Agent built successfully.");
     let sessions = SqliteSessionService::new("sessions.db?mode=rwc").await?;
     sessions.migrate().await?;
@@ -63,7 +63,7 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::Cli => {
             log::info!("Running in CLI mode");
-            modes::cli::run_cli(agent, sessions, model).await?;
+            modes::cli::run_cli(agent, sessions, model, provider, model_name).await?;
         }
         Commands::Run { prompt } => {
             log::info!("Running in direct run mode");

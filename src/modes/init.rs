@@ -16,6 +16,10 @@ pub async fn initialize_project() -> anyhow::Result<()> {
             "USER.md",
             "# User Information\n\nUser profile and preferences.",
         ),
+        (
+            "config.toml",
+            "[model]\nprovider = \"gemini\"\nmodel_name = \"gemini-2.5-flash\"\napi_key_env = \"GOOGLE_API_KEY\"\n",
+        ),
     ];
 
     for (filename, content) in files {

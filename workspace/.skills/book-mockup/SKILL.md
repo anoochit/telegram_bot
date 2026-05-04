@@ -5,34 +5,53 @@ description: Generate photo-realistic book mockup images using Gemini 2.5 Flash 
 
 # Skill: Generate Book Mockup
 
-Use this skill to transform a flat 2D book cover image into a realistic 3D mockup using a dedicated Python script.
+Transform flat 2D book cover images into professional, photo-realistic 3D mockups.
 
-## Description
+## Overview
 
-Runs the `generate_mockup.py` script to overlay a cover image onto a 3D-rendered book scene based on a text description.
+This skill leverages the `generate_mockup.py` script to generate high-fidelity 3D book visualizations. It uses text prompts to define the scene, lighting, and environment, ensuring consistent and aesthetic results.
 
 ## Prerequisites
 
-* **Python 3.x** installed.
-* **Dependencies:** Ensure `Pillow`, `google-genai`, and `python-dotenv` are installed (see `pyproject.toml`).
-* **Assets:** The input cover image must exist in the root or specified directory.
+* **Python 3.10+** environment.
+* **Dependencies:** Install required packages via `pip install -r requirements.txt`.
+* **API Key:** Ensure `GOOGLE_API_KEY` is configured in your `.env` file.
 
 ## Usage
 
-Execute the script from the project root using the following command structure:
+Run the script from the project root. The `--description` should be detailed, focusing on lighting, surface, and atmosphere for optimal realism.
 
 ```bash
-python <skill-path>/generate_mockup.py \
-  --cover <data-path>cover.png \
-  --description "A book lying on a wooden table with soft morning light" \
-  --output <output-path>\mockup_result.png
-
+python workspace/.skills/book-mockup/scripts/generate_mockup.py \
+  --cover "assets/images/cover.png" \
+  --description "A high-quality 3D render of a book resting on a dark walnut desk with dramatic cinematic side lighting." \
+  --output "workspace/output/mockup.png"
 ```
 
 ## Parameters
 
-| Parameter | Description | Required |
-| --- | --- | --- |
-| `--cover` | Path to the source 2D cover image (e.g., .png, .jpg). | Yes |
-| `--description` | A natural language prompt describing the mockup environment. | Yes |
-| `--output` | The filename/path where the finished mockup will be saved. | Yes |
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `--cover` | String | Yes | Path to the source 2D cover image (supports PNG, JPG). |
+| `--description` | String | Yes | Natural language prompt defining the environment and lighting. |
+| `--output` | String | Yes | File path and name for the generated mockup. |
+
+## Best Practices
+
+* **Prompt Engineering:** Include scene details: "soft natural sunlight," "top-down flat lay," "office desk background," or "minimalist studio lighting."
+* **Image Quality:** Use high-resolution source covers (min. 1000px height) for best results.
+* **Error Handling:** If the script fails, verify your API key access and that the source image path is correct. Check console output for detailed error messages.
+
+## Troubleshooting
+
+* **API Connection Issues:** Ensure `GOOGLE_API_KEY` is active and has sufficient quota. Verify your internet connection if using the cloud-based image generation endpoint.
+* **Image Format Errors:** The script expects standard 2D formats (PNG/JPG). If using specialized formats like TIFF or WebP, convert to PNG first.
+* **Memory/Performance:** For extremely high-resolution images, the script may consume significant RAM. If it crashes, resize your input image to 2000px height or less.
+* **Prompting Quality:** If the resulting mockup is mismatched, try refining the description to be more specific about the "camera angle" (e.g., "front-facing," "isometric view").
+
+## How it works
+
+The `book-mockup` script orchestrates a multi-step process:
+1. **Validation:** Checks input images and verifies API key connectivity.
+2. **Generation:** Sends your cover image and text prompt to the Gemini model, which uses advanced generative rendering to synthesize the final 3D environment.
+3. **Saving:** Retrieves the generated image and saves it to your specified output path.

@@ -4,7 +4,7 @@ version = "0.5.0"
 edition = "2024"
 
 [dependencies]
-adk-rust = "0.7.0"
+adk-rust = { version = "0.7.0", features = ["openrouter"] }
 tokio = { version = "1", features = ["full"] }
 dotenvy = "0.15"
 anyhow = "1"
@@ -38,3 +38,4 @@ walkdir = "2.5.0"
 yaml-rust = "0.4.5"
 serde_yaml = "0.9.34"
 indexmap = "2.14.0"
+toml = "1.1.2"
