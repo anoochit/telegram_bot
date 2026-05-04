@@ -71,7 +71,7 @@ jobs:
 
       - name: Install cross
         if: matrix.use-cross
-        run: cargo install cross --git https://github.com/cross-rs/cross
+        run: cargo install --force cross --git https://github.com/cross-rs/cross
 
       - name: Build
         if: '!matrix.use-cross'
